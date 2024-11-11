@@ -20,9 +20,9 @@ SCP_1025_CONFIG.Diseases = {
 }
 
 --[[
-* Shoot with the gun depend on the ammo type
-* @param disease : string
-* @param ply : Player
+* Call the disease for the player.
+* @string disease The disease
+* @Player ply The player to set the disease.
 --]]
 function scp_1025.CallDisease(disease, ply)
     SCP_1025_CONFIG.Diseases[disease](ply)

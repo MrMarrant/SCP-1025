@@ -16,6 +16,8 @@
 
 SCP_1025_CONFIG.ScrW = ScrW()
 SCP_1025_CONFIG.ScrH = ScrH()
+SCP_1025_CONFIG.WIdealResolution = 1920
+SCP_1025_CONFIG.HIdealResolution = 1080
 
 hook.Add( "OnScreenSizeChanged", "OnScreenSizeChanged.SCP1025", function( oldWidth, oldHeight )
     SCP_1025_CONFIG.ScrW = ScrW()

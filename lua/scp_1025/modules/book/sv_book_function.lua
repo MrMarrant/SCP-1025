@@ -14,11 +14,19 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+--[[
+* Open the book for the player.
+* @Player ply The player to set the page.
+--]]
 function scp_1025.OpenBook(ply)
     if (not IsValid(ply)) then return end
     scp_1025.IndexPage(ply)
 end
 
+--[[
+* Open the index page for the player.
+* @Player ply The player to set the page.
+--]]
 function scp_1025.IndexPage(ply)
     net.Start(SCP_1025_CONFIG.IndexPage)
     net.Send(ply)
