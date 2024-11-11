@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Common Diseases</title>
+        <style>
+            body {
+                font-size: 1em;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                /*background: url(https://i.imgur.com/TvOMl8f.png) no-repeat center center fixed;*/
+                background: url("assets://garrysmod/addons/scp_1025/materials/img_scp_1025/page.png") no-repeat center center fixed;
+                background-size: cover;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: #333;
+            }
+        
+            h1 {
+                margin-top: 10px;
+                text-align: center;
+                font-size: 3rem;
+                line-height: 1.2;
+            }
+        
+            hr {
+                margin-top: 15px;
+                width: 70%;
+                border: none;
+                border-top: 3px solid #333;
+            }
+            .disease-column {
+                gap: 0px 100px;
+                display: flex;
+                flex-direction: column;
+                max-height: 1000px;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+        
+            .footer-text {
+                text-align: center;
+                padding-bottom: 100px;
+                position: absolute;
+                font-size: 2rem;
+                bottom: 0;
+            }
+        
+            button {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            outline: inherit;
+            }
+            button:hover {
+                cursor: pointer;
+                color: blue;
+            }
+
+            .QuitButton {
+                background-color: burlywood;
+                position: absolute;
+                right: 0;
+                width: 10em;
+                height: 3em;
+                display: grid;
+                margin-top: 3em;
+                color: #e2e2e2;
+            }
+            .QuitButton:hover {
+                width: 10.5em;
+            }
+
+        </style>
+        </head>
+        <body>
+        
+        <h1>The<br>Encyclopedia<br>of<br>Common<br>Diseases</h1>
+        <hr>
+        <div class="QuitButton">
+            <button onclick='DeletePage()'>Quit</button>
+        </div>
+        <div class="disease-column">
+            <button onclick='OpenPage()'>Rhume</button>
+            <button onclick='OpenPage()'>Rhume</button>
+            <button onclick='OpenPage()'>Rhume</button>
+        </div>
+
+<div class="footer-text">Illustrated by Coltan Press<br>1948</div>
+<script>
+    function DeletePage() {
+        console.log("RUNLUA:scp_1025.DeletePage()")
+    }
+
+    function OpenPage(page) {
+        console.log("RUNLUA:scp_1025.OpenDiseasePage('"+page+"')")
+    }
+</script>
+
+</body>
+</html>
