@@ -16,9 +16,10 @@
 
 SCP_1025_CONFIG.BasePage = [[
 <head>
-<title>Common Diseases</title>
+<title>Index Page</title>
 <style>
     body {
+        overflow: hidden;
         margin: 0;
         font-family: "Lumios Typewriter Old";
         src: url("asset://garrysmod/addons/scp_1025/resource/fonts/LumiosTypewriter-Old.ttf") format("truetype");
@@ -71,18 +72,22 @@ SCP_1025_CONFIG.BasePage = [[
     }
 
     button:hover {
-    cursor: pointer;
-    color: blue;
+        cursor: pointer;
+        color: blue;
     }
 
     .QuitButton {
-    background-color: #000000;
-    position: absolute;
-    right: 0;
-    width: %frem;
-    height: 3em;
-    display: grid;
-    margin-top: 3em;
+        top: 10px;
+        right: -10px;
+        border-radius: 5px;
+        background-color: #000000;
+        margin-bottom: 0.5em;
+        transition: all 0.3s ease;
+        position: absolute;
+        width: %frem;
+        height: 5em;
+        display: grid;
+        margin-top: 3em;
     }
     .QuitButton:hover {
         width: %frem;
@@ -101,13 +106,13 @@ SCP_1025_CONFIG.BasePage = [[
 <h1>The<br>Encyclopedia<br>of<br>Common<br>Diseases</h1>
 <hr>
 <div class="QuitButton">
-    <button class="DeletePageButton" onclick='DeletePage()'>Quit</button>
+    <button class="DeletePageButton" onclick='DeletePage()'>Close</button>
 </div>
 
 <div class="disease-column">
 ]]
 
-SCP_1025_CONFIG.FooterPage = [[
+SCP_1025_CONFIG.IndexFooterPage = [[
 </div>
 
 <div class="footer-text">Illustrated by Coltan Press<br>1948</div>
@@ -124,18 +129,118 @@ SCP_1025_CONFIG.FooterPage = [[
 </body>
 ]]
 
+SCP_1025_CONFIG.DescriptionPage = [[
+<head>
+    <title>Description Disease</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Lumios Typewriter Old";
+            src: url("asset://garrysmod/addons/scp_1025/resource/fonts/LumiosTypewriter-Old.ttf") format("truetype");
+            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/page.png") no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+    
+        h1 {
+            position: absolute;
+            left: 30px;
+            margin-top: 10px;
+            font-size: %frem;
+        }
+        button {
+            color: white;
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            outline: inherit;
+            font-size: %frem;
+            width: inherit;
+            height: inherit;
+        }
+        button:hover {
+            cursor: pointer;
+            color: #e2e2e2;
+        }
+        .close {
+            top: 10px;
+            border-radius: 5px;
+            background-color: #000000;
+            margin-bottom: 0.5em;
+        }
+        .close:hover {
+            width: %frem;
+        }
+        .index {
+            margin-top: 100px;
+            right: -10px;
+            background-color: #424242;
+        }
+        .index:hover {
+            width: %frem;
+        }
+        .index, .close {
+            transition: all 0.3s ease;
+            text-align: center;
+            position: absolute;
+            right: -10px;
+            align-content: center;
+            width: %frem;
+            height: 5em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .content {
+            position: absolute;
+            top: 100px;
+            left: 30px;
+            width: %dpx;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>%s</h1>
+    <div class="close">
+        <button class="DeletePageButton" onclick='DeletePage()'>Close</button>
+    </div>
+    <div class="index">
+        <button class="IndexButton" onclick='OpenIndex()'>Index</button>
+    </div>
+    <div class="content">
+        <p>
+]]
+
+SCP_1025_CONFIG.DescriptionFooterPage = [[
+        </p>
+    </div>
+    <script>
+        function DeletePage() {
+            console.log("RUNLUA:scp_1025.DeletePage()")
+        }
+
+        function OpenIndex() {
+            console.log("RUNLUA:scp_1025.IndexPage()")
+        }
+    </script>
+</body>
+]]
+
 --[[
 * Open the index page of the book.
 * @Player ply The player to set the page.
 --]]
-function scp_1025.IndexPage(ply)
-    local page = string.format(SCP_1025_CONFIG.BasePage, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(1.5))
+function scp_1025.IndexPage()
+    local ply = LocalPlayer()
+    local page = string.format(SCP_1025_CONFIG.BasePage, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
     local i = 1
     for k, v in pairs(SCP_1025_CONFIG.DiseaseType) do
         page = page .. "<button onclick='OpenPage(\"" .. k .. "\")'>" .. v.name .. " ......." .. i .. "</button>"
         i = i + 1
     end
-    page = page .. SCP_1025_CONFIG.FooterPage
+    page = page .. SCP_1025_CONFIG.IndexFooterPage
     scp_1025.CreateDHTMLPage(ply, page)
 end
 
@@ -146,9 +251,16 @@ end
 --]]
 function scp_1025.DescriptionPage(ply, disease)
     scp_1025.DeletePage()
-    -- TODO : Faire la page de description
+    local diseaseSelect = SCP_1025_CONFIG.DiseaseType[disease]
+    local page = string.format(SCP_1025_CONFIG.DescriptionPage, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10), SCP_1025_CONFIG.ScrW * 0.35, diseaseSelect.name)
+    page = page .. diseaseSelect.description .. SCP_1025_CONFIG.DescriptionFooterPage
+    scp_1025.CreateDHTMLPage(ply, page)
 end
 
+--[[
+* Open the description page of the disease and set the disease to the player.
+* @string disease The disease to display.
+--]]
 function scp_1025.OpenDiseasePage(disease)
     local ply = LocalPlayer()
     scp_1025.DescriptionPage(ply, disease)
