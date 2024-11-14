@@ -34,7 +34,7 @@ end
 function scp_1025.Aids(ply)
 end
 
-net.Receive(SCP_1025_CONFIG.CallDisease, function(len, ply)
+net.Receive(SCP_1025_CONFIG.NetVar.CallDisease, function(len, ply)
     local disease = net.ReadString()
     scp_1025.CallDisease(disease, ply)
 end)

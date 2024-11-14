@@ -15,15 +15,21 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- NET VAR
-SCP_1025_CONFIG.IndexPage = "SCP_1025_CONFIG.IndexPage"
-SCP_1025_CONFIG.CallDisease = "SCP_1025_CONFIG.CallDisease"
+SCP_1025_CONFIG.NetVar = {}
+SCP_1025_CONFIG.NetVar.IndexPage = "SCP_1025_CONFIG.NetVar.IndexPage"
+SCP_1025_CONFIG.NetVar.CallDisease = "SCP_1025_CONFIG.NetVar.CallDisease"
 
 -- Model Path
-SCP_1025_CONFIG.ModelBook = "models/props_borealis/bluebarrel001.mdl"
+SCP_1025_CONFIG.Models = {}
+SCP_1025_CONFIG.Models.ModelBook = "models/scp_1025/scp_1025.mdl"
 
+-- TODO : Sounds
 --Sound Path
-SCP_1025_CONFIG.OpenBookSound = "scp_1025/1025_book.wav"
+SCP_1025_CONFIG.Sounds = {}
+SCP_1025_CONFIG.Sounds.OpenBookSound = "scp_1025/open_book.wav"
+SCP_1025_CONFIG.Sounds.CloseBookSound = "scp_1025/close_book.wav"
 
+-- Default Diseases
 SCP_1025_CONFIG.DiseaseType = {
     common_cold = {
         name = "Common Cold",

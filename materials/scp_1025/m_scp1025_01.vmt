@@ -1,0 +1,19 @@
+"VertexlitGeneric"
+{
+	$basetexture "scp_1025/m_scp1025_01"
+	$normalmap "scp_1025/m_normal_scp1025_01"
+	$phongexponenttexture "scp_1025//m_metalic_scp1025_01"
+	$phong	"1"
+	$phongboost	"5"
+	$phongfresnelranges	"[.78 .9 1]"
+
+	$normalmapalphaenvmapmask	"1"
+	$envmapfresnel	"1"
+
+	$rimlight	"1"
+	$rimmask	"1"
+	$rimlightboost	"1"
+	$rimlightexponent	"2"
+
+	$envmaptintmult	"[.25 .25 .25]"
+}

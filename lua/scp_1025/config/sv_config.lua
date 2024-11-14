@@ -15,5 +15,5 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -- AddNetworkString
-util.AddNetworkString(SCP_1025_CONFIG.IndexPage)
-util.AddNetworkString(SCP_1025_CONFIG.CallDisease)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.IndexPage)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.CallDisease)

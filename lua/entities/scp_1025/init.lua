@@ -14,11 +14,11 @@
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 function ENT:Initialize()
-	self:SetModel(SCP_1025_CONFIG.ModelBook)
+	self:SetModel(SCP_1025_CONFIG.Models.ModelBook)
 	self:RebuildPhysics()
 end
 
--- Intialise the physic of the entity
+-- Initialise the physic of the entity
 function ENT:RebuildPhysics()
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
@@ -43,5 +43,5 @@ function ENT:Use(ply)
 	if (not IsValid(ply)) then return end
 
 	scp_1025.OpenBook(ply)
-	ply:EmitSound(Sound(SCP_1025_CONFIG.OpenBookSound))
+	self:EmitSound(Sound(SCP_1025_CONFIG.Sounds.OpenBookSound))
 end

@@ -28,6 +28,6 @@ end
 * @Player ply The player to set the page.
 --]]
 function scp_1025.IndexPage(ply)
-    net.Start(SCP_1025_CONFIG.IndexPage)
+    net.Start(SCP_1025_CONFIG.NetVar.IndexPage)
     net.Send(ply)
 end

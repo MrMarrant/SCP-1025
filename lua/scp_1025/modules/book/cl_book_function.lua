@@ -118,7 +118,7 @@ SCP_1025_CONFIG.IndexFooterPage = [[
 <div class="footer-text">Illustrated by Coltan Press<br>1948</div>
 <script>
     function DeletePage() {
-        console.log("RUNLUA:scp_1025.DeletePage()")
+        console.log("RUNLUA:scp_1025.CloseBook()")
     }
 
     function OpenPage(page) {
@@ -218,7 +218,7 @@ SCP_1025_CONFIG.DescriptionFooterPage = [[
     </div>
     <script>
         function DeletePage() {
-            console.log("RUNLUA:scp_1025.DeletePage()")
+            console.log("RUNLUA:scp_1025.CloseBook()")
         }
 
         function OpenIndex() {
@@ -265,7 +265,7 @@ function scp_1025.OpenDiseasePage(disease)
     local ply = LocalPlayer()
     scp_1025.DescriptionPage(ply, disease)
 
-    net.Start(SCP_1025_CONFIG.CallDisease)
+    net.Start(SCP_1025_CONFIG.NetVar.CallDisease)
     net.WriteString(disease)
     net.SendToServer()
 end
@@ -287,7 +287,7 @@ function scp_1025.CreateDHTMLPage(ply, content)
     frame:ShowCloseButton(false)
     local width, height = frame:GetSize()
 
-    -- Crée le panneau DHTML
+    -- Create the DHTML panel
     local dhtml = vgui.Create("DHTML", frame)
     dhtml:SetSize(width, height)
     dhtml:SetHTML(content)
@@ -309,7 +309,16 @@ function scp_1025.DeletePage()
 end
 
 --[[
-* Delete the current page.
+* Close the book and play a sound.
+--]]
+function scp_1025.CloseBook()
+    local ply = LocalPlayer()
+    scp_1025.DeletePage()
+    ply:EmitSound(Sound(SCP_1025_CONFIG.Sounds.CloseBookSound)) --! Ne sera joué que coté client
+end
+
+--[[
+* Convert the size of the font to the resolution of the screen.
 * @float size The size to convert.
 --]]
 function scp_1025.FontSizeResolution(size)
@@ -317,7 +326,7 @@ function scp_1025.FontSizeResolution(size)
 end
 
 -- Net Messages
-net.Receive(SCP_1025_CONFIG.IndexPage, function()
+net.Receive(SCP_1025_CONFIG.NetVar.IndexPage, function()
     local ply = LocalPlayer()
     if (not IsValid(ply)) then return end
 
