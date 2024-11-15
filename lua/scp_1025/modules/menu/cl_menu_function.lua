@@ -112,22 +112,50 @@ function scp_1025.CreateDisease(func, name, description, index)
     end
 end
 
+--[[
+* Remove a custom disease.
+* @string index The index of the disease.
+--]]
+function scp_1025.RemoveDisease(index)
+    if (index == "") then 
+        scp_1025.AlertChat("indexempty")
+        return
+    end
+    net.Start(SCP_1025_CONFIG.NetVar.RemoveCustomDisease)
+    net.WriteString(index)
+    net.SendToServer()
+end
+
+--[[
+* Check if all parameters are valid.
+* @string func The function to call.
+* @string name The name of the disease.
+* @string description The description of the disease.
+* @string index The index of the disease.
+--]]
 function scp_1025.IsNewDiseaseValid(func, name, description, index)
     local ply = LocalPlayer()
     -- check if params are not empty
     if (func == "" or name == "" or description == "" or index == "") then
-        ply:ChatPrint(scp_1025.GetTranslation("fillall"))
+        scp_1025.AlertChat("fillall")
         return false
     end
     if (SCP_1025_CONFIG.CustomDiseaseType[index]) then
-        ply:ChatPrint(scp_1025.GetTranslation("diseaseexist"))
+        scp_1025.AlertChat("diseaseexist")
         return false
     end
     return true
 end
 
-function scp_1025.AlertChat(mesage)
-    LocalPlayer():ChatPrint(scp_1025.GetTranslation(mesage))
+--[[
+* Create a notificatino message to the screen of the player.
+* @string message The message to display.
+* @number|nil notiftype The type notification icon to display.
+--]]
+function scp_1025.AlertChat(message, notiftype)
+    notiftype = notiftype or NOTIFY_ERROR
+    notification.AddLegacy(scp_1025.GetTranslation(message), notiftype, 4)
+    -- LocalPlayer():ChatPrint(scp_1025.GetTranslation(mesage))
 end
 
 -- NET RECEIVE
@@ -141,14 +169,21 @@ net.Receive(SCP_1025_CONFIG.NetVar.CreateCustomDisease, function()
     SCP_1025_CONFIG.DiseaseAvailable[index] = {name = name, description = description}
 end)
 
-net.Receive(SCP_1025_CONFIG.NetVar.ConfirmCreationDisease, function()
-    scp_1025.AlertChat("confirmcreation")
+net.Receive(SCP_1025_CONFIG.NetVar.ConfirmMenu, function()
+    local message = net.ReadString()
+    scp_1025.AlertChat(message, NOTIFY_GENERIC)
     scp_1025.DeletePage()
 end)
 
 net.Receive(SCP_1025_CONFIG.NetVar.ErrorMessage, function()
     local message = net.ReadString()
     scp_1025.AlertChat(message)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.DeleteCustomDisease, function()
+    local index = net.ReadString()
+    SCP_1025_CONFIG.CustomDiseaseType[index] = nil
+    SCP_1025_CONFIG.DiseaseAvailable[index] = nil
 end)
 
 -- HOOKs

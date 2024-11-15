@@ -43,7 +43,7 @@ end
 local function CreateDisease(func, name, description, index, caller)
     if not IsNewDiseaseValid(func, name, description, index, caller) then return end
 
-    SCP_1025_CONFIG.CustomDiseaseType[index] = {name = name, description = description}
+    SCP_1025_CONFIG.CustomDiseaseType[index] = {name = name, description = description, func = func}
     SCP_1025_CONFIG.DiseaseAvailable[index] = {name = name, description = description}
     SCP_1025_CONFIG.Diseases[index] = function (ply) _G[func](ply) end
 
@@ -58,8 +58,31 @@ local function CreateDisease(func, name, description, index, caller)
     net.Broadcast()
 
     -- Confirmation Coté joueur
-    net.Start(SCP_1025_CONFIG.NetVar.ConfirmCreationDisease)
+    net.Start(SCP_1025_CONFIG.NetVar.ConfirmMenu)
+    net.WriteString("confirmcreation")
     net.Send(caller)
+end
+
+local function DeleteCustomDisease(ply, index)
+    if (not ply:IsAdmin()) then
+        scp_1025.ErrorMesage(ply, "warningsettings")
+        return false
+    end
+
+    SCP_1025_CONFIG.CustomDiseaseType[index] = nil
+    SCP_1025_CONFIG.DiseaseAvailable[index] = nil
+    SCP_1025_CONFIG.Diseases[index] = nil
+    
+    scp_1025.UpdateJson(SCP_1025_CONFIG.DiseaseAvailable)
+    -- TODO : Remove client to
+    net.Start(SCP_1025_CONFIG.NetVar.DeleteCustomDisease)
+    net.WriteString(index)
+    net.Broadcast()
+
+    -- Confirmation Coté joueur
+    net.Start(SCP_1025_CONFIG.NetVar.ConfirmMenu)
+    net.WriteString("confirmdelete")
+    net.Send(ply)
 end
 
 function scp_1025.CreateJson(func, name, description, index)
@@ -71,11 +94,18 @@ function scp_1025.CreateJson(func, name, description, index)
     local SERVER_VALUES = util.JSONToTable(fileFind) or {}
 
     SERVER_VALUES[index] = {
-        ["name"] = name,
-        ["description"] = description,
-        ["func"] = func
+        name = name,
+        description = description,
+        func = func
     }
     file.Write(SCP_1025_CONFIG.Paths.DataJson, util.TableToJSON(SERVER_VALUES, true))
+end
+
+function scp_1025.UpdateJson(data)
+    if not file.Exists(SCP_1025_CONFIG.Paths.FolderData, "DATA") then
+        file.CreateDir(SCP_1025_CONFIG.Paths.FolderData)
+    end
+    file.Write(SCP_1025_CONFIG.Paths.DataJson, util.TableToJSON(data, true))
 end
 
 function scp_1025.ErrorMesage(ply, message)
@@ -88,7 +118,7 @@ function TestSCP1025(ply)
     print("ah oui oui")
 end
 
-
+-- NET MESSAGES
 net.Receive(SCP_1025_CONFIG.NetVar.AddCustomDisease, function(len, ply)
     local func = net.ReadString()
     local name = net.ReadString()
@@ -96,4 +126,9 @@ net.Receive(SCP_1025_CONFIG.NetVar.AddCustomDisease, function(len, ply)
     local index = net.ReadString()
 
     CreateDisease(func, name, description, index, ply)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.RemoveCustomDisease, function(len, ply)
+    local index = net.ReadString()
+    DeleteCustomDisease(ply, index)
 end)

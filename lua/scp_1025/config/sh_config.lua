@@ -21,7 +21,9 @@ SCP_1025_CONFIG.NetVar.CallDisease = "SCP_1025_CONFIG.NetVar.CallDisease"
 SCP_1025_CONFIG.NetVar.AddCustomDisease = "SCP_1025_CONFIG.NetVar.AddCustomDisease"
 SCP_1025_CONFIG.NetVar.ErrorMessage = "SCP_1025_CONFIG.NetVar.ErrorMessage"
 SCP_1025_CONFIG.NetVar.CreateCustomDisease = "SCP_1025_CONFIG.NetVar.CreateCustomDisease"
-SCP_1025_CONFIG.NetVar.ConfirmCreationDisease = "SCP_1025_CONFIG.NetVar.ConfirmCreationDisease"
+SCP_1025_CONFIG.NetVar.ConfirmMenu = "SCP_1025_CONFIG.NetVar.ConfirmMenu"
+SCP_1025_CONFIG.NetVar.DeleteCustomDisease = "SCP_1025_CONFIG.NetVar.DeleteCustomDisease"
+SCP_1025_CONFIG.NetVar.RemoveCustomDisease = "SCP_1025_CONFIG.NetVar.RemoveCustomDisease"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}

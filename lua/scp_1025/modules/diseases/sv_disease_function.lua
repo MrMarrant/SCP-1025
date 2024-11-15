@@ -19,6 +19,10 @@ SCP_1025_CONFIG.Diseases = {
     ["aids"] = function (ply) scp_1025.CommonCold(ply) end,
 }
 
+for key, value in cs(SCP_1025_CONFIG.CustomDiseaseType) do
+    SCP_1025_CONFIG.Diseases[key] = function (ply) _G[value.func](ply) end
+end
+
 --[[
 * Call the disease for the player.
 * @string disease The disease
@@ -26,6 +30,7 @@ SCP_1025_CONFIG.Diseases = {
 --]]
 function scp_1025.CallDisease(disease, ply)
     SCP_1025_CONFIG.Diseases[disease](ply)
+    hook.Call("SCP1025.CallDisease", nil, ply, disease) --? In case some dev wants to do something on disease call
 end
 
 function scp_1025.CommonCold(ply)
