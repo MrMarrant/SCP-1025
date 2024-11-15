@@ -19,6 +19,9 @@ SCP_1025_CONFIG.NetVar = {}
 SCP_1025_CONFIG.NetVar.IndexPage = "SCP_1025_CONFIG.NetVar.IndexPage"
 SCP_1025_CONFIG.NetVar.CallDisease = "SCP_1025_CONFIG.NetVar.CallDisease"
 SCP_1025_CONFIG.NetVar.AddCustomDisease = "SCP_1025_CONFIG.NetVar.AddCustomDisease"
+SCP_1025_CONFIG.NetVar.ErrorMessage = "SCP_1025_CONFIG.NetVar.ErrorMessage"
+SCP_1025_CONFIG.NetVar.CreateCustomDisease = "SCP_1025_CONFIG.NetVar.CreateCustomDisease"
+SCP_1025_CONFIG.NetVar.ConfirmCreationDisease = "SCP_1025_CONFIG.NetVar.ConfirmCreationDisease"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -30,8 +33,13 @@ SCP_1025_CONFIG.Sounds = {}
 SCP_1025_CONFIG.Sounds.OpenBookSound = "scp_1025/open_book.wav"
 SCP_1025_CONFIG.Sounds.CloseBookSound = "scp_1025/close_book.wav"
 
+-- JSON Path
+SCP_1025_CONFIG.Paths = {}
+SCP_1025_CONFIG.Paths.FolderData = "scp_1025"
+SCP_1025_CONFIG.Paths.DataJson = "scp_1025/custom_disease.json"
+
 -- Default Diseases
-SCP_1025_CONFIG.DiseaseType = {
+SCP_1025_CONFIG.DiseaseAvailable = {
     common_cold = {
         name = "Common Cold",
         description = "The common cold is a viral infection of your nose and throat (upper respiratory tract). It's usually harmless, although it might not feel that way. Many types of viruses can cause a common cold.",
@@ -43,4 +51,7 @@ SCP_1025_CONFIG.DiseaseType = {
 }
 
 -- Custom Diseases
-SCP_1025_CONFIG.CustomDiseaseType = {}
+SCP_1025_CONFIG.CustomDiseaseType = util.JSONToTable(file.Read(SCP_1025_CONFIG.Paths.DataJson) or "") or {}
+
+-- Merge Diseases
+SCP_1025_CONFIG.DiseaseAvailable = table.Merge(SCP_1025_CONFIG.DiseaseAvailable, SCP_1025_CONFIG.CustomDiseaseType)

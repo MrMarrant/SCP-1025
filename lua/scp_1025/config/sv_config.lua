@@ -18,3 +18,6 @@
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.IndexPage)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.CallDisease)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.AddCustomDisease)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.ErrorMessage)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.CreateCustomDisease)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.ConfirmCreationDisease)

@@ -101,23 +101,14 @@ end
 * @string index The index of the disease.
 --]]
 function scp_1025.CreateDisease(func, name, description, index)
-    local ply = LocalPlayer()
     local isValid = scp_1025.IsNewDiseaseValid(func, name, description, index)
     if (isValid) then
-        -- TODO : Send ça en broadcast à tous les joueurs en client après le traitement coté serveur
-        -- SCP_1025_CONFIG.CustomDiseaseType[index] = {name = name, description = description}
-        -- SCP_1025_CONFIG.DiseaseType[index] = {name = name, description = description}
-
         net.Start(SCP_1025_CONFIG.NetVar.AddCustomDisease)
         net.WriteString(func)
         net.WriteString(name)
         net.WriteString(description)
         net.WriteString(index)
         net.SendToServer()
-        -- TODO : Ajouter la méthode coté serveur sur 'Diseases' et rajouter coté client et serveur DiseaseType & CustomDiseaseType
-        -- TODO : SERV : SCP_1025_CONFIG.Diseases & SCP_1025_CONFIG.DiseaseType & SCP_1025_CONFIG.CustomDiseaseType
-        -- TODO : CLIENT : SCP_1025_CONFIG.DiseaseType & SCP_1025_CONFIG.CustomDiseaseType
-        -- TODO : Créer ou mettre à jour le JSON
     end
 end
 
@@ -132,17 +123,6 @@ function scp_1025.IsNewDiseaseValid(func, name, description, index)
         ply:ChatPrint(scp_1025.GetTranslation("diseaseexist"))
         return false
     end
-    -- TODO : Pertinent à check coté client ?
-    -- verify if the function exist
-    -- if not _G[func] then
-    --     ply:ChatPrint(scp_1025.GetTranslation("funcdontexist"))
-    --     return false
-    -- -- verify if the function has a one parameter
-    -- elseif debug.getinfo(_G[func]).nparams != 1 then
-    --     PrintTable(debug.getinfo(_G[func]))
-    --     ply:ChatPrint(scp_1025.GetTranslation("needoneparam"))
-    --     return false
-    -- end
     return true
 end
 
@@ -150,6 +130,28 @@ function scp_1025.AlertChat(mesage)
     LocalPlayer():ChatPrint(scp_1025.GetTranslation(mesage))
 end
 
+-- NET RECEIVE
+net.Receive(SCP_1025_CONFIG.NetVar.CreateCustomDisease, function()
+    local name = net.ReadString()
+    local description = net.ReadString()
+    local func = net.ReadString()
+    local index = net.ReadString()
+
+    SCP_1025_CONFIG.CustomDiseaseType[index] = {name = name, description = description}
+    SCP_1025_CONFIG.DiseaseAvailable[index] = {name = name, description = description}
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.ConfirmCreationDisease, function()
+    scp_1025.AlertChat("confirmcreation")
+    scp_1025.DeletePage()
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.ErrorMessage, function()
+    local message = net.ReadString()
+    scp_1025.AlertChat(message)
+end)
+
+-- HOOKs
 hook.Add("PopulateToolMenu", "PopulateToolMenu.SCP1025", function()
     spawnmenu.AddToolMenuOption("Utilities", "SCP-1025", "SCP1025_Menu", "Settings", "", "", function(panel)
         local AddDisease = vgui.Create("DButton")

@@ -236,7 +236,7 @@ function scp_1025.IndexPage()
     local ply = LocalPlayer()
     local page = string.format(SCP_1025_CONFIG.BasePage, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
     local i = 1
-    for k, v in pairs(SCP_1025_CONFIG.DiseaseType) do
+    for k, v in pairs(SCP_1025_CONFIG.DiseaseAvailable) do
         page = page .. "<button onclick='OpenPage(\"" .. k .. "\")'>" .. v.name .. " ......." .. i .. "</button>"
         i = i + 1
     end
@@ -251,7 +251,7 @@ end
 --]]
 function scp_1025.DescriptionPage(ply, disease)
     scp_1025.DeletePage()
-    local diseaseSelect = SCP_1025_CONFIG.DiseaseType[disease]
+    local diseaseSelect = SCP_1025_CONFIG.DiseaseAvailable[disease]
     local page = string.format(SCP_1025_CONFIG.DescriptionPage, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10), SCP_1025_CONFIG.ScrW * 0.35, diseaseSelect.name)
     page = page .. diseaseSelect.description .. SCP_1025_CONFIG.DescriptionFooterPage
     scp_1025.CreateDHTMLPage(ply, page, SCP_1025_CONFIG.ScrW * 0.5, SCP_1025_CONFIG.ScrH * 0.95, false)

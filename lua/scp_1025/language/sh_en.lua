@@ -23,6 +23,7 @@ local LANG_EN = {
     funcdontexist = "The function call doesn't exist.",
     needoneparam = "The function call needs to have only one parameter.",
     diseaseexist = "The disease already exist.",
+    confirmcreation = "The disease has been created.",
 
     -- CONTEXT MENU
     adddisease = "Add custom disease",
