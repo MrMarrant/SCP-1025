@@ -241,7 +241,7 @@ function scp_1025.IndexPage()
         i = i + 1
     end
     page = page .. SCP_1025_CONFIG.IndexFooterPage
-    scp_1025.CreateDHTMLPage(ply, page)
+    scp_1025.CreateDHTMLPage(ply, page, SCP_1025_CONFIG.ScrW * 0.5, SCP_1025_CONFIG.ScrH * 0.95, false)
 end
 
 --[[
@@ -254,7 +254,7 @@ function scp_1025.DescriptionPage(ply, disease)
     local diseaseSelect = SCP_1025_CONFIG.DiseaseType[disease]
     local page = string.format(SCP_1025_CONFIG.DescriptionPage, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10), SCP_1025_CONFIG.ScrW * 0.35, diseaseSelect.name)
     page = page .. diseaseSelect.description .. SCP_1025_CONFIG.DescriptionFooterPage
-    scp_1025.CreateDHTMLPage(ply, page)
+    scp_1025.CreateDHTMLPage(ply, page, SCP_1025_CONFIG.ScrW * 0.5, SCP_1025_CONFIG.ScrH * 0.95, false)
 end
 
 --[[
@@ -275,17 +275,18 @@ end
 * @Player ply The player to set the page.
 * @string content The page content.
 --]]
-function scp_1025.CreateDHTMLPage(ply, content)
+function scp_1025.CreateDHTMLPage(ply, content, w, h, canClose)
     scp_1025.DeletePage(ply)
 
     local frame = vgui.Create("DFrame")
-    frame:SetSize(SCP_1025_CONFIG.ScrW * 0.5, SCP_1025_CONFIG.ScrH * 0.95)
+    frame:SetSize(w, h)
     frame:Center()
     frame:SetTitle("")
     frame:MakePopup()
-    frame:SetDraggable(false)
-    frame:ShowCloseButton(false)
+    frame:SetDraggable(canClose)
+    frame:ShowCloseButton(canClose)
     local width, height = frame:GetSize()
+    height = canClose and height - 30 or height
 
     -- Create the DHTML panel
     local dhtml = vgui.Create("DHTML", frame)
@@ -293,6 +294,7 @@ function scp_1025.CreateDHTMLPage(ply, content)
     dhtml:SetHTML(content)
     dhtml:SetAllowLua(true)
     dhtml:RequestFocus()
+    dhtml:Dock(BOTTOM)
 
     ply.scp_1025_CurrentPage = frame
 end

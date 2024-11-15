@@ -21,7 +21,7 @@
 --]]
 function scp_1025.AddLanguage(langName, data)
     if (type(langName) == "string" and type(data) == "table") then
-        SCP_032_FR_LANG[langName] = data
+        SCP_1025_LANG[langName] = data
     end
 end
 

@@ -40,3 +40,6 @@ SCP_1025_CONFIG.DiseaseType = {
         description = "HIV (human immunodeficiency virus) is a virus that attacks cells that help the body fight infection, making a person more vulnerable to other infections and diseases. It is spread by contact with certain bodily fluids of a person with HIV, most commonly during",
     }
 }
+
+-- Custom Diseases
+SCP_1025_CONFIG.CustomDiseaseType = {}

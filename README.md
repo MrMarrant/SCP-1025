@@ -18,8 +18,7 @@ Install the addon from the workshop page or by downloading the zip and placing i
 
 ## 🤝 Credits
 
-// TODO<br>
-All the contents can be found [here](https://pastebin.com/).
+All the contents can be found [here](https://pastebin.com/8pCXTcAK).
 
 ## 🧮 Contributing
 

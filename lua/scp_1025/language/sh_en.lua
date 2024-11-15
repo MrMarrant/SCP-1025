@@ -17,7 +17,15 @@
 local LANG_EN = {
     test = "test",
     warningsettings = "Only Super Admins can change these values, all other roles will do nothing.",
+    adminaccess = "You need to be Admin or Super Admin to access this menu.",
     durationprops_description = "Time before a props disappears.",
+    fillall = "Please fill all the fields.",
+    funcdontexist = "The function call doesn't exist.",
+    needoneparam = "The function call needs to have only one parameter.",
+
+    -- CONTEXT MENU
+    adddisease = "Add custom disease",
+    removedisease = "Remove custom disease",
 }
 
 scp_1025.AddLanguage("en", LANG_EN)
