@@ -18,6 +18,7 @@
 SCP_1025_CONFIG.NetVar = {}
 SCP_1025_CONFIG.NetVar.IndexPage = "SCP_1025_CONFIG.NetVar.IndexPage"
 SCP_1025_CONFIG.NetVar.CallDisease = "SCP_1025_CONFIG.NetVar.CallDisease"
+SCP_1025_CONFIG.NetVar.AddCustomDisease = "SCP_1025_CONFIG.NetVar.AddCustomDisease"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}

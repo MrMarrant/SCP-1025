@@ -104,8 +104,16 @@ function scp_1025.CreateDisease(func, name, description, index)
     local ply = LocalPlayer()
     local isValid = scp_1025.IsNewDiseaseValid(func, name, description, index)
     if (isValid) then
-        -- TODO : Check si la méthode existe ET si elle n'existe pas déjà dans SCP_1025_CONFIG.CustomDiseaseType
+        -- TODO : Send ça en broadcast à tous les joueurs en client après le traitement coté serveur
+        -- SCP_1025_CONFIG.CustomDiseaseType[index] = {name = name, description = description}
+        -- SCP_1025_CONFIG.DiseaseType[index] = {name = name, description = description}
 
+        net.Start(SCP_1025_CONFIG.NetVar.AddCustomDisease)
+        net.WriteString(func)
+        net.WriteString(name)
+        net.WriteString(description)
+        net.WriteString(index)
+        net.SendToServer()
         -- TODO : Ajouter la méthode coté serveur sur 'Diseases' et rajouter coté client et serveur DiseaseType & CustomDiseaseType
         -- TODO : SERV : SCP_1025_CONFIG.Diseases & SCP_1025_CONFIG.DiseaseType & SCP_1025_CONFIG.CustomDiseaseType
         -- TODO : CLIENT : SCP_1025_CONFIG.DiseaseType & SCP_1025_CONFIG.CustomDiseaseType
@@ -120,17 +128,21 @@ function scp_1025.IsNewDiseaseValid(func, name, description, index)
         ply:ChatPrint(scp_1025.GetTranslation("fillall"))
         return false
     end
-    -- TODO : Pertinent à check coté client ?
-    -- verify if the function exist
-    if not _G[func] then
-        ply:ChatPrint(scp_1025.GetTranslation("funcdontexist"))
-        return false
-    -- verify if the function has a one parameter
-    elseif debug.getinfo(_G[func]).nparams != 1 then
-        PrintTable(debug.getinfo(_G[func]))
-        ply:ChatPrint(scp_1025.GetTranslation("needoneparam"))
+    if (SCP_1025_CONFIG.CustomDiseaseType[index]) then
+        ply:ChatPrint(scp_1025.GetTranslation("diseaseexist"))
         return false
     end
+    -- TODO : Pertinent à check coté client ?
+    -- verify if the function exist
+    -- if not _G[func] then
+    --     ply:ChatPrint(scp_1025.GetTranslation("funcdontexist"))
+    --     return false
+    -- -- verify if the function has a one parameter
+    -- elseif debug.getinfo(_G[func]).nparams != 1 then
+    --     PrintTable(debug.getinfo(_G[func]))
+    --     ply:ChatPrint(scp_1025.GetTranslation("needoneparam"))
+    --     return false
+    -- end
     return true
 end
 

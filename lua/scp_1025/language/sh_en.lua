@@ -22,6 +22,7 @@ local LANG_EN = {
     fillall = "Please fill all the fields.",
     funcdontexist = "The function call doesn't exist.",
     needoneparam = "The function call needs to have only one parameter.",
+    diseaseexist = "The disease already exist.",
 
     -- CONTEXT MENU
     adddisease = "Add custom disease",
