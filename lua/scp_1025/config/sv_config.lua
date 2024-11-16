@@ -23,3 +23,14 @@ util.AddNetworkString(SCP_1025_CONFIG.NetVar.CreateCustomDisease)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.ConfirmMenu)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.DeleteCustomDisease)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.RemoveCustomDisease)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.UpdateTableDisease)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.CloseMenu)
+
+hook.Add( "PlayerDeath", "SCP1025.PlayerDeath", function(victim)
+    scp_1025.CloseMenu(victim)
+end)
+
+-- TODO : A vérifier si je dois initialiser quand un joueur se co, je sais pas.
+-- hook.Add("PlayerInitialSpawn", "SCP1025.PlayerInitialSpawn", function (ply)
+    
+-- end)

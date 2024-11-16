@@ -24,6 +24,8 @@ SCP_1025_CONFIG.NetVar.CreateCustomDisease = "SCP_1025_CONFIG.NetVar.CreateCusto
 SCP_1025_CONFIG.NetVar.ConfirmMenu = "SCP_1025_CONFIG.NetVar.ConfirmMenu"
 SCP_1025_CONFIG.NetVar.DeleteCustomDisease = "SCP_1025_CONFIG.NetVar.DeleteCustomDisease"
 SCP_1025_CONFIG.NetVar.RemoveCustomDisease = "SCP_1025_CONFIG.NetVar.RemoveCustomDisease"
+SCP_1025_CONFIG.NetVar.UpdateTableDisease = "SCP_1025_CONFIG.NetVar.UpdateTableDisease"
+SCP_1025_CONFIG.NetVar.CloseMenu = "SCP_1025_CONFIG.NetVar.CloseMenu"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -53,7 +55,7 @@ SCP_1025_CONFIG.DiseaseAvailable = {
 }
 
 -- Custom Diseases
-SCP_1025_CONFIG.CustomDiseaseType = util.JSONToTable(file.Read(SCP_1025_CONFIG.Paths.DataJson) or "") or {}
+SCP_1025_CONFIG.CustomDisease = util.JSONToTable(file.Read(SCP_1025_CONFIG.Paths.DataJson) or "") or {}
 
 -- Merge Diseases
-SCP_1025_CONFIG.DiseaseAvailable = table.Merge(SCP_1025_CONFIG.DiseaseAvailable, SCP_1025_CONFIG.CustomDiseaseType)
+SCP_1025_CONFIG.DiseaseAvailable = table.Merge(SCP_1025_CONFIG.DiseaseAvailable, SCP_1025_CONFIG.CustomDisease)

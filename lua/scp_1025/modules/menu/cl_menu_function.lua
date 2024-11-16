@@ -81,6 +81,79 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
 </body>
 ]]
 
+SCP_1025_CONFIG.RemoveHeaderMenu = [[
+ <head>
+    <title>Add Disease</title>
+    <style>
+        body {
+            margin-left: 10px;
+            color: #ffffff;
+            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/add_disease.png") no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+        .disease-column {
+            gap: 0px 100px;
+            display: flex;
+            flex-direction: column;
+            max-height: -webkit-fill-available;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+        .disease-element {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+        .no-disease {
+            width: 117px;
+            height: 100px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>SCP-1025</h1>
+    <h2>Remove disease</h2>
+    <div class="disease-column">
+ ]]
+
+ SCP_1025_CONFIG.RemoveFooterMenu = [[
+     </div>
+    <script>
+        function RemoveDisease(index) {
+            console.log("RUNLUA:scp_1025.RemoveDisease('"+index+"')")
+        }
+    </script>
+</body>
+ ]]
+
+ --[[
+* Open the remove disease menu.
+--]]
+function scp_1025.OpenRemoveMenu()
+    local ply = LocalPlayer()
+    if (not ply:IsAdmin()) then scp_1025.AlertChat("adminaccess") return end
+    local page = SCP_1025_CONFIG.RemoveHeaderMenu
+
+    for k, v in pairs(SCP_1025_CONFIG.CustomDisease) do
+        page = page .. "<div class="disease-element"><p>" .. v.name .. "</p> <button onclick='RemoveDisease(\"" .. k .. "\")'>Remove</button></div>"
+    end
+    if (next(SCP_1025_CONFIG.CustomDisease) == nil) then
+        page = page .. '<p class="no-disease">Aucune maladies.</p>'
+    end
+
+    page = page .. SCP_1025_CONFIG.RemoveFooterMenu
+    scp_1025.CreateDHTMLPage(ply, page, SCP_1025_CONFIG.ScrW * 0.8, SCP_1025_CONFIG.ScrH * 0.8, true)
+end
+
 --[[
 * Open the add disease menu.
 --]]
@@ -89,7 +162,7 @@ function scp_1025.OpenAddMenu()
     if (ply:IsAdmin()) then
         scp_1025.CreateDHTMLPage(ply, SCP_1025_CONFIG.AddDiseaseMenu, SCP_1025_CONFIG.ScrW * 0.8, SCP_1025_CONFIG.ScrH * 0.8, true)
     else
-        ply:ChatPrint(scp_1025.GetTranslation("adminaccess"))
+        scp_1025.AlertChat("adminaccess")
     end
 end
 
@@ -140,7 +213,7 @@ function scp_1025.IsNewDiseaseValid(func, name, description, index)
         scp_1025.AlertChat("fillall")
         return false
     end
-    if (SCP_1025_CONFIG.CustomDiseaseType[index]) then
+    if (SCP_1025_CONFIG.CustomDisease[index]) then
         scp_1025.AlertChat("diseaseexist")
         return false
     end
@@ -165,7 +238,7 @@ net.Receive(SCP_1025_CONFIG.NetVar.CreateCustomDisease, function()
     local func = net.ReadString()
     local index = net.ReadString()
 
-    SCP_1025_CONFIG.CustomDiseaseType[index] = {name = name, description = description}
+    SCP_1025_CONFIG.CustomDisease[index] = {name = name, description = description}
     SCP_1025_CONFIG.DiseaseAvailable[index] = {name = name, description = description}
 end)
 
@@ -182,8 +255,19 @@ end)
 
 net.Receive(SCP_1025_CONFIG.NetVar.DeleteCustomDisease, function()
     local index = net.ReadString()
-    SCP_1025_CONFIG.CustomDiseaseType[index] = nil
+    SCP_1025_CONFIG.CustomDisease[index] = nil
     SCP_1025_CONFIG.DiseaseAvailable[index] = nil
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.UpdateTableDisease, function()
+    local CustomDisease = net.ReadTable()
+    local DiseaseAvailable = net.ReadTable()
+    SCP_1025_CONFIG.CustomDisease[index] = CustomDisease
+    SCP_1025_CONFIG.DiseaseAvailable[index] = DiseaseAvailable
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.CloseMenu, function()
+    scp_1025.DeletePage()
 end)
 
 -- HOOKs

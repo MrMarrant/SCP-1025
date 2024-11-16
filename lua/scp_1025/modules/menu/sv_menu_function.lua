@@ -24,7 +24,7 @@ local function IsNewDiseaseValid(func, name, description, index, ply)
         scp_1025.ErrorMesage(ply, "fillall")
         return false
     end
-    if (SCP_1025_CONFIG.CustomDiseaseType[index] or SCP_1025_CONFIG.DiseaseAvailable[index]) then
+    if (SCP_1025_CONFIG.CustomDisease[index] or SCP_1025_CONFIG.DiseaseAvailable[index]) then
         scp_1025.ErrorMesage(ply, "diseaseexist")
         return false
     end
@@ -43,7 +43,7 @@ end
 local function CreateDisease(func, name, description, index, caller)
     if not IsNewDiseaseValid(func, name, description, index, caller) then return end
 
-    SCP_1025_CONFIG.CustomDiseaseType[index] = {name = name, description = description, func = func}
+    SCP_1025_CONFIG.CustomDisease[index] = {name = name, description = description, func = func}
     SCP_1025_CONFIG.DiseaseAvailable[index] = {name = name, description = description}
     SCP_1025_CONFIG.Diseases[index] = function (ply) _G[func](ply) end
 
@@ -69,12 +69,15 @@ local function DeleteCustomDisease(ply, index)
         return false
     end
 
-    SCP_1025_CONFIG.CustomDiseaseType[index] = nil
+    -- Clear table
+    SCP_1025_CONFIG.CustomDisease[index] = nil
     SCP_1025_CONFIG.DiseaseAvailable[index] = nil
     SCP_1025_CONFIG.Diseases[index] = nil
     
+    -- Update the JSON file
     scp_1025.UpdateJson(SCP_1025_CONFIG.DiseaseAvailable)
-    -- TODO : Remove client to
+
+    -- Update table for every client
     net.Start(SCP_1025_CONFIG.NetVar.DeleteCustomDisease)
     net.WriteString(index)
     net.Broadcast()
@@ -111,6 +114,11 @@ end
 function scp_1025.ErrorMesage(ply, message)
     net.Start(SCP_1025_CONFIG.NetVar.ErrorMessage)
     net.WriteString(message)
+    net.Send(ply)
+end
+
+function scp_1025.CloseMenu(ply)
+    net.Start(SCP_1025_CONFIG.NetVar.CloseMenu)
     net.Send(ply)
 end
 
