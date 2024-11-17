@@ -16,7 +16,15 @@
 
 SCP_1025_CONFIG.Diseases = {
     ["common_cold"] = function (ply) scp_1025.CommonCold(ply) end,
-    ["aids"] = function (ply) scp_1025.CommonCold(ply) end,
+    ["schizophrenia"] = function (ply) scp_1025.Schizophrenia(ply) end,
+    ["gastroenteritis"] = function (ply) scp_1025.Gastroenteritis(ply) end,
+    ["myopia"] = function (ply) scp_1025.Myopia(ply) end,
+    ["rabies"] = function (ply) scp_1025.Rabies(ply) end,
+    ["huntington"] = function (ply) scp_1025.Huntington(ply) end,
+    ["polio"] = function (ply) scp_1025.Polio(ply) end,
+    ["diabetes"] = function (ply) scp_1025.Diabetes(ply) end,
+    ["kleine_levin"] = function (ply) scp_1025.KleineLevin(ply) end,
+    ["pica"] = function (ply) scp_1025.Pica(ply) end,
 }
 
 for key, value in cs(SCP_1025_CONFIG.CustomDisease) do
@@ -34,10 +42,49 @@ function scp_1025.CallDisease(disease, ply)
     hook.Call("SCP1025.CallDisease", nil, ply, disease) --? In case some dev wants to do something on disease call
 end
 
+-- TODO : Eternuement régulier toutes les 80-120s
 function scp_1025.CommonCold(ply)
+    local minDuration = SCP_1025_CONFIG.Settings.MinCommonCold
+    local maxDuration = SCP_1025_CONFIG.Settings.MaxCommonCold
+    local sneezeSounds = SCP_1025_CONFIG.Sounds.Sneezing
+    if (not timer.Exists("SCP1025.CommonCold." .. ply:EntIndex())) then
+        timer.Create("SCP1025.CommonCold." .. ply:EntIndex(), math.random(minDuration, maxDuration), SCP_1025_CONFIG.Settings.Repetitions, function ()
+            if (not ply:IsValid()) then timer.Remove("SCP1025.CommonCold") return end
+            ply:EmitSound(sneezeSounds[math.random(#sneezeSounds)])
+            timer.Adjust("SCP1025.CommonCold", math.random(minDuration, maxDuration))
+        end)
+    end
 end
 
-function scp_1025.Aids(ply)
+function scp_1025.Schizophrenia(ply)
+end
+
+function scp_1025.Gastroenteritis(ply)
+end
+
+function scp_1025.Myopia(ply)
+end
+
+function scp_1025.Rabies(ply)
+end
+
+function scp_1025.Huntington(ply)
+end
+
+function scp_1025.Polio(ply)
+end
+
+function scp_1025.Diabetes(ply)
+end
+
+function scp_1025.KleineLevin(ply)
+end
+
+function scp_1025.Pica(ply)
+end
+
+function scp_1025.ClearDiseases(ply)
+    timer.Remove("SCP1025.CommonCold." .. ply:EntIndex())
 end
 
 net.Receive(SCP_1025_CONFIG.NetVar.CallDisease, function(len, ply)
