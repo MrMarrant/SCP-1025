@@ -73,7 +73,7 @@ local function DeleteCustomDisease(ply, index)
     SCP_1025_CONFIG.CustomDisease[index] = nil
     SCP_1025_CONFIG.DiseaseAvailable[index] = nil
     SCP_1025_CONFIG.Diseases[index] = nil
-    
+
     -- Update the JSON file
     scp_1025.UpdateJson(SCP_1025_CONFIG.DiseaseAvailable)
 

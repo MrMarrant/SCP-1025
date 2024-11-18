@@ -21,7 +21,7 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
         body {
             margin-left: 10px;
             color: #ffffff;
-            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/add_disease.png") no-repeat center center fixed;
+            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/background_menu.png") no-repeat center center fixed;
             background-size: cover;
             overflow: hidden;
         }
@@ -82,13 +82,13 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
 ]]
 
 SCP_1025_CONFIG.RemoveHeaderMenu = [[
- <head>
+<head>
     <title>Add Disease</title>
     <style>
         body {
             margin-left: 10px;
             color: #ffffff;
-            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/add_disease.png") no-repeat center center fixed;
+            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/background_menu.png") no-repeat center center fixed;
             background-size: cover;
             overflow: hidden;
         }
@@ -108,7 +108,7 @@ SCP_1025_CONFIG.RemoveHeaderMenu = [[
             gap: 10px;
         }
         .no-disease {
-            width: 117px;
+            width: 190px;
             height: 100px;
             position: absolute;
             top: 0;
@@ -116,6 +116,7 @@ SCP_1025_CONFIG.RemoveHeaderMenu = [[
             left: 0;
             right: 0;
             margin: auto;
+            font-size: 2em;
         }
     </style>
 </head>
@@ -123,31 +124,31 @@ SCP_1025_CONFIG.RemoveHeaderMenu = [[
     <h1>SCP-1025</h1>
     <h2>Remove disease</h2>
     <div class="disease-column">
- ]]
+]]
 
- SCP_1025_CONFIG.RemoveFooterMenu = [[
-     </div>
+SCP_1025_CONFIG.RemoveFooterMenu = [[
+    </div>
     <script>
         function RemoveDisease(index) {
             console.log("RUNLUA:scp_1025.RemoveDisease('"+index+"')")
         }
     </script>
 </body>
- ]]
+]]
 
- --[[
+--[[
 * Open the remove disease menu.
 --]]
-function scp_1025.OpenRemoveMenu()
+local function OpenRemoveMenu()
     local ply = LocalPlayer()
     if (not ply:IsAdmin()) then scp_1025.AlertChat("adminaccess") return end
     local page = SCP_1025_CONFIG.RemoveHeaderMenu
 
     for k, v in pairs(SCP_1025_CONFIG.CustomDisease) do
-        page = page .. "<div class="disease-element"><p>" .. v.name .. "</p> <button onclick='RemoveDisease(\"" .. k .. "\")'>Remove</button></div>"
+        page = page .. "<div class=\"disease-element\"><p>" .. v.name .. "</p> <button onclick=\"RemoveDisease('" .. k .. "')\">Remove</button></div>"
     end
     if (next(SCP_1025_CONFIG.CustomDisease) == nil) then
-        page = page .. '<p class="no-disease">Aucune maladies.</p>'
+        page = page .. "<p class='no-disease'>No Diseases.</p>"
     end
 
     page = page .. SCP_1025_CONFIG.RemoveFooterMenu
@@ -157,7 +158,7 @@ end
 --[[
 * Open the add disease menu.
 --]]
-function scp_1025.OpenAddMenu()
+local function OpenAddMenu()
     local ply = LocalPlayer()
     if (ply:IsAdmin()) then
         scp_1025.CreateDHTMLPage(ply, SCP_1025_CONFIG.AddDiseaseMenu, SCP_1025_CONFIG.ScrW * 0.8, SCP_1025_CONFIG.ScrH * 0.8, true)
@@ -207,7 +208,6 @@ end
 * @string index The index of the disease.
 --]]
 function scp_1025.IsNewDiseaseValid(func, name, description, index)
-    local ply = LocalPlayer()
     -- check if params are not empty
     if (func == "" or name == "" or description == "" or index == "") then
         scp_1025.AlertChat("fillall")
@@ -278,7 +278,7 @@ hook.Add("PopulateToolMenu", "PopulateToolMenu.SCP1025", function()
         AddDisease:SetText(scp_1025.GetTranslation("adddisease"))
         AddDisease:SetSize( 250, 30 )
         AddDisease.DoClick = function()
-            scp_1025.OpenAddMenu()
+            OpenAddMenu()
         end
 
         local RemoveDisease = vgui.Create("DButton")
@@ -286,7 +286,7 @@ hook.Add("PopulateToolMenu", "PopulateToolMenu.SCP1025", function()
         RemoveDisease:SetText(scp_1025.GetTranslation("removedisease"))
         RemoveDisease:SetSize( 250, 30 )
         RemoveDisease.DoClick = function()
-            -- TODO
+            OpenRemoveMenu()
         end
 
         panel:Clear()

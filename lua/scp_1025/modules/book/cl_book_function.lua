@@ -294,7 +294,7 @@ function scp_1025.CreateDHTMLPage(ply, content, w, h, canClose)
     dhtml:SetHTML(content)
     dhtml:SetAllowLua(true)
     dhtml:RequestFocus()
-    dhtml:Dock(BOTTOM)
+    if (canClose) then dhtml:Dock(BOTTOM) end
 
     ply.scp_1025_CurrentPage = frame
 end

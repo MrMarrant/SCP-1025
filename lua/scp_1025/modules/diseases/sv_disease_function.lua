@@ -27,7 +27,7 @@ SCP_1025_CONFIG.Diseases = {
     ["pica"] = function (ply) scp_1025.Pica(ply) end,
 }
 
-for key, value in cs(SCP_1025_CONFIG.CustomDisease) do
+for key, value in pairs(SCP_1025_CONFIG.CustomDisease) do
     SCP_1025_CONFIG.Diseases[key] = function (ply) _G[value.func](ply) end
 end
 
