@@ -25,6 +25,7 @@ SCP_1025_CONFIG.Diseases = {
     ["diabetes"] = function (ply) scp_1025.Diabetes(ply) end,
     ["kleine_levin"] = function (ply) scp_1025.KleineLevin(ply) end,
     ["pica"] = function (ply) scp_1025.Pica(ply) end,
+    ["writer_block"] = function (ply) scp_1025.WriterBlock(ply) end,
 }
 
 for key, value in pairs(SCP_1025_CONFIG.CustomDisease) do
@@ -81,6 +82,11 @@ function scp_1025.KleineLevin(ply)
 end
 
 function scp_1025.Pica(ply)
+end
+
+-- TODO : BlackScreen -> Impossible d'entendre
+-- TODO : 
+function scp_1025.WriterBlock(ply)
 end
 
 function scp_1025.ClearDiseases(ply)
