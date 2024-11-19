@@ -26,6 +26,8 @@ SCP_1025_CONFIG.NetVar.DeleteCustomDisease = "SCP_1025_CONFIG.NetVar.DeleteCusto
 SCP_1025_CONFIG.NetVar.RemoveCustomDisease = "SCP_1025_CONFIG.NetVar.RemoveCustomDisease"
 SCP_1025_CONFIG.NetVar.UpdateTableDisease = "SCP_1025_CONFIG.NetVar.UpdateTableDisease"
 SCP_1025_CONFIG.NetVar.CloseMenu = "SCP_1025_CONFIG.NetVar.CloseMenu"
+SCP_1025_CONFIG.NetVar.ClearDisease = "SCP_1025_CONFIG.NetVar.ClearDisease"
+SCP_1025_CONFIG.NetVar.Myopia = "SCP_1025_CONFIG.NetVar.Myopia"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -34,10 +36,16 @@ SCP_1025_CONFIG.Models.ModelBook = "models/scp_1025/scp_1025.mdl"
 -- TODO : Sounds
 --Sound Path
 SCP_1025_CONFIG.Sounds = {}
-SCP_1025_CONFIG.Sounds.OpenBookSound = "scp_1025/open_book.mp3"
-SCP_1025_CONFIG.Sounds.CloseBookSound = "scp_1025/close_book.mp3"
+SCP_1025_CONFIG.Sounds.OpenBook = "scp_1025/book/open_book.mp3"
+SCP_1025_CONFIG.Sounds.CloseBook = "scp_1025/book/close_book.mp3"
+SCP_1025_CONFIG.Sounds.TurnPage = "scp_1025/book/turn_page.mp3"
+SCP_1025_CONFIG.Sounds.TurnIndex = "scp_1025/book/turn_index.mp3"
+SCP_1025_CONFIG.Sounds.DiseaseRead = "scp_1025/disease_read.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing = {}
-SCP_1025_CONFIG.Sounds.Sneezing[1] = ""
+SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
+SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
+SCP_1025_CONFIG.Sounds.Sneezing[3] = "scp_1025/sneezing/sneeze-03.mp3"
+SCP_1025_CONFIG.Sounds.Sneezing[4] = "scp_1025/sneezing/sneeze-04.mp3"
 
 -- JSON Path
 SCP_1025_CONFIG.Paths = {}
@@ -49,6 +57,7 @@ SCP_1025_CONFIG.Settings = {}
 SCP_1025_CONFIG.Settings.MinCommonCold = 80
 SCP_1025_CONFIG.Settings.MaxCommonCold = 120
 SCP_1025_CONFIG.Settings.Repetitions = 10
+SCP_1025_CONFIG.Settings.ProbabilityWriter = 20
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {
@@ -98,6 +107,7 @@ SCP_1025_CONFIG.DiseaseAvailable = {
     }
 }
 
+-- TODO : A vérifier, dès fois toutes les maladies par defauts sont ajoutées
 -- Custom Diseases
 SCP_1025_CONFIG.CustomDisease = util.JSONToTable(file.Read(SCP_1025_CONFIG.Paths.DataJson) or "") or {}
 
