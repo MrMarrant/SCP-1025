@@ -122,7 +122,7 @@ SCP_1025_CONFIG.IndexFooterPage = [[
     }
 
     function OpenPage(page) {
-        console.log("RUNLUA:scp_1025.OpenDiseasePage('"+page+"')")
+        console.log("RUNLUA:scp_1025.OpenDescriptionPage('"+page+"')")
     }
 </script>
 
@@ -222,7 +222,7 @@ SCP_1025_CONFIG.DescriptionFooterPage = [[
         }
 
         function OpenIndex() {
-            console.log("RUNLUA:scp_1025.IndexPage()")
+            console.log("RUNLUA:scp_1025.OpenIndexPage()")
         }
     </script>
 </body>
@@ -236,7 +236,11 @@ function scp_1025.IndexPage()
     local ply = LocalPlayer()
     local page = string.format(SCP_1025_CONFIG.BasePage, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
     local i = 1
-    for k, v in pairs(SCP_1025_CONFIG.DiseaseType) do
+    for k, v in pairs(SCP_1025_CONFIG.DiseaseAvailable) do
+        if (k == "writer_block") then
+            local displayed = math.random(1, SCP_1025_CONFIG.Settings.ProbabilityWriter) == 1 and true or false
+            if (not displayed) then continue end
+        end
         page = page .. "<button onclick='OpenPage(\"" .. k .. "\")'>" .. v.name .. " ......." .. i .. "</button>"
         i = i + 1
     end
@@ -251,23 +255,35 @@ end
 --]]
 function scp_1025.DescriptionPage(ply, disease)
     scp_1025.DeletePage()
-    local diseaseSelect = SCP_1025_CONFIG.DiseaseType[disease]
+    local diseaseSelect = SCP_1025_CONFIG.DiseaseAvailable[disease]
     local page = string.format(SCP_1025_CONFIG.DescriptionPage, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10), SCP_1025_CONFIG.ScrW * 0.35, diseaseSelect.name)
     page = page .. diseaseSelect.description .. SCP_1025_CONFIG.DescriptionFooterPage
     scp_1025.CreateDHTMLPage(ply, page, SCP_1025_CONFIG.ScrW * 0.5, SCP_1025_CONFIG.ScrH * 0.95, false)
+    ply:EmitSound(Sound(SCP_1025_CONFIG.Sounds.TurnPage), 90, math.random( 90, 110 )) --! Ne sera joué que coté client
 end
 
 --[[
 * Open the description page of the disease and set the disease to the player.
 * @string disease The disease to display.
 --]]
-function scp_1025.OpenDiseasePage(disease)
+function scp_1025.OpenDescriptionPage(disease)
     local ply = LocalPlayer()
     scp_1025.DescriptionPage(ply, disease)
+    ply:EmitSound(Sound(SCP_1025_CONFIG.Sounds.DiseaseRead), 90, math.random( 90, 110 ))
+    scp_1025.CreateBlurEffect(ply, 8)
 
     net.Start(SCP_1025_CONFIG.NetVar.CallDisease)
     net.WriteString(disease)
     net.SendToServer()
+end
+
+--[[
+* Open the index page from the html page.
+--]]
+function scp_1025.OpenIndexPage()
+    local ply = LocalPlayer()
+    scp_1025.IndexPage()
+    ply:EmitSound(Sound(SCP_1025_CONFIG.Sounds.TurnIndex), 90, math.random( 90, 110 )) --! Ne sera joué que coté client
 end
 
 --[[
@@ -294,7 +310,7 @@ function scp_1025.CreateDHTMLPage(ply, content, w, h, canClose)
     dhtml:SetHTML(content)
     dhtml:SetAllowLua(true)
     dhtml:RequestFocus()
-    dhtml:Dock(BOTTOM)
+    if (canClose) then dhtml:Dock(BOTTOM) end
 
     ply.scp_1025_CurrentPage = frame
 end
@@ -316,7 +332,7 @@ end
 function scp_1025.CloseBook()
     local ply = LocalPlayer()
     scp_1025.DeletePage()
-    ply:EmitSound(Sound(SCP_1025_CONFIG.Sounds.CloseBookSound)) --! Ne sera joué que coté client
+    ply:EmitSound(Sound(SCP_1025_CONFIG.Sounds.CloseBook), 90, math.random( 90, 110 )) --! Ne sera joué que coté client
 end
 
 --[[

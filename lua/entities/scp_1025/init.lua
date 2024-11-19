@@ -43,5 +43,5 @@ function ENT:Use(ply)
 	if (not IsValid(ply)) then return end
 
 	scp_1025.OpenBook(ply)
-	self:EmitSound(Sound(SCP_1025_CONFIG.Sounds.OpenBookSound))
+	self:EmitSound(Sound(SCP_1025_CONFIG.Sounds.OpenBook), 90, math.random( 90, 110 ))
 end

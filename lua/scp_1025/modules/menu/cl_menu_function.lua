@@ -21,7 +21,7 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
         body {
             margin-left: 10px;
             color: #ffffff;
-            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/add_disease.png") no-repeat center center fixed;
+            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/background_menu.png") no-repeat center center fixed;
             background-size: cover;
             overflow: hidden;
         }
@@ -81,15 +81,89 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
 </body>
 ]]
 
+SCP_1025_CONFIG.RemoveHeaderMenu = [[
+<head>
+    <title>Add Disease</title>
+    <style>
+        body {
+            margin-left: 10px;
+            color: #ffffff;
+            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/background_menu.png") no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+        .disease-column {
+            gap: 0px 100px;
+            display: flex;
+            flex-direction: column;
+            max-height: -webkit-fill-available;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+        .disease-element {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+        .no-disease {
+            width: 190px;
+            height: 100px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>SCP-1025</h1>
+    <h2>Remove disease</h2>
+    <div class="disease-column">
+]]
+
+SCP_1025_CONFIG.RemoveFooterMenu = [[
+    </div>
+    <script>
+        function RemoveDisease(index) {
+            console.log("RUNLUA:scp_1025.RemoveDisease('"+index+"')")
+        }
+    </script>
+</body>
+]]
+
+--[[
+* Open the remove disease menu.
+--]]
+local function OpenRemoveMenu()
+    local ply = LocalPlayer()
+    if (not ply:IsAdmin()) then scp_1025.AlertChat("adminaccess") return end
+    local page = SCP_1025_CONFIG.RemoveHeaderMenu
+
+    for k, v in pairs(SCP_1025_CONFIG.CustomDisease) do
+        page = page .. "<div class=\"disease-element\"><p>" .. v.name .. "</p> <button onclick=\"RemoveDisease('" .. k .. "')\">Remove</button></div>"
+    end
+    if (next(SCP_1025_CONFIG.CustomDisease) == nil) then
+        page = page .. "<p class='no-disease'>No Diseases.</p>"
+    end
+
+    page = page .. SCP_1025_CONFIG.RemoveFooterMenu
+    scp_1025.CreateDHTMLPage(ply, page, SCP_1025_CONFIG.ScrW * 0.8, SCP_1025_CONFIG.ScrH * 0.8, true)
+end
+
 --[[
 * Open the add disease menu.
 --]]
-function scp_1025.OpenAddMenu()
+local function OpenAddMenu()
     local ply = LocalPlayer()
     if (ply:IsAdmin()) then
         scp_1025.CreateDHTMLPage(ply, SCP_1025_CONFIG.AddDiseaseMenu, SCP_1025_CONFIG.ScrW * 0.8, SCP_1025_CONFIG.ScrH * 0.8, true)
     else
-        ply:ChatPrint(scp_1025.GetTranslation("adminaccess"))
+        scp_1025.AlertChat("adminaccess")
     end
 end
 
@@ -101,43 +175,102 @@ end
 * @string index The index of the disease.
 --]]
 function scp_1025.CreateDisease(func, name, description, index)
-    local ply = LocalPlayer()
     local isValid = scp_1025.IsNewDiseaseValid(func, name, description, index)
     if (isValid) then
-        -- TODO : Check si la méthode existe ET si elle n'existe pas déjà dans SCP_1025_CONFIG.CustomDiseaseType
-
-        -- TODO : Ajouter la méthode coté serveur sur 'Diseases' et rajouter coté client et serveur DiseaseType & CustomDiseaseType
-        -- TODO : SERV : SCP_1025_CONFIG.Diseases & SCP_1025_CONFIG.DiseaseType & SCP_1025_CONFIG.CustomDiseaseType
-        -- TODO : CLIENT : SCP_1025_CONFIG.DiseaseType & SCP_1025_CONFIG.CustomDiseaseType
-        -- TODO : Créer ou mettre à jour le JSON
+        net.Start(SCP_1025_CONFIG.NetVar.AddCustomDisease)
+        net.WriteString(func)
+        net.WriteString(name)
+        net.WriteString(description)
+        net.WriteString(index)
+        net.SendToServer()
     end
 end
 
+--[[
+* Remove a custom disease.
+* @string index The index of the disease.
+--]]
+function scp_1025.RemoveDisease(index)
+    if (index == "") then 
+        scp_1025.AlertChat("indexempty")
+        return
+    end
+    net.Start(SCP_1025_CONFIG.NetVar.RemoveCustomDisease)
+    net.WriteString(index)
+    net.SendToServer()
+end
+
+--[[
+* Check if all parameters are valid.
+* @string func The function to call.
+* @string name The name of the disease.
+* @string description The description of the disease.
+* @string index The index of the disease.
+--]]
 function scp_1025.IsNewDiseaseValid(func, name, description, index)
-    local ply = LocalPlayer()
     -- check if params are not empty
     if (func == "" or name == "" or description == "" or index == "") then
-        ply:ChatPrint(scp_1025.GetTranslation("fillall"))
+        scp_1025.AlertChat("fillall")
         return false
     end
-    -- TODO : Pertinent à check coté client ?
-    -- verify if the function exist
-    if not _G[func] then
-        ply:ChatPrint(scp_1025.GetTranslation("funcdontexist"))
-        return false
-    -- verify if the function has a one parameter
-    elseif debug.getinfo(_G[func]).nparams != 1 then
-        PrintTable(debug.getinfo(_G[func]))
-        ply:ChatPrint(scp_1025.GetTranslation("needoneparam"))
+    if (SCP_1025_CONFIG.CustomDisease[index]) then
+        scp_1025.AlertChat("diseaseexist")
         return false
     end
     return true
 end
 
-function scp_1025.AlertChat(mesage)
-    LocalPlayer():ChatPrint(scp_1025.GetTranslation(mesage))
+--[[
+* Create a notificatino message to the screen of the player.
+* @string message The message to display.
+* @number|nil notiftype The type notification icon to display.
+--]]
+function scp_1025.AlertChat(message, notiftype)
+    notiftype = notiftype or NOTIFY_ERROR
+    notification.AddLegacy(scp_1025.GetTranslation(message), notiftype, 4)
+    -- LocalPlayer():ChatPrint(scp_1025.GetTranslation(mesage))
 end
 
+-- NET RECEIVE
+net.Receive(SCP_1025_CONFIG.NetVar.CreateCustomDisease, function()
+    local name = net.ReadString()
+    local description = net.ReadString()
+    local func = net.ReadString()
+    local index = net.ReadString()
+
+    SCP_1025_CONFIG.CustomDisease[index] = {name = name, description = description}
+    SCP_1025_CONFIG.DiseaseAvailable[index] = {name = name, description = description}
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.ConfirmMenu, function()
+    local message = net.ReadString()
+    scp_1025.AlertChat(message, NOTIFY_GENERIC)
+    scp_1025.DeletePage()
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.ErrorMessage, function()
+    local message = net.ReadString()
+    scp_1025.AlertChat(message)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.DeleteCustomDisease, function()
+    local index = net.ReadString()
+    SCP_1025_CONFIG.CustomDisease[index] = nil
+    SCP_1025_CONFIG.DiseaseAvailable[index] = nil
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.UpdateTableDisease, function()
+    local CustomDisease = net.ReadTable()
+    local DiseaseAvailable = net.ReadTable()
+    SCP_1025_CONFIG.CustomDisease[index] = CustomDisease
+    SCP_1025_CONFIG.DiseaseAvailable[index] = DiseaseAvailable
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.CloseMenu, function()
+    scp_1025.DeletePage()
+end)
+
+-- HOOKs
 hook.Add("PopulateToolMenu", "PopulateToolMenu.SCP1025", function()
     spawnmenu.AddToolMenuOption("Utilities", "SCP-1025", "SCP1025_Menu", "Settings", "", "", function(panel)
         local AddDisease = vgui.Create("DButton")
@@ -145,7 +278,7 @@ hook.Add("PopulateToolMenu", "PopulateToolMenu.SCP1025", function()
         AddDisease:SetText(scp_1025.GetTranslation("adddisease"))
         AddDisease:SetSize( 250, 30 )
         AddDisease.DoClick = function()
-            scp_1025.OpenAddMenu()
+            OpenAddMenu()
         end
 
         local RemoveDisease = vgui.Create("DButton")
@@ -153,7 +286,7 @@ hook.Add("PopulateToolMenu", "PopulateToolMenu.SCP1025", function()
         RemoveDisease:SetText(scp_1025.GetTranslation("removedisease"))
         RemoveDisease:SetSize( 250, 30 )
         RemoveDisease.DoClick = function()
-            -- TODO
+            OpenRemoveMenu()
         end
 
         panel:Clear()
