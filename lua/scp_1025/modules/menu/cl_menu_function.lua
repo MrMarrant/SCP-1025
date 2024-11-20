@@ -233,9 +233,9 @@ end
 
 -- NET RECEIVE
 net.Receive(SCP_1025_CONFIG.NetVar.CreateCustomDisease, function()
+    local func = net.ReadString()
     local name = net.ReadString()
     local description = net.ReadString()
-    local func = net.ReadString()
     local index = net.ReadString()
 
     SCP_1025_CONFIG.CustomDisease[index] = {name = name, description = description}

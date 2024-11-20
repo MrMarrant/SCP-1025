@@ -28,12 +28,12 @@ SCP_1025_CONFIG.NetVar.UpdateTableDisease = "SCP_1025_CONFIG.NetVar.UpdateTableD
 SCP_1025_CONFIG.NetVar.CloseMenu = "SCP_1025_CONFIG.NetVar.CloseMenu"
 SCP_1025_CONFIG.NetVar.ClearDisease = "SCP_1025_CONFIG.NetVar.ClearDisease"
 SCP_1025_CONFIG.NetVar.Myopia = "SCP_1025_CONFIG.NetVar.Myopia"
+SCP_1025_CONFIG.NetVar.Gastroenteritis = "SCP_1025_CONFIG.NetVar.Gastroenteritis"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
 SCP_1025_CONFIG.Models.ModelBook = "models/scp_1025/scp_1025.mdl"
 
--- TODO : Sounds
 --Sound Path
 SCP_1025_CONFIG.Sounds = {}
 SCP_1025_CONFIG.Sounds.OpenBook = "scp_1025/book/open_book.mp3"
@@ -41,7 +41,7 @@ SCP_1025_CONFIG.Sounds.CloseBook = "scp_1025/book/close_book.mp3"
 SCP_1025_CONFIG.Sounds.TurnPage = "scp_1025/book/turn_page.mp3"
 SCP_1025_CONFIG.Sounds.TurnIndex = "scp_1025/book/turn_index.mp3"
 SCP_1025_CONFIG.Sounds.DiseaseRead = "scp_1025/disease_read.mp3"
-
+SCP_1025_CONFIG.Sounds.GastroenteritisVomiting = "" -- TODO : Ajouter un son de vomissement
 SCP_1025_CONFIG.Sounds.Sneezing = {}
 SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
@@ -66,6 +66,9 @@ SCP_1025_CONFIG.Settings.HuntingtonDuration = 2
 SCP_1025_CONFIG.Settings.HuntingtonDelay = 60
 SCP_1025_CONFIG.Settings.HuntingtonInterval = 10
 SCP_1025_CONFIG.Settings.HuntingtonShootDuration = 2
+SCP_1025_CONFIG.Settings.MinGastroenteritis = 3
+SCP_1025_CONFIG.Settings.MaxGastroenteritis = 5
+SCP_1025_CONFIG.Settings.RepetitionsGastroenteritis = 6
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {

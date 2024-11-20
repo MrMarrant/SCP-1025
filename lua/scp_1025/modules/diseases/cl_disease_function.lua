@@ -43,10 +43,17 @@ end
 * Set the myopia for the player.
 * @Player ply The player to set the myopia.
 --]]
-function scp_1025.Myopia(ply)
+function scp_1025.Myopia(ply) -- TODO : Empecher le joueur d'utiliser la commande
     ply:ConCommand("pp_dof_initlength 10")
     ply:ConCommand("pp_dof_spacing 100")
     ply:ConCommand("pp_dof 1")
+end
+
+--[[
+* Set the gastroenteritis for the player.
+* @Player ply The player to set the disease.
+--]]
+function scp_1025.Gastroenteritis(ply)
 end
 
 
@@ -59,4 +66,9 @@ end)
 net.Receive(SCP_1025_CONFIG.NetVar.Myopia, function()
     local ply = LocalPlayer()
     scp_1025.Myopia(ply)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.Gastroenteritis, function()
+    local ply = LocalPlayer()
+    scp_1025.Gastroenteritis(ply)
 end)

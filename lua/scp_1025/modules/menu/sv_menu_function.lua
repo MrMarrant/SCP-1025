@@ -75,7 +75,7 @@ local function DeleteCustomDisease(ply, index)
     SCP_1025_CONFIG.Diseases[index] = nil
 
     -- Update the JSON file
-    scp_1025.UpdateJson(SCP_1025_CONFIG.DiseaseAvailable)
+    scp_1025.UpdateJson(SCP_1025_CONFIG.CustomDisease)
 
     -- Update table for every client
     net.Start(SCP_1025_CONFIG.NetVar.DeleteCustomDisease)

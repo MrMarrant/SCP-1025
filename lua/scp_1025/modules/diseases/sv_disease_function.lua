@@ -28,7 +28,7 @@ SCP_1025_CONFIG.Diseases = {
     ["writer_block"] = function (ply) scp_1025.WriterBlock(ply) end,
 }
 
-for key, value in ipairs(SCP_1025_CONFIG.CustomDisease) do
+for key, value in pairs(SCP_1025_CONFIG.CustomDisease) do
     SCP_1025_CONFIG.Diseases[key] = function (ply) _G[value.func](ply) end
 end
 
@@ -59,7 +59,41 @@ end
 function scp_1025.Schizophrenia(ply)
 end
 
+--[[
+* Set the gastroenteritis for the player.
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.Gastroenteritis(ply)
+    local minDuration = SCP_1025_CONFIG.Settings.MinGastroenteritis
+    local maxDuration = SCP_1025_CONFIG.Settings.MaxGastroenteritis
+
+    if (not timer.Exists("SCP1025.Gastroenteritis." .. ply:EntIndex())) then
+        timer.Create("SCP1025.Gastroenteritis." .. ply:EntIndex(), math.random(minDuration, maxDuration), SCP_1025_CONFIG.Settings.RepetitionsGastroenteritis, function ()
+            if (not ply:IsValid()) then timer.Remove("SCP1025.CommonCold") return end
+
+            ply:EmitSound(SCP_1025_CONFIG.Sounds.GastroenteritisVomiting, 75, math.random( 90, 110 ))
+            util.Decal("YellowBlood", ply:GetPos() - Vector(0, 0, 1), ply:GetPos() + Vector(0, 0, 1), ply)
+
+            local attachments = ply:GetAttachments()
+            local keyMouth = nil
+
+            for key, value in ipairs(attachments) do
+                if (value.name == "mouth") then keyMouth = value.id end --? We find the attachment eye
+            end
+
+            local offsetvec = keyMouth and ply:GetAttachment( keyMouth ).Pos or Vector(2.5, -5.6, 0 )
+            local effectdata = EffectData()
+            effectdata:SetOrigin(offsetvec)
+            effectdata:SetScale(100)
+            effectdata:SetColor(1)
+            util.Effect( "BloodImpact", effectdata )
+            util.Effect( "BloodImpact", effectdata )
+
+            net.Start(SCP_1025_CONFIG.NetVar.Gastroenteritis)
+            net.Send(ply)
+            timer.Adjust("SCP1025.Gastroenteritis", math.random(minDuration, maxDuration))
+        end)
+    end
 end
 
 function scp_1025.Myopia(ply)
@@ -120,7 +154,7 @@ function scp_1025.Asthma(ply)
                 ply.scp_1025_SprintTime = math.Clamp(ply.scp_1025_SprintTime + FrameTime(), 0, sprintDuration)
             else
                 if (ply.scp_1025_IsRunning) then
-            ply.scp_1025_RecoverTime = cur + SCP_1025_CONFIG.Settings.RecoveryDuration
+                    ply.scp_1025_RecoverTime = cur + SCP_1025_CONFIG.Settings.RecoveryDuration
                     ply:SetRunSpeed(minRunSpeed)
                     ply.scp_1025_SprintTime = 0
                     -- TODO : Ajouter un son de respiration
@@ -134,6 +168,7 @@ end
 function scp_1025.Diabetes(ply)
 end
 
+-- TODO : Cligne des yeux, ecran s'assombrit, et quand il s'endort, il est freeze, écran  très sombre, caméra vers le bas, bruit loop de ronflement.
 function scp_1025.KleineLevin(ply)
 end
 
@@ -155,6 +190,7 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.CommonCold." .. ply:EntIndex())
     timer.Remove("SCP1025.NextSymptomHuntington." .. ply:EntIndex())
     timer.Remove("SCP1025.Huntington." .. ply:EntIndex())
+    timer.Remove("SCP1025.Gastroenteritis." .. ply:EntIndex())
     hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
     ply.scp_1025_Huntington_Symptom = nil
 
@@ -171,7 +207,7 @@ end)
 -- HOOKS
 hook.Add("StartCommand", "StartCommand.SCP1025", function(ply, cmd)
     if (not ply:IsBot() and ply:Alive() and ply.scp_1025_Huntington_Symptom) then
-        cmd:RemoveKey( IN_DUCK ) --? We don't want the ply to crouch
+        cmd:RemoveKey(IN_DUCK) --? We don't want the ply to crouch
         cmd:ClearMovement()
         cmd:ClearButtons()
         local speedMove = math.random(80, 200)
@@ -200,6 +236,7 @@ hook.Add("NextSymptomHuntington", "NextSymptomHuntington.SCP_1025", function(ply
     if (not ply.scp_1025_Huntington) then return end
 
     ply.scp_1025_Huntington_Symptom = true
+    -- TODO : Jouer un son ?
 
     timer.Create("SCP1025.NextSymptomHuntington." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.HuntingtonDuration, 1, function()
         if (not IsValid(ply)) then return end
