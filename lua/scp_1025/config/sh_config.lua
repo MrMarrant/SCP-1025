@@ -41,6 +41,7 @@ SCP_1025_CONFIG.Sounds.CloseBook = "scp_1025/book/close_book.mp3"
 SCP_1025_CONFIG.Sounds.TurnPage = "scp_1025/book/turn_page.mp3"
 SCP_1025_CONFIG.Sounds.TurnIndex = "scp_1025/book/turn_index.mp3"
 SCP_1025_CONFIG.Sounds.DiseaseRead = "scp_1025/disease_read.mp3"
+
 SCP_1025_CONFIG.Sounds.Sneezing = {}
 SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
@@ -58,6 +59,13 @@ SCP_1025_CONFIG.Settings.MinCommonCold = 80
 SCP_1025_CONFIG.Settings.MaxCommonCold = 120
 SCP_1025_CONFIG.Settings.Repetitions = 10
 SCP_1025_CONFIG.Settings.ProbabilityWriter = 20
+SCP_1025_CONFIG.Settings.SprintDuration = 3
+SCP_1025_CONFIG.Settings.RecoveryDuration = 5
+SCP_1025_CONFIG.Settings.MinRunSpeed = 50
+SCP_1025_CONFIG.Settings.HuntingtonDuration = 2
+SCP_1025_CONFIG.Settings.HuntingtonDelay = 60
+SCP_1025_CONFIG.Settings.HuntingtonInterval = 10
+SCP_1025_CONFIG.Settings.HuntingtonShootDuration = 2
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {
@@ -85,9 +93,9 @@ SCP_1025_CONFIG.DiseaseAvailable = {
         name = "Huntington's disease",
         description = "Huntington's disease (HD), also known as Huntington's chorea, is an incurable neurodegenerative disease that is mostly inherited. The earliest symptoms are often subtle problems with mood or mental/psychiatric abilities. A general lack of coordination and an unsteady gait often follow. It is also a basal ganglia disease causing a hyperkinetic movement disorder known as chorea. As the disease advances, uncoordinated, involuntary body movements of chorea become more apparent. Physical abilities gradually worsen until coordinated movement becomes difficult and the person is unable to talk. Mental abilities generally decline into dementia, depression, apathy, and impulsivity at times. The specific symptoms vary somewhat between people. Symptoms usually begin between 30 and 50 years of age, and can start at any age but are usually seen around the age of 40. The disease may develop earlier in each successive generation. About eight percent of cases start before the age of 20 years, and are known as juvenile HD, which typically present with the slow movement symptoms of Parkinson's disease rather than those of chorea."
     },
-    polio = {
-        name = "Polio",
-        description = "Poliomyelitis, commonly shortened to polio, is an infectious disease caused by the poliovirus. Approximately 75% of cases are asymptomatic; mild symptoms which can occur include sore throat and fever; in a proportion of cases more severe symptoms develop such as headache, neck stiffness, and paresthesia. These symptoms usually pass within one or two weeks. A less common symptom is permanent paralysis, and possible death in extreme cases. Years after recovery, post-polio syndrome may occur, with a slow development of muscle weakness similar to what the person had during the initial infection. Polio occurs naturally only in humans. It is highly infectious, and is spread from person to person either through fecal–oral transmission (e.g. poor hygiene, or by ingestion of food or water contaminated by human feces), or via the oral–oral route. Those who are infected may spread the disease for up to six weeks even if no symptoms are present. The disease may be diagnosed by finding the virus in the feces or detecting antibodies against it in the blood."
+    asthma = {
+        name = "Asthma",
+        description = "Asthma is a long-term inflammatory disease of the airways of the lungs. Its also a risk factor of pneumonia. Also, It is characterized by variable and recurring symptoms, reversible airflow obstruction, and easily triggered bronchospasms. Symptoms include episodes of wheezing, coughing, chest tightness, and shortness of breath. These may occur a few times a day or a few times per week. Depending on the person, asthma symptoms may become worse at night or with exercise. Asthma is thought to be caused by a combination of genetic and environmental factors. Environmental factors include exposure to air pollution and allergens. Other potential triggers include medications such as aspirin and beta blockers. Diagnosis is usually based on the pattern of symptoms, response to therapy over time, and spirometry lung function testing. Asthma is classified according to the frequency of symptoms of forced expiratory volume in one second (FEV1), and peak expiratory flow rate. It may also be classified as atopic or non-atopic, where atopy refers to a predisposition toward developing a type 1 hypersensitivity reaction. There is no known cure for asthma, but it can be controlled. Symptoms can be prevented by avoiding triggers, such as allergens and respiratory irritants, and suppressed with the use of inhaled corticosteroids. Long-acting beta agonists (LABA) or antileukotriene agents may be used in addition to inhaled corticosteroids if asthma symptoms remain uncontrolled. Treatment of rapidly worsening symptoms is usually with an inhaled short-acting beta2 agonist such as salbutamol and corticosteroids taken by mouth. In very severe cases, intravenous corticosteroids, magnesium sulfate, and hospitalization may be required."
     },
     kleine_levin = {
         name = "Kleine–Levin syndrome",

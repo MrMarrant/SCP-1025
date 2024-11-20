@@ -21,7 +21,7 @@ SCP_1025_CONFIG.Diseases = {
     ["myopia"] = function (ply) scp_1025.Myopia(ply) end,
     ["rabies"] = function (ply) scp_1025.Rabies(ply) end,
     ["huntington"] = function (ply) scp_1025.Huntington(ply) end,
-    ["polio"] = function (ply) scp_1025.Polio(ply) end,
+    ["asthma"] = function (ply) scp_1025.Asthma(ply) end,
     ["diabetes"] = function (ply) scp_1025.Diabetes(ply) end,
     ["kleine_levin"] = function (ply) scp_1025.KleineLevin(ply) end,
     ["pica"] = function (ply) scp_1025.Pica(ply) end,
@@ -43,7 +43,6 @@ function scp_1025.CallDisease(disease, ply)
     hook.Call("SCP1025.CallDisease", nil, ply, disease) --? In case some dev wants to do something on disease call
 end
 
--- TODO : Eternuement régulier toutes les 80-120s
 function scp_1025.CommonCold(ply)
     local minDuration = SCP_1025_CONFIG.Settings.MinCommonCold
     local maxDuration = SCP_1025_CONFIG.Settings.MaxCommonCold
@@ -71,10 +70,65 @@ end
 function scp_1025.Rabies(ply)
 end
 
+--[[
+* Set the huntington for the player.
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.Huntington(ply)
+    ply.scp_1025_Huntington = true
+    local delay = SCP_1025_CONFIG.Settings.HuntingtonDelay
+    local interval = math.random(1, SCP_1025_CONFIG.Settings.HuntingtonInterval)
+    local delaySymptom = math.random(delay - interval, delay + interval)
+
+    timer.Create( "SCP1025.Huntington." .. ply:EntIndex(), delaySymptom, 0, function()
+        if (not IsValid(ply)) then return end
+        if (not ply.scp_1025_Huntington) then return end
+
+        hook.Call("NextSymptomHuntington", nil, ply)
+        timer.Adjust("SCP1025.Huntington." .. ply:EntIndex(), math.random(delay - interval, delay + interval))
+    end )
 end
 
-function scp_1025.Polio(ply)
+--[[
+* Set the asthma for the player.
+* @Player ply The player to set the disease.
+--]]
+function scp_1025.Asthma(ply)
+    local oldRunSpeed = ply:GetRunSpeed()
+    ply.scp_1025_IsRunning = false
+    ply.scp_1025_SprintTime = 0
+    ply.scp_1025_RecoverTime = nil
+    local minRunSpeed = SCP_1025_CONFIG.Settings.MinRunSpeed
+    local sprintDuration = SCP_1025_CONFIG.Settings.SprintDuration
+
+    hook.Add("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex(), function()
+        if (not IsValid(ply)) then return end
+
+        local cur = CurTime()
+        local sprintTime = ply.scp_1025_SprintTime
+        local recoverTime = ply.scp_1025_RecoverTime
+        if (recoverTime) then
+            if (cur > recoverTime) then
+                ply.scp_1025_RecoverTime = nil
+                ply.scp_1025_SprintTime = 0
+                -- TODO : Ajouter un son de souffle
+            end
+        else
+            if ply:KeyDown(IN_SPEED) and ply:IsOnGround() then
+                ply.scp_1025_IsRunning = true
+                ply:SetRunSpeed(math.Clamp(oldRunSpeed * (1 - sprintTime / sprintDuration), minRunSpeed, oldRunSpeed))
+                ply.scp_1025_SprintTime = math.Clamp(ply.scp_1025_SprintTime + FrameTime(), 0, sprintDuration)
+            else
+                if (ply.scp_1025_IsRunning) then
+            ply.scp_1025_RecoverTime = cur + SCP_1025_CONFIG.Settings.RecoveryDuration
+                    ply:SetRunSpeed(minRunSpeed)
+                    ply.scp_1025_SprintTime = 0
+                    -- TODO : Ajouter un son de respiration
+                end
+                ply.scp_1025_IsRunning = false
+            end
+        end
+    end)
 end
 
 function scp_1025.Diabetes(ply)
@@ -99,12 +153,59 @@ end
 --]]
 function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.CommonCold." .. ply:EntIndex())
+    timer.Remove("SCP1025.NextSymptomHuntington." .. ply:EntIndex())
+    timer.Remove("SCP1025.Huntington." .. ply:EntIndex())
+    hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
+    ply.scp_1025_Huntington_Symptom = nil
 
     net.Start(SCP_1025_CONFIG.NetVar.ClearDisease)
     net.Send(ply)
 end
 
+-- NET RECEIVERS
 net.Receive(SCP_1025_CONFIG.NetVar.CallDisease, function(len, ply)
     local disease = net.ReadString()
     scp_1025.CallDisease(disease, ply)
+end)
+
+-- HOOKS
+hook.Add("StartCommand", "StartCommand.SCP1025", function(ply, cmd)
+    if (not ply:IsBot() and ply:Alive() and ply.scp_1025_Huntington_Symptom) then
+        cmd:RemoveKey( IN_DUCK ) --? We don't want the ply to crouch
+        cmd:ClearMovement()
+        cmd:ClearButtons()
+        local speedMove = math.random(80, 200)
+        if not ply.SCP1025_IsMoving then
+            ply.SCP1025_IsMoving = true
+            local Direction = Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0):GetNormalized()
+            cmd:SetViewAngles((Direction):GetNormalized():Angle())
+            ply:SetEyeAngles((Direction):GetNormalized():Angle())
+
+            local shootDuration = math.random(0.1, SCP_1025_CONFIG.Settings.HuntingtonShootDuration)
+            ply:ConCommand("+attack")
+            timer.Simple(shootDuration, function()
+                if IsValid(ply) then
+                    ply:ConCommand("-attack")
+                end
+            end)
+        end
+        if (ply.SCP1025_IsMoving) then
+            cmd:SetForwardMove(speedMove)
+        end
+    end
+end)
+
+hook.Add("NextSymptomHuntington", "NextSymptomHuntington.SCP_1025", function(ply)
+    if (not ply:IsValid()) then return end
+    if (not ply.scp_1025_Huntington) then return end
+
+    ply.scp_1025_Huntington_Symptom = true
+
+    timer.Create("SCP1025.NextSymptomHuntington." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.HuntingtonDuration, 1, function()
+        if (not IsValid(ply)) then return end
+        if (not ply.scp_1025_Huntington) then return end
+
+        ply.scp_1025_Huntington_Symptom = nil
+        ply.SCP1025_IsMoving = nil
+    end)
 end)
