@@ -78,7 +78,7 @@ function scp_1025.Gastroenteritis(ply)
             local keyMouth = nil
 
             for key, value in ipairs(attachments) do
-                if (value.name == "mouth") then keyMouth = value.id end --? We find the attachment eye
+                if (value.name == "mouth") then keyMouth = value.id end --? We find the attachment mouth
             end
 
             local offsetvec = keyMouth and ply:GetAttachment( keyMouth ).Pos or Vector(2.5, -5.6, 0 )
@@ -168,8 +168,37 @@ end
 function scp_1025.Diabetes(ply)
 end
 
--- TODO : Cligne des yeux, ecran s'assombrit, et quand il s'endort, il est freeze, écran  très sombre, caméra vers le bas, bruit loop de ronflement.
 function scp_1025.KleineLevin(ply)
+    local delay = SCP_1025_CONFIG.Settings.KleineLevinDelay
+    local minInterval = SCP_1025_CONFIG.Settings.KleineLevinMinInterval
+    local maxInterval = SCP_1025_CONFIG.Settings.KleineLevinMaxInterval
+    local repetition = SCP_1025_CONFIG.Settings.KleineLevinRepetition
+    local leaseSound = SCP_1025_CONFIG.Sounds.Lease
+    local i = 0
+
+    if (not timer.Exists("SCP1025.KleineLevin." .. ply:EntIndex())) then
+        timer.Create("SCP1025.KleineLevin." .. ply:EntIndex(), delay, repetition, function ()
+            if (not IsValid(ply)) then return end
+
+            i = i + 1
+            if (i == repetition) then
+                local eyeAngle = ply:EyeAngles()
+                local Direction = Angle(90, eyeAngle.y, eyeAngle.r)
+
+                scp_1025.CreateBlinkEye(ply, 1, true, false)
+                ply:SetEyeAngles(Direction)
+                ply:Freeze(true)
+                ply:StartLoopingSound(SCP_1025_CONFIG.Sounds.Snoring)
+                hook.Call("WakeUpFromKleineLevin", nil, ply)
+            else
+                net.Start(SCP_1025_CONFIG.NetVar.KleineLevin)
+                net.Send(ply)
+                delay = math.random(delay - minInterval, delay - maxInterval)
+                timer.Adjust("SCP1025.KleineLevin." .. ply:EntIndex(), delay)
+                ply:EmitSound(leaseSound, 75, math.random( 90, 110 ))
+            end
+        end)
+    end
 end
 
 function scp_1025.Pica(ply)
@@ -191,10 +220,29 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.NextSymptomHuntington." .. ply:EntIndex())
     timer.Remove("SCP1025.Huntington." .. ply:EntIndex())
     timer.Remove("SCP1025.Gastroenteritis." .. ply:EntIndex())
+    timer.Remove("SCP1025.KleineLevin." .. ply:EntIndex())
+    timer.Remove("SCP1025.KleineLevin.WakeUp." .. ply:EntIndex())
     hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
+    ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
+    ply:Freeze(false)
     ply.scp_1025_Huntington_Symptom = nil
 
     net.Start(SCP_1025_CONFIG.NetVar.ClearDisease)
+    net.Send(ply)
+end
+
+--[[
+* Create a blink eye effect for the player.
+* @Player ply The player to create the blink eye effect.
+* @number duration The duration of the blink eye effect.
+* @boolean oneSide If the blink eye effect is only on one side.
+* @boolean wasClose If the blink eye effect is close.
+--]]
+function scp_1025.CreateBlinkEye(ply, duration, oneSide, wasClose)
+    net.Start(SCP_1025_CONFIG.NetVar.CreateBlinkEye)
+    net.WriteFloat(duration)
+    net.WriteBool(oneSide)
+    net.WriteBool(wasClose)
     net.Send(ply)
 end
 
@@ -244,5 +292,18 @@ hook.Add("NextSymptomHuntington", "NextSymptomHuntington.SCP_1025", function(ply
 
         ply.scp_1025_Huntington_Symptom = nil
         ply.SCP1025_IsMoving = nil
+    end)
+end)
+
+hook.Add("WakeUpFromKleineLevin", "WakeUpFromKleineLevin.SCP_1025", function(ply)
+    if (not ply:IsValid()) then return end
+
+    timer.Create("SCP1025.KleineLevin.WakeUp." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.KleineLevinSleepDuration, 1, function()
+        if (not IsValid(ply)) then return end
+
+        ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
+        ply:Freeze(false)
+        scp_1025.CreateBlinkEye(ply, 1, true, true)
+        scp_1025.KleineLevin(ply)
     end)
 end)

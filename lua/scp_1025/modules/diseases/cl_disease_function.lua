@@ -29,13 +29,66 @@ function scp_1025.CreateBlurEffect(ply, duration)
 end
 
 --[[
+* Create a blink eye effect for the player.
+* @number duration The duration of the blink eye effect.
+* @boolean oneSide If the blink eye effect is only on one side.
+* @boolean wasClose If the blink eye effect is close.
+--]]
+function scp_1025.CreateBlinkEye(duration, oneSide, wasClose)
+    local w = SCP_1025_CONFIG.ScrW
+    local h = SCP_1025_CONFIG.ScrH
+    local minUp = -0.5
+    local maxUp = 0
+    local minDown = 1
+    local maxDown = 0.5
+    local currentUp = minUp
+    local currentDown = minDown
+    oneSide = oneSide or false
+    wasClose = wasClose or false
+
+    hook.Add("HUDPaint", "HUDPaint.SCP1025.CreateBlinkEye", function()
+        surface.SetDrawColor(0, 0, 0, 255)
+        surface.DrawRect(0, h * currentUp, w, h * 0.5)
+        surface.DrawRect(0, h * currentDown, w, h * 0.5)
+    end)
+
+    local startTime = CurTime()
+
+    hook.Add("Think", "Think.SCP1025.CreateBlinkEye", function()
+        local currentTime = CurTime()
+        local progress = math.Clamp((currentTime - startTime) / duration, 0, 1)
+        if (wasClose) then
+            currentUp = Lerp(progress, maxUp, minUp)
+            currentDown = Lerp(progress, maxDown, minDown)
+        else
+            currentUp = Lerp(progress, minUp, maxUp)
+            currentDown = Lerp(progress, minDown, maxDown)
+        end
+
+        if progress >= 1 then
+            if (not wasClose and not oneSide) then
+                wasClose = true
+                startTime = CurTime()
+                progress = 0
+            elseif (not oneSide) then
+                hook.Remove("Think", "Think.SCP1025.CreateBlinkEye")
+            end
+        end
+    end)
+end
+
+--[[
 * Clear the diseases for the player.
 * @Player ply The player to clear diseases.
 --]]
 function scp_1025.ClearDiseases(ply)
+    if not (IsValid(ply)) then return end
+
     timer.Remove("SCP1025.CommonCold." .. ply:EntIndex())
     timer.Remove("SCP1025.BlurEffect." .. ply:EntIndex())
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025")
+    hook.Remove("Think", "Think.SCP1025.CreateBlinkEye")
+    hook.Remove("HUDPaint", "HUDPaint.SCP1025.CreateBlinkEye")
     ply:ConCommand("pp_dof 0")
 end
 
@@ -49,11 +102,17 @@ function scp_1025.Myopia(ply) -- TODO : Empecher le joueur d'utiliser la command
     ply:ConCommand("pp_dof 1")
 end
 
+function scp_1025.KleineLevin(ply)
+    scp_1025.CreateBlinkEye(SCP_1025_CONFIG.Settings.KleineLevinDurationBlink)
+    scp_1025.CreateBlurEffect(ply, 2)
+end
+
 --[[
 * Set the gastroenteritis for the player.
 * @Player ply The player to set the disease.
 --]]
 function scp_1025.Gastroenteritis(ply)
+    scp_1025.CreateBlurEffect(ply, 4)
 end
 
 
@@ -71,4 +130,17 @@ end)
 net.Receive(SCP_1025_CONFIG.NetVar.Gastroenteritis, function()
     local ply = LocalPlayer()
     scp_1025.Gastroenteritis(ply)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.KleineLevin, function()
+    local ply = LocalPlayer()
+    scp_1025.KleineLevin(ply)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.CreateBlinkEye, function()
+    local duration = net.ReadFloat()
+    local oneSide = net.ReadBool()
+    local wasClose = net.ReadBool()
+
+    scp_1025.CreateBlinkEye(duration, oneSide, wasClose)
 end)

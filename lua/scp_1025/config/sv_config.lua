@@ -28,6 +28,8 @@ util.AddNetworkString(SCP_1025_CONFIG.NetVar.CloseMenu)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.ClearDisease)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.Myopia)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.Gastroenteritis)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.KleineLevin)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.CreateBlinkEye)
 
 hook.Add( "PlayerDeath", "SCP1025.PlayerDeath", function(victim)
     scp_1025.CloseMenu(victim)
