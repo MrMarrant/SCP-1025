@@ -43,12 +43,16 @@ function scp_1025.CallDisease(disease, ply)
     hook.Call("SCP1025.CallDisease", nil, ply, disease) --? In case some dev wants to do something on disease call
 end
 
+--[[
+* Set the common cold for the player (sneezing sound).
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.CommonCold(ply)
     local minDuration = SCP_1025_CONFIG.Settings.MinCommonCold
     local maxDuration = SCP_1025_CONFIG.Settings.MaxCommonCold
     local sneezeSounds = SCP_1025_CONFIG.Sounds.Sneezing
     if (not timer.Exists("SCP1025.CommonCold." .. ply:EntIndex())) then
-        timer.Create("SCP1025.CommonCold." .. ply:EntIndex(), math.random(minDuration, maxDuration), SCP_1025_CONFIG.Settings.Repetitions, function ()
+        timer.Create("SCP1025.CommonCold." .. ply:EntIndex(), math.random(minDuration, maxDuration), SCP_1025_CONFIG.Settings.CommonColdRepetitions, function ()
             if (not ply:IsValid()) then timer.Remove("SCP1025.CommonCold") return end
             ply:EmitSound(sneezeSounds[math.random(#sneezeSounds)], 75, math.random( 100, 110 ))
             timer.Adjust("SCP1025.CommonCold", math.random(minDuration, maxDuration))
@@ -60,7 +64,7 @@ function scp_1025.Schizophrenia(ply)
 end
 
 --[[
-* Set the gastroenteritis for the player.
+* Set the gastroenteritis for the player (vomiting effect/decals and blur).
 * @Player ply The player to set the disease.
 --]]
 function scp_1025.Gastroenteritis(ply)
@@ -69,33 +73,20 @@ function scp_1025.Gastroenteritis(ply)
 
     if (not timer.Exists("SCP1025.Gastroenteritis." .. ply:EntIndex())) then
         timer.Create("SCP1025.Gastroenteritis." .. ply:EntIndex(), math.random(minDuration, maxDuration), SCP_1025_CONFIG.Settings.RepetitionsGastroenteritis, function ()
-            if (not ply:IsValid()) then timer.Remove("SCP1025.CommonCold") return end
+            if (not ply:IsValid()) then return end
 
-            ply:EmitSound(SCP_1025_CONFIG.Sounds.GastroenteritisVomiting, 75, math.random( 90, 110 ))
-            util.Decal("YellowBlood", ply:GetPos() - Vector(0, 0, 1), ply:GetPos() + Vector(0, 0, 1), ply)
+            scp_1025.Vomiting(ply)
+            scp_1025.CreateBlurEffect(ply, 4)
 
-            local attachments = ply:GetAttachments()
-            local keyMouth = nil
-
-            for key, value in ipairs(attachments) do
-                if (value.name == "mouth") then keyMouth = value.id end --? We find the attachment mouth
-            end
-
-            local offsetvec = keyMouth and ply:GetAttachment( keyMouth ).Pos or Vector(2.5, -5.6, 0 )
-            local effectdata = EffectData()
-            effectdata:SetOrigin(offsetvec)
-            effectdata:SetScale(100)
-            effectdata:SetColor(1)
-            util.Effect( "BloodImpact", effectdata )
-            util.Effect( "BloodImpact", effectdata )
-
-            net.Start(SCP_1025_CONFIG.NetVar.Gastroenteritis)
-            net.Send(ply)
             timer.Adjust("SCP1025.Gastroenteritis", math.random(minDuration, maxDuration))
         end)
     end
 end
 
+--[[
+* Set the myopia for the player (blur effect).
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.Myopia(ply)
     net.Start(SCP_1025_CONFIG.NetVar.Myopia)
     net.Send(ply)
@@ -105,7 +96,7 @@ function scp_1025.Rabies(ply)
 end
 
 --[[
-* Set the huntington for the player.
+* Set the huntington for the player (random movement/shoot/eyesangle).
 * @Player ply The player to set the disease.
 --]]
 function scp_1025.Huntington(ply)
@@ -124,7 +115,7 @@ function scp_1025.Huntington(ply)
 end
 
 --[[
-* Set the asthma for the player.
+* Set the asthma for the player (sprint slowdown effect).
 * @Player ply The player to set the disease.
 --]]
 function scp_1025.Asthma(ply)
@@ -165,9 +156,48 @@ function scp_1025.Asthma(ply)
     end)
 end
 
+-- TODO : Entité de bouffe / Insuline
+-- TODO : Entité Lecteur glycémie
+-- TODO : Gérer si le joueur est trop bas ou trop haut (On les tues ? / Coma / etc)
+--[[
+* Set the diabetes for the player (Player need to take insulin).
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.Diabetes(ply)
+    ply.scp_1025_Glycemia = SCP_1025_CONFIG.Settings.NormalGlycemia
+    ply.scp_1025_CoefficientGlycemia = SCP_1025_CONFIG.Settings.CoefficientIncreaseGlycemia
+    ply.scp_1025_HypoGlycemia = false
+    ply.scp_1025_HyperGlycemia = false
+    local interval = SCP_1025_CONFIG.Settings.IntervalGlycemia
+    local hypoGlycemia = SCP_1025_CONFIG.Settings.HypoGlycemia
+    local hyperGlycemia = SCP_1025_CONFIG.Settings.HyperGlycemia
+
+    timer.Create("SCP1025.Diabetes." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.DelayUpdateGlycemia, 0, function ()
+        if (not IsValid(ply)) then return end
+
+        currentGlycemia = math.Clamp(ply.scp_1025_Glycemia - interval, 0, 5)
+        print(currentGlycemia)
+        ply.scp_1025_Glycemia = currentGlycemia
+        if (currentGlycemia <= hypoGlycemia and not ply.scp_1025_HypoGlycemia) then
+            ply.scp_1025_HypoGlycemia = true
+            hook.Call("HypoGlycemiaDiabetes", nil, ply)
+        elseif (currentGlycemia >= hyperGlycemia and not ply.scp_1025_HyperGlycemia) then
+            ply.scp_1025_HyperGlycemia = true
+            hook.Call("HyperGlycemiaDiabetes", nil, ply)
+        elseif (currentGlycemia < hyperGlycemia and currentGlycemia > hypoGlycemia and (ply.scp_1025_HypoGlycemia or ply.scp_1025_HyperGlycemia)) then
+            ply.scp_1025_HypoGlycemia = false
+            ply.scp_1025_HyperGlycemia = false
+            timer.Remove("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex())
+            timer.Remove("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex())
+            ply:SetRunSpeed(ply.scp_1025_OldRunSpeed)
+        end
+    end)
 end
 
+--[[
+* Set the kleine levin for the player (sleep effect/blink eye).
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.KleineLevin(ply)
     local delay = SCP_1025_CONFIG.Settings.KleineLevinDelay
     local minInterval = SCP_1025_CONFIG.Settings.KleineLevinMinInterval
@@ -222,10 +252,16 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.Gastroenteritis." .. ply:EntIndex())
     timer.Remove("SCP1025.KleineLevin." .. ply:EntIndex())
     timer.Remove("SCP1025.KleineLevin.WakeUp." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex())
     hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
     ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
     ply:Freeze(false)
     ply.scp_1025_Huntington_Symptom = nil
+    ply.scp_1025_Glycemia = nil
+    ply.scp_1025_HypoGlycemia = false
+    ply.scp_1025_HyperGlycemia = false
 
     net.Start(SCP_1025_CONFIG.NetVar.ClearDisease)
     net.Send(ply)
@@ -244,6 +280,43 @@ function scp_1025.CreateBlinkEye(ply, duration, oneSide, wasClose)
     net.WriteBool(oneSide)
     net.WriteBool(wasClose)
     net.Send(ply)
+end
+
+--[[
+* Create a blur effect for the player.
+* @Player ply The player to set the disease.
+* @number duration The duration of the blur effect.
+* @boolean sfx If the blur effect has a sound effect.
+--]]
+function scp_1025.CreateBlurEffect(ply, duration, sfx)
+    net.Start(SCP_1025_CONFIG.NetVar.CreateBlurEffect)
+    net.WriteFloat(duration)
+    net.WriteBool(sfx)
+    net.Send(ply)
+end
+
+--[[
+* Make player vomit.
+* @Player ply The player to set the disease.
+--]]
+function scp_1025.Vomiting(ply)
+    ply:EmitSound(SCP_1025_CONFIG.Sounds.GastroenteritisVomiting, 75, math.random( 90, 110 ))
+    util.Decal("YellowBlood", ply:GetPos() - Vector(0, 0, 1), ply:GetPos() + Vector(0, 0, 1), ply)
+
+    local attachments = ply:GetAttachments()
+    local keyMouth = nil
+
+    for key, value in ipairs(attachments) do
+        if (value.name == "mouth") then keyMouth = value.id end --? We find the attachment mouth
+    end
+
+    local offsetvec = keyMouth and ply:GetAttachment( keyMouth ).Pos or Vector(2.5, -5.6, 0 )
+    local effectdata = EffectData()
+    effectdata:SetOrigin(offsetvec)
+    effectdata:SetScale(100)
+    effectdata:SetColor(1)
+    util.Effect("BloodImpact", effectdata)
+    util.Effect("BloodImpact", effectdata)
 end
 
 -- NET RECEIVERS
@@ -305,5 +378,59 @@ hook.Add("WakeUpFromKleineLevin", "WakeUpFromKleineLevin.SCP_1025", function(ply
         ply:Freeze(false)
         scp_1025.CreateBlinkEye(ply, 1, true, true)
         scp_1025.KleineLevin(ply)
+    end)
+end)
+
+hook.Add("HypoGlycemiaDiabetes", "HypoGlycemiaDiabetes.SCP_1025", function(ply)
+    if (not IsValid(ply)) then return end
+    if (not ply.scp_1025_HypoGlycemia) then return end
+
+    local delaySymptom = SCP_1025_CONFIG.Settings.DelaySymptomGlycemia
+    local intervalSymptom = SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia
+    local coefficientSpeed = SCP_1025_CONFIG.Settings.CoefficientSpeedHypo
+
+    ply.scp_1025_OldRunSpeed = ply:GetRunSpeed()
+
+    timer.Create("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex(), 2, 0, function()
+        if (not IsValid(ply)) then return end
+        if (not ply.scp_1025_HypoGlycemia) then return end
+
+
+        local interval = intervalSymptom * (1 - ply.scp_1025_Glycemia / 0.01)
+        local coefficient = coefficientSpeed * (1 - ply.scp_1025_Glycemia / 0.01)
+        scp_1025.CreateBlurEffect(ply, 3, true)
+        ply:SetRunSpeed(ply.scp_1025_OldRunSpeed - coefficient)
+        timer.Adjust("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex(), delaySymptom - interval)
+    end)
+end)
+
+hook.Add("HyperGlycemiaDiabetes", "HyperGlycemiaDiabetes.SCP_1025", function(ply)
+    if (not IsValid(ply)) then return end
+    if (not ply.scp_1025_HyperGlycemia) then return end
+
+    local delaySymptom = SCP_1025_CONFIG.Settings.DelaySymptomGlycemia
+    local intervalSymptom = SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia
+    local probabiltyVomiting = SCP_1025_CONFIG.Settings.ProbabilityVomiting
+    local coefficientSpeed = SCP_1025_CONFIG.Settings.CoefficientSpeedHyper
+
+    ply.scp_1025_OldRunSpeed = ply:GetRunSpeed()
+    ply:SetRunSpeed(ply.scp_1025_OldRunSpeed * SCP_1025_CONFIG.Settings.CoefficientSpeedHyper)
+
+    timer.Create("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex(), 2, 0, function ()
+        if (not IsValid(ply)) then return end
+        if (not ply.scp_1025_HyperGlycemia) then return end
+
+        local randomSymptom = math.random(1, probabiltyVomiting)
+        local coefficient = coefficientSpeed * (1 - ply.scp_1025_Glycemia / 5)
+        local interval = intervalSymptom * (1 - ply.scp_1025_Glycemia / 0.01)
+
+        if (randomSymptom > 1) then
+            scp_1025.CreateBlinkEye(ply, 0.5)
+            scp_1025.CreateBlurEffect(ply, 1)
+        else
+            scp_1025.Vomiting(ply)
+        end
+        ply:SetRunSpeed(ply.scp_1025_OldRunSpeed - coefficient)
+        timer.Adjust("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex(), delaySymptom - interval)
     end)
 end)

@@ -19,13 +19,15 @@
 * @Player ply The player to set the disease.
 * @number duration The duration of the blur effect.
 --]]
-function scp_1025.CreateBlurEffect(ply, duration)
+function scp_1025.CreateBlurEffect(ply, duration, sfx)
+    sfx = sfx or false
     hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025", function()
         DrawMotionBlur( 0.4, 0.8, 0.01 )
     end )
     timer.Create("SCP1025.BlurEffect." .. ply:EntIndex(), duration, 1, function()
         hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025")
     end)
+    if (sfx) then ply:EmitSound(SCP_1025_CONFIG.Sounds.Dizzy, 75, math.random( 90, 110 )) end
 end
 
 --[[
@@ -107,15 +109,6 @@ function scp_1025.KleineLevin(ply)
     scp_1025.CreateBlurEffect(ply, 2)
 end
 
---[[
-* Set the gastroenteritis for the player.
-* @Player ply The player to set the disease.
---]]
-function scp_1025.Gastroenteritis(ply)
-    scp_1025.CreateBlurEffect(ply, 4)
-end
-
-
 -- NET VARS
 net.Receive(SCP_1025_CONFIG.NetVar.ClearDisease, function()
     local ply = LocalPlayer()
@@ -125,11 +118,6 @@ end)
 net.Receive(SCP_1025_CONFIG.NetVar.Myopia, function()
     local ply = LocalPlayer()
     scp_1025.Myopia(ply)
-end)
-
-net.Receive(SCP_1025_CONFIG.NetVar.Gastroenteritis, function()
-    local ply = LocalPlayer()
-    scp_1025.Gastroenteritis(ply)
 end)
 
 net.Receive(SCP_1025_CONFIG.NetVar.KleineLevin, function()
@@ -143,4 +131,12 @@ net.Receive(SCP_1025_CONFIG.NetVar.CreateBlinkEye, function()
     local wasClose = net.ReadBool()
 
     scp_1025.CreateBlinkEye(duration, oneSide, wasClose)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.CreateBlurEffect, function()
+    local ply = LocalPlayer()
+    local duration = net.ReadFloat()
+    local sfx = net.ReadBool()
+
+    scp_1025.CreateBlurEffect(ply, duration, sfx)
 end)

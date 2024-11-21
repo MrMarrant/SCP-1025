@@ -28,9 +28,9 @@ SCP_1025_CONFIG.NetVar.UpdateTableDisease = "SCP_1025_CONFIG.NetVar.UpdateTableD
 SCP_1025_CONFIG.NetVar.CloseMenu = "SCP_1025_CONFIG.NetVar.CloseMenu"
 SCP_1025_CONFIG.NetVar.ClearDisease = "SCP_1025_CONFIG.NetVar.ClearDisease"
 SCP_1025_CONFIG.NetVar.Myopia = "SCP_1025_CONFIG.NetVar.Myopia"
-SCP_1025_CONFIG.NetVar.Gastroenteritis = "SCP_1025_CONFIG.NetVar.Gastroenteritis"
 SCP_1025_CONFIG.NetVar.KleineLevin = "SCP_1025_CONFIG.NetVar.KleineLevin"
 SCP_1025_CONFIG.NetVar.CreateBlinkEye = "SCP_1025_CONFIG.NetVar.CreateBlinkEye"
+SCP_1025_CONFIG.NetVar.CreateBlurEffect = "SCP_1025_CONFIG.NetVar.CreateBlurEffect"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -46,6 +46,7 @@ SCP_1025_CONFIG.Sounds.DiseaseRead = "scp_1025/disease_read.mp3"
 SCP_1025_CONFIG.Sounds.GastroenteritisVomiting = "" -- TODO : Ajouter un son de vomissement
 SCP_1025_CONFIG.Sounds.Snoring = "" -- TODO : Ajouter un son de ronflement wav loop
 SCP_1025_CONFIG.Sounds.Lease = "" -- TODO : Ajouter un son de baillement
+SCP_1025_CONFIG.Sounds.Dizzy = "" -- TODO : Ajouter un son de vertige
 SCP_1025_CONFIG.Sounds.Sneezing = {}
 SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
@@ -59,26 +60,43 @@ SCP_1025_CONFIG.Paths.DataJson = "scp_1025/custom_disease.json"
 
 -- Settings Disease
 SCP_1025_CONFIG.Settings = {}
+-- Common Cold Settings
 SCP_1025_CONFIG.Settings.MinCommonCold = 80
 SCP_1025_CONFIG.Settings.MaxCommonCold = 120
-SCP_1025_CONFIG.Settings.Repetitions = 10
+SCP_1025_CONFIG.Settings.CommonColdRepetitions = 10
 SCP_1025_CONFIG.Settings.ProbabilityWriter = 20
+-- Asthme Settings
 SCP_1025_CONFIG.Settings.SprintDuration = 3
 SCP_1025_CONFIG.Settings.RecoveryDuration = 5
 SCP_1025_CONFIG.Settings.MinRunSpeed = 50
+-- Huntington Settings
 SCP_1025_CONFIG.Settings.HuntingtonDuration = 2
 SCP_1025_CONFIG.Settings.HuntingtonDelay = 60
 SCP_1025_CONFIG.Settings.HuntingtonInterval = 10
 SCP_1025_CONFIG.Settings.HuntingtonShootDuration = 2
+-- Gastroenteritis Settings
 SCP_1025_CONFIG.Settings.MinGastroenteritis = 60
 SCP_1025_CONFIG.Settings.MaxGastroenteritis = 120
 SCP_1025_CONFIG.Settings.RepetitionsGastroenteritis = 6
+-- Kleine Levin Settings
 SCP_1025_CONFIG.Settings.KleineLevinDurationBlink = 0.2
 SCP_1025_CONFIG.Settings.KleineLevinDelay = 60
 SCP_1025_CONFIG.Settings.KleineLevinMinInterval = 5
 SCP_1025_CONFIG.Settings.KleineLevinMaxInterval = 10
 SCP_1025_CONFIG.Settings.KleineLevinRepetition = 5
 SCP_1025_CONFIG.Settings.KleineLevinSleepDuration = 15
+-- Diabetes Settings
+SCP_1025_CONFIG.Settings.NormalGlycemia = 1.2
+SCP_1025_CONFIG.Settings.HyperGlycemia = 2
+SCP_1025_CONFIG.Settings.HypoGlycemia = 0.5
+SCP_1025_CONFIG.Settings.DelayUpdateGlycemia = 2 -- default 10
+SCP_1025_CONFIG.Settings.IntervalGlycemia = 0.2 -- default 0.011
+SCP_1025_CONFIG.Settings.CoefficientIncreaseGlycemia = 2
+SCP_1025_CONFIG.Settings.DelaySymptomGlycemia = 15
+SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia = 10
+SCP_1025_CONFIG.Settings.ProbabilityVomiting = 8
+SCP_1025_CONFIG.Settings.CoefficientSpeedHypo = 0.7
+SCP_1025_CONFIG.Settings.CoefficientSpeedHyper = 0.3
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {
