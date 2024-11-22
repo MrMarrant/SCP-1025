@@ -175,7 +175,7 @@ function scp_1025.Diabetes(ply)
     timer.Create("SCP1025.Diabetes." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.DelayUpdateGlycemia, 0, function ()
         if (not IsValid(ply)) then return end
 
-        currentGlycemia = math.Clamp(ply.scp_1025_Glycemia - interval, 0, 5)
+        currentGlycemia = math.Clamp(ply.scp_1025_Glycemia - interval, 0, SCP_1025_CONFIG.Settings.MaxHyperGlycemia)
         print(currentGlycemia)
         ply.scp_1025_Glycemia = currentGlycemia
         if (currentGlycemia <= hypoGlycemia and not ply.scp_1025_HypoGlycemia) then
@@ -412,6 +412,7 @@ hook.Add("HyperGlycemiaDiabetes", "HyperGlycemiaDiabetes.SCP_1025", function(ply
     local intervalSymptom = SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia
     local probabiltyVomiting = SCP_1025_CONFIG.Settings.ProbabilityVomiting
     local coefficientSpeed = SCP_1025_CONFIG.Settings.CoefficientSpeedHyper
+    local maxHyperGlycemia = SCP_1025_CONFIG.Settings.MaxHyperGlycemia
 
     ply.scp_1025_OldRunSpeed = ply:GetRunSpeed()
     ply:SetRunSpeed(ply.scp_1025_OldRunSpeed * SCP_1025_CONFIG.Settings.CoefficientSpeedHyper)
@@ -421,7 +422,7 @@ hook.Add("HyperGlycemiaDiabetes", "HyperGlycemiaDiabetes.SCP_1025", function(ply
         if (not ply.scp_1025_HyperGlycemia) then return end
 
         local randomSymptom = math.random(1, probabiltyVomiting)
-        local coefficient = coefficientSpeed * (1 - ply.scp_1025_Glycemia / 5)
+        local coefficient = coefficientSpeed * (1 - ply.scp_1025_Glycemia / maxHyperGlycemia)
         local interval = intervalSymptom * (1 - ply.scp_1025_Glycemia / 0.01)
 
         if (randomSymptom > 1) then
@@ -433,4 +434,11 @@ hook.Add("HyperGlycemiaDiabetes", "HyperGlycemiaDiabetes.SCP_1025", function(ply
         ply:SetRunSpeed(ply.scp_1025_OldRunSpeed - coefficient)
         timer.Adjust("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex(), delaySymptom - interval)
     end)
+end)
+
+hook.Add("OnGlucideConsumption", "OnGlucideConsumption.SCP_1025", function(ply, glucide)
+    if (not IsValid(ply)) then return end
+    if (not ply.scp_1025_Glycemia) then return end
+
+    ply.scp_1025_Glycemia = math.Clamp(ply.scp_1025_Glycemia + glucide, 0, SCP_1025_CONFIG.Settings.MaxHyperGlycemia)
 end)

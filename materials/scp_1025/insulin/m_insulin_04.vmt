@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$baseTexture"	"scp_1025/insulin/m_insulin_01"
+    	"$translucent" 1
+	"$surfaceprop"	"glass"
+}

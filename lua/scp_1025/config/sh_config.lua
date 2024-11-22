@@ -35,6 +35,10 @@ SCP_1025_CONFIG.NetVar.CreateBlurEffect = "SCP_1025_CONFIG.NetVar.CreateBlurEffe
 -- Model Path
 SCP_1025_CONFIG.Models = {}
 SCP_1025_CONFIG.Models.ModelBook = "models/scp_1025/scp_1025.mdl"
+SCP_1025_CONFIG.Models.Hamburger = "models/food/burger.mdl"
+SCP_1025_CONFIG.Models.Coke = "models/props_junk/PopCan01a.mdl"
+SCP_1025_CONFIG.Models.Donut = "models/scp_1025/donut/donut.mdl"
+SCP_1025_CONFIG.Models.Insulin = "models/scp_1025/insulin/insulin.mdl"
 
 --Sound Path
 SCP_1025_CONFIG.Sounds = {}
@@ -47,6 +51,8 @@ SCP_1025_CONFIG.Sounds.GastroenteritisVomiting = "" -- TODO : Ajouter un son de 
 SCP_1025_CONFIG.Sounds.Snoring = "" -- TODO : Ajouter un son de ronflement wav loop
 SCP_1025_CONFIG.Sounds.Lease = "" -- TODO : Ajouter un son de baillement
 SCP_1025_CONFIG.Sounds.Dizzy = "" -- TODO : Ajouter un son de vertige
+SCP_1025_CONFIG.Sounds.Eat = "" -- TODO : Ajouter un son de bouffe
+SCP_1025_CONFIG.Sounds.Injection = "" -- TODO : Ajouter un son de injection
 SCP_1025_CONFIG.Sounds.Sneezing = {}
 SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
@@ -89,6 +95,7 @@ SCP_1025_CONFIG.Settings.KleineLevinSleepDuration = 15
 SCP_1025_CONFIG.Settings.NormalGlycemia = 1.2
 SCP_1025_CONFIG.Settings.HyperGlycemia = 2
 SCP_1025_CONFIG.Settings.HypoGlycemia = 0.5
+SCP_1025_CONFIG.Settings.MaxHyperGlycemia = 5
 SCP_1025_CONFIG.Settings.DelayUpdateGlycemia = 2 -- default 10
 SCP_1025_CONFIG.Settings.IntervalGlycemia = 0.2 -- default 0.011
 SCP_1025_CONFIG.Settings.CoefficientIncreaseGlycemia = 2
@@ -97,6 +104,10 @@ SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia = 10
 SCP_1025_CONFIG.Settings.ProbabilityVomiting = 8
 SCP_1025_CONFIG.Settings.CoefficientSpeedHypo = 0.7
 SCP_1025_CONFIG.Settings.CoefficientSpeedHyper = 0.3
+SCP_1025_CONFIG.Settings.HamburgerGlycemiaValue = 0.7
+SCP_1025_CONFIG.Settings.CokeGlycemiaValue = 1
+SCP_1025_CONFIG.Settings.DonutGlycemiaValue = 0.3
+SCP_1025_CONFIG.Settings.InsulinGlycemiaValue = -1
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {
