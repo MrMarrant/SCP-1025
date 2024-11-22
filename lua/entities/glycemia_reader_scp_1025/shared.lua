@@ -17,6 +17,6 @@
 ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 ENT.Author = "MrMarrant"
-ENT.PrintName = "Coke"
+ENT.PrintName = "Glycemia Reader"
 ENT.Spawnable = true
 ENT.Category = "Diabetes Stuff"

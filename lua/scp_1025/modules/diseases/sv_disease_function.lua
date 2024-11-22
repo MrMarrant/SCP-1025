@@ -33,6 +33,27 @@ for key, value in pairs(SCP_1025_CONFIG.CustomDisease) do
 end
 
 --[[
+* Set the sleep for the player (blink eye effect and freeze).
+* @Player ply The player to set the disease.
+--]]
+local function Sleep(ply)
+    local eyeAngle = ply:EyeAngles()
+    local Direction = Angle(90, eyeAngle.y, eyeAngle.r)
+
+    scp_1025.CreateBlinkEye(ply, 1, true, false)
+    ply:SetEyeAngles(Direction)
+    ply:Freeze(true)
+    ply.scp_1025_IsSleeping = true
+end
+
+local function UnSleep(ply)
+    ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
+    ply:Freeze(false)
+    scp_1025.CreateBlinkEye(ply, 1, true, true)
+    ply.scp_1025_IsSleeping = nil
+end
+
+--[[
 * Call the disease for the player.
 * @string disease The disease
 * @Player ply The player to set the disease.
@@ -171,13 +192,20 @@ function scp_1025.Diabetes(ply)
     local interval = SCP_1025_CONFIG.Settings.IntervalGlycemia
     local hypoGlycemia = SCP_1025_CONFIG.Settings.HypoGlycemia
     local hyperGlycemia = SCP_1025_CONFIG.Settings.HyperGlycemia
+    local delay = SCP_1025_CONFIG.Settings.DelayUpdateGlycemia
+    local nextGlycemia = CurTime() + delay
 
-    timer.Create("SCP1025.Diabetes." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.DelayUpdateGlycemia, 0, function ()
+    hook.Add("Think", "Think.SCP1025.Diabetes." .. ply:EntIndex(), function()
         if (not IsValid(ply)) then return end
 
-        currentGlycemia = math.Clamp(ply.scp_1025_Glycemia - interval, 0, SCP_1025_CONFIG.Settings.MaxHyperGlycemia)
-        print(currentGlycemia)
-        ply.scp_1025_Glycemia = currentGlycemia
+        local cur = CurTime()
+        local currentGlycemia = ply.scp_1025_Glycemia
+
+        if (cur > nextGlycemia) then
+            currentGlycemia = math.Clamp(ply.scp_1025_Glycemia - interval, 0, 6)
+            ply.scp_1025_Glycemia = currentGlycemia
+            nextGlycemia = cur + delay
+        end
         if (currentGlycemia <= hypoGlycemia and not ply.scp_1025_HypoGlycemia) then
             ply.scp_1025_HypoGlycemia = true
             hook.Call("HypoGlycemiaDiabetes", nil, ply)
@@ -189,7 +217,27 @@ function scp_1025.Diabetes(ply)
             ply.scp_1025_HyperGlycemia = false
             timer.Remove("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex())
             timer.Remove("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex())
+            timer.Remove("SCP1025.Diabetes.ComaHypoGlycemia." .. ply:EntIndex())
+            timer.Remove("SCP1025.Diabetes.ComaHyperGlycemia." .. ply:EntIndex())
             ply:SetRunSpeed(ply.scp_1025_OldRunSpeed)
+            UnSleep(ply)
+        end
+
+        if (currentGlycemia <= SCP_1025_CONFIG.Settings.MaxHypoGlycemia and not ply.scp_1025_IsSleeping) then
+            Sleep(ply)
+            timer.Create("SCP1025.Diabetes.ComaHypoGlycemia." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.DelayComa, 1, function()
+                if (not IsValid(ply)) then return end
+                if (not ply.scp_1025_HypoGlycemia) then return end
+
+                ply:Kill()
+            end)
+        elseif (currentGlycemia >= SCP_1025_CONFIG.Settings.MaxHyperGlycemia) then
+            timer.Create("SCP1025.Diabetes.ComaHyperGlycemia." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.DelayComa, 1, function()
+                if (not IsValid(ply)) then return end
+                if (not ply.scp_1025_HyperGlycemia) then return end
+
+                ply:Kill()
+            end)
         end
     end)
 end
@@ -212,12 +260,7 @@ function scp_1025.KleineLevin(ply)
 
             i = i + 1
             if (i == repetition) then
-                local eyeAngle = ply:EyeAngles()
-                local Direction = Angle(90, eyeAngle.y, eyeAngle.r)
-
-                scp_1025.CreateBlinkEye(ply, 1, true, false)
-                ply:SetEyeAngles(Direction)
-                ply:Freeze(true)
+                Sleep(ply)
                 ply:StartLoopingSound(SCP_1025_CONFIG.Sounds.Snoring)
                 hook.Call("WakeUpFromKleineLevin", nil, ply)
             else
@@ -252,16 +295,18 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.Gastroenteritis." .. ply:EntIndex())
     timer.Remove("SCP1025.KleineLevin." .. ply:EntIndex())
     timer.Remove("SCP1025.KleineLevin.WakeUp." .. ply:EntIndex())
-    timer.Remove("SCP1025.Diabetes." .. ply:EntIndex())
     timer.Remove("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex())
     timer.Remove("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.ComaHypoGlycemia." .. ply:EntIndex())
     hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
+    hook.Remove("Think", "Think.SCP1025.Diabetes." .. ply:EntIndex())
     ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
-    ply:Freeze(false)
+    if (ply.scp_1025_IsSleeping) then ply:Freeze(false) end
     ply.scp_1025_Huntington_Symptom = nil
     ply.scp_1025_Glycemia = nil
     ply.scp_1025_HypoGlycemia = false
     ply.scp_1025_HyperGlycemia = false
+    ply.scp_1025_IsSleeping = false
 
     net.Start(SCP_1025_CONFIG.NetVar.ClearDisease)
     net.Send(ply)
@@ -374,9 +419,7 @@ hook.Add("WakeUpFromKleineLevin", "WakeUpFromKleineLevin.SCP_1025", function(ply
     timer.Create("SCP1025.KleineLevin.WakeUp." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.KleineLevinSleepDuration, 1, function()
         if (not IsValid(ply)) then return end
 
-        ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
-        ply:Freeze(false)
-        scp_1025.CreateBlinkEye(ply, 1, true, true)
+        UnSleep(ply)
         scp_1025.KleineLevin(ply)
     end)
 end)
@@ -388,18 +431,20 @@ hook.Add("HypoGlycemiaDiabetes", "HypoGlycemiaDiabetes.SCP_1025", function(ply)
     local delaySymptom = SCP_1025_CONFIG.Settings.DelaySymptomGlycemia
     local intervalSymptom = SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia
     local coefficientSpeed = SCP_1025_CONFIG.Settings.CoefficientSpeedHypo
+    local hypoGlycemia = SCP_1025_CONFIG.Settings.HypoGlycemia
 
     ply.scp_1025_OldRunSpeed = ply:GetRunSpeed()
+    ply:SetRunSpeed(ply.scp_1025_OldRunSpeed - (1 - (coefficientSpeed * math.Clamp(hypoGlycemia / ply.scp_1025_Glycemia, 0, 1))))
 
     timer.Create("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex(), 2, 0, function()
         if (not IsValid(ply)) then return end
         if (not ply.scp_1025_HypoGlycemia) then return end
 
-
-        local interval = intervalSymptom * (1 - ply.scp_1025_Glycemia / 0.01)
-        local coefficient = coefficientSpeed * (1 - ply.scp_1025_Glycemia / 0.01)
+        local glycemia = ply.scp_1025_Glycemia
+        local interval = intervalSymptom * math.Clamp(glycemia / hypoGlycemia, 0, 1)
+        local coefficient = 1 - (coefficientSpeed * math.Clamp(hypoGlycemia / glycemia, 0, 1))
         scp_1025.CreateBlurEffect(ply, 3, true)
-        ply:SetRunSpeed(ply.scp_1025_OldRunSpeed - coefficient)
+        ply:SetRunSpeed(ply.scp_1025_OldRunSpeed * coefficient)
         timer.Adjust("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex(), delaySymptom - interval)
     end)
 end)
@@ -412,26 +457,27 @@ hook.Add("HyperGlycemiaDiabetes", "HyperGlycemiaDiabetes.SCP_1025", function(ply
     local intervalSymptom = SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia
     local probabiltyVomiting = SCP_1025_CONFIG.Settings.ProbabilityVomiting
     local coefficientSpeed = SCP_1025_CONFIG.Settings.CoefficientSpeedHyper
-    local maxHyperGlycemia = SCP_1025_CONFIG.Settings.MaxHyperGlycemia
+    local highHyper = SCP_1025_CONFIG.Settings.HighHyperGlycemia
 
     ply.scp_1025_OldRunSpeed = ply:GetRunSpeed()
-    ply:SetRunSpeed(ply.scp_1025_OldRunSpeed * SCP_1025_CONFIG.Settings.CoefficientSpeedHyper)
+    ply:SetRunSpeed(ply.scp_1025_OldRunSpeed - (1 - (coefficientSpeed * math.Clamp(highHyper / ply.scp_1025_Glycemia, 0, 1))))
 
     timer.Create("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex(), 2, 0, function ()
         if (not IsValid(ply)) then return end
         if (not ply.scp_1025_HyperGlycemia) then return end
 
+        local glycemia = ply.scp_1025_Glycemia
         local randomSymptom = math.random(1, probabiltyVomiting)
-        local coefficient = coefficientSpeed * (1 - ply.scp_1025_Glycemia / maxHyperGlycemia)
-        local interval = intervalSymptom * (1 - ply.scp_1025_Glycemia / 0.01)
+        local interval = intervalSymptom * math.Clamp(glycemia / highHyper, 0, 1)
+        local coefficient = 1 - (coefficientSpeed * math.Clamp(highHyper / glycemia, 0, 1))
 
         if (randomSymptom > 1) then
             scp_1025.CreateBlinkEye(ply, 0.5)
-            scp_1025.CreateBlurEffect(ply, 1)
+            scp_1025.CreateBlurEffect(ply, 2)
         else
             scp_1025.Vomiting(ply)
         end
-        ply:SetRunSpeed(ply.scp_1025_OldRunSpeed - coefficient)
+        ply:SetRunSpeed(ply.scp_1025_OldRunSpeed * coefficient)
         timer.Adjust("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex(), delaySymptom - interval)
     end)
 end)

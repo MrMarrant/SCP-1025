@@ -39,11 +39,24 @@ function ENT:PhysicsCollide( data, physobj )
 	end
 end
 
+function ENT:Eat(ply)
+	hook.Call("OnGlucideConsumption", nil, ply, SCP_1025_CONFIG.Settings.DonutGlycemiaValue)
+	ply:EmitSound(SCP_1025_CONFIG.Sounds.Eat, 75, math.random( 90, 110 ))
+	self:Remove()
+end
+
 function ENT:Use(ply)
 	if (not IsValid(ply)) then return end
 	if (not ply.scp_1025_Glycemia) then return end
 
-	hook.Call("OnGlucideConsumption", nil, ply, SCP_1025_CONFIG.Settings.CokeGlycemiaValue)
-	ply:EmitSound(SCP_1025_CONFIG.Sounds.Eat, 75, math.random( 90, 110 ))
-	self:Remove()
+	self:Eat(ply)
+end
+
+function ENT:Touch(ent)
+	if (not IsValid(ent)) then return end
+	if (not ent:IsPlayer()) then return end
+	if (not ent.scp_1025_Glycemia) then return end
+	if (not ent.scp_1025_IsSleeping) then return end
+
+	self:Eat(ent)
 end

@@ -1,5 +1,5 @@
--- SCP-1025, A representation of a paranormal object on a fictional series on the game Garry's Mod.
--- Copyright (C) 2024  MrMarrant aka BIBI.
+-- SCP-055, A representation of a paranormal object on a fictional series on the game Garry's Mod.
+-- Copyright (C) 2023  MrMarrant aka BIBI.
 
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -14,9 +14,11 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-ENT.Type = "anim"
-ENT.Base = "base_gmodentity"
-ENT.Author = "MrMarrant"
-ENT.PrintName = "Coke"
-ENT.Spawnable = true
-ENT.Category = "Diabetes Stuff"
+include("shared.lua")
+
+SWEP.PrintName = "Glycemia Reader Swep"
+SWEP.Author = "MrMarrant"
+SWEP.Purpose = "To check your glycemia level."
+SWEP.DrawCrosshair = false
+SWEP.Base = "weapon_base"
+SWEP.AutoSwitchTo = false

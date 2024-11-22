@@ -14,8 +14,9 @@
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 function ENT:Initialize()
-	self:SetModel(SCP_1025_CONFIG.Models.Coke)
+	self:SetModel(SCP_1025_CONFIG.Models.GlycemiaReader)
 	self:RebuildPhysics()
+	self.Delay = CurTime()
 end
 
 -- Initialise the physic of the entity
@@ -39,24 +40,13 @@ function ENT:PhysicsCollide( data, physobj )
 	end
 end
 
-function ENT:Eat(ply)
-	hook.Call("OnGlucideConsumption", nil, ply, SCP_1025_CONFIG.Settings.CokeGlycemiaValue)
-	ply:EmitSound(SCP_1025_CONFIG.Sounds.Eat, 75, math.random( 90, 110 ))
-	self:Remove()
-end
-
 function ENT:Use(ply)
 	if (not IsValid(ply)) then return end
-	if (not ply.scp_1025_Glycemia) then return end
+	local cur = CurTime()
+	if (self.Delay > cur ) then return end
 
-	self:Eat(ply)
-end
-
-function ENT:Touch(ent)
-	if (not IsValid(ent)) then return end
-	if (not ent:IsPlayer()) then return end
-	if (not ent.scp_1025_Glycemia) then return end
-	if (not ent.scp_1025_IsSleeping) then return end
-
-	self:Eat(ent)
+	local glycemia = ply.scp_1025_Glycemia or "1.2"
+	self.Delay = cur + SCP_1025_CONFIG.Settings.DelayGlycemiaReader
+	ply:ChatPrint(glycemia .. " g/L")
+	ply:EmitSound(SCP_1025_CONFIG.Sounds.GlycemiaReader, 75, math.random( 90, 110 ))
 end

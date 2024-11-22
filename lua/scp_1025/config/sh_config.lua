@@ -39,6 +39,7 @@ SCP_1025_CONFIG.Models.Hamburger = "models/food/burger.mdl"
 SCP_1025_CONFIG.Models.Coke = "models/props_junk/PopCan01a.mdl"
 SCP_1025_CONFIG.Models.Donut = "models/scp_1025/donut/donut.mdl"
 SCP_1025_CONFIG.Models.Insulin = "models/scp_1025/insulin/insulin.mdl"
+SCP_1025_CONFIG.Models.GlycemiaReader = "models/scp_1025/insulin_reader/insulin_reader.mdl"
 
 --Sound Path
 SCP_1025_CONFIG.Sounds = {}
@@ -53,6 +54,7 @@ SCP_1025_CONFIG.Sounds.Lease = "" -- TODO : Ajouter un son de baillement
 SCP_1025_CONFIG.Sounds.Dizzy = "" -- TODO : Ajouter un son de vertige
 SCP_1025_CONFIG.Sounds.Eat = "" -- TODO : Ajouter un son de bouffe
 SCP_1025_CONFIG.Sounds.Injection = "" -- TODO : Ajouter un son de injection
+SCP_1025_CONFIG.Sounds.GlycemiaReader = "" -- TODO : Ajouter un son de bip
 SCP_1025_CONFIG.Sounds.Sneezing = {}
 SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
@@ -94,20 +96,25 @@ SCP_1025_CONFIG.Settings.KleineLevinSleepDuration = 15
 -- Diabetes Settings
 SCP_1025_CONFIG.Settings.NormalGlycemia = 1.2
 SCP_1025_CONFIG.Settings.HyperGlycemia = 2
-SCP_1025_CONFIG.Settings.HypoGlycemia = 0.5
+SCP_1025_CONFIG.Settings.HypoGlycemia = 0.6
 SCP_1025_CONFIG.Settings.MaxHyperGlycemia = 5
-SCP_1025_CONFIG.Settings.DelayUpdateGlycemia = 2 -- default 10
-SCP_1025_CONFIG.Settings.IntervalGlycemia = 0.2 -- default 0.011
+SCP_1025_CONFIG.Settings.MaxHypoGlycemia = 0.2
+SCP_1025_CONFIG.Settings.DelayUpdateGlycemia = 10 -- default 10
+SCP_1025_CONFIG.Settings.IntervalGlycemia = 0.011 -- default 0.011
 SCP_1025_CONFIG.Settings.CoefficientIncreaseGlycemia = 2
 SCP_1025_CONFIG.Settings.DelaySymptomGlycemia = 15
 SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia = 10
 SCP_1025_CONFIG.Settings.ProbabilityVomiting = 8
-SCP_1025_CONFIG.Settings.CoefficientSpeedHypo = 0.7
+SCP_1025_CONFIG.Settings.CoefficientSpeedHypo = 0.4
 SCP_1025_CONFIG.Settings.CoefficientSpeedHyper = 0.3
 SCP_1025_CONFIG.Settings.HamburgerGlycemiaValue = 0.7
 SCP_1025_CONFIG.Settings.CokeGlycemiaValue = 1
 SCP_1025_CONFIG.Settings.DonutGlycemiaValue = 0.3
 SCP_1025_CONFIG.Settings.InsulinGlycemiaValue = -1
+SCP_1025_CONFIG.Settings.DelayGlycemiaReader = 1
+SCP_1025_CONFIG.Settings.HighHyperGlycemia = 3.5
+SCP_1025_CONFIG.Settings.HighHypoGlycemia = 0.4
+SCP_1025_CONFIG.Settings.DelayComa = 120
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {
@@ -144,8 +151,8 @@ SCP_1025_CONFIG.DiseaseAvailable = {
         description = "Kleine–Levin syndrome is a rare neurological disorder characterized by persistent episodic hypersomnia accompanied by cognitive and behavioral changes. These changes may include disinhibition (failure to inhibit actions or words), sometimes manifested through hypersexuality, hyperphagia or emotional lability, and other symptoms, such as derealization. Patients generally experience recurrent episodes of the condition for more than a decade, which may return at a later age. Individual episodes generally last more than a week, sometimes lasting for months. The condition greatly affects the personal, professional, and social lives of those with KLS. The severity of symptoms and the course of the syndrome vary between those with KLS. Patients commonly have about 20 episodes over about a decade. Several months may elapse between episodes. The onset of the condition usually follows a viral infection (72% of patients); several different viruses have been observed to trigger KLS. It is generally only diagnosed after similar conditions have been excluded; MRI, CT scans, lumbar puncture, and toxicology tests are used to rule out other possibilities."
     },
     diabetes = {
-        name = "Diabetes Type 2",
-        description = "Type 2 diabetes (T2D), formerly known as adult-onset diabetes, is a form of diabetes mellitus that is characterized by high blood sugar, insulin resistance, and relative lack of insulin. Common symptoms include increased thirst, frequent urination, fatigue and unexplained weight loss. Other symptoms include increased hunger, having a sensation of pins and needles, and sores (wounds) that heal slowly. Symptoms often develop slowly. Long-term complications from high blood sugar include heart disease, stroke, diabetic retinopathy, which can result in blindness, kidney failure, and poor blood flow in the lower-limbs, which may lead to amputations. The sudden onset of hyperosmolar hyperglycemic state may occur; however, ketoacidosis is uncommon. Type 2 diabetes primarily occurs as a result of obesity and lack of exercise. Some people are genetically more at risk than others."
+        name = "Diabetes Type 1",
+        description = "Type 1 diabetes, formerly known as juvenile diabetes, is an autoimmune disease that occurs when pancreatic (beta cells) are destroyed by the body's immune system. In healthy persons, beta cells produce insulin. Insulin is a hormone required by the body to store and convert blood sugar into energy. T1D results in high blood sugar levels in the body prior to treatment. Common symptoms include frequent urination, increased thirst, increased hunger, weight loss, and other complications. Additional symptoms may include blurry vision, tiredness, and slow wound healing (owing to impaired blood flow). While some cases take longer, symptoms usually appear within weeks or a few months. The cause of type 1 diabetes is not completely understood, though there have been recent studies that suggest linkage with HLA-DR3/DR4-DQ8. Further, it is believed to involve a combination of genetic and environmental factors. The underlying mechanism involves an autoimmune destruction of the insulin-producing beta cells in the pancreas. Diabetes is diagnosed by testing the level of sugar or glycated hemoglobin (HbA1C) in the blood. Type 1 diabetes can typically be distinguished from type 2 by testing for the presence of autoantibodies and/or declining levels/absence of C-peptide. There is no known way to prevent type 1 diabetes. Treatment with insulin is required for survival. Insulin therapy is usually given by injection just under the skin but can also be delivered by an insulin pump. A diabetic diet, exercise, and lifestyle modifications are considered cornerstones of management. If left untreated, diabetes can cause many complications. Complications of relatively rapid onset include diabetic ketoacidosis and nonketotic hyperosmolar coma. Long-term complications include heart disease, stroke, kidney failure, foot ulcers, and damage to the eyes. Furthermore, since insulin lowers blood sugar levels, complications may arise from low blood sugar if more insulin is taken than necessary."
     },
     pica = {
         name = "Pica",
