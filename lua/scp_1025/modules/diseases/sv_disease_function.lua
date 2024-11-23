@@ -34,7 +34,7 @@ end
 
 --[[
 * Set the sleep for the player (blink eye effect and freeze).
-* @Player ply The player to set the disease.
+* @Player ply The player to set to sleep.
 --]]
 local function Sleep(ply)
     local eyeAngle = ply:EyeAngles()
@@ -46,6 +46,10 @@ local function Sleep(ply)
     ply.scp_1025_IsSleeping = true
 end
 
+--[[
+* UnSleep a plyer and make him blink like he open eyes.
+* @Player ply The player to unsleep.
+--]]
 local function UnSleep(ply)
     ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
     ply:Freeze(false)
@@ -54,11 +58,22 @@ local function UnSleep(ply)
 end
 
 --[[
+* Chatprint clienside.
+* @Player ply The player to display the message.
+* @string index The index of the message.
+--]]
+local function ChatPrint(ply, index)
+    net.Start(SCP_1025_CONFIG.NetVar.ChatPrint)
+    net.WriteString(index)
+    net.Send(ply)
+end
+
+--[[
 * Call the disease for the player.
 * @string disease The disease
 * @Player ply The player to set the disease.
 --]]
-function scp_1025.CallDisease(disease, ply)
+local function CallDisease(disease, ply)
     if (not ply:Alive()) then return end
     SCP_1025_CONFIG.Diseases[disease](ply)
     hook.Call("SCP1025.CallDisease", nil, ply, disease) --? In case some dev wants to do something on disease call
@@ -113,7 +128,20 @@ function scp_1025.Myopia(ply)
     net.Send(ply)
 end
 
+--[[
+* Apply the rabies for the player (paralized/rage effect with overlay).
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.Rabies(ply)
+    local delay = SCP_1025_CONFIG.Settings.RabiesDelay
+    local interval = SCP_1025_CONFIG.Settings.RabiesInterval
+    ply.scp_1025_Rabies = ply.scp_1025_Rabies or 1
+
+    timer.Create("SCP1025.Rabies." .. ply:EntIndex(), delay + math.random(-interval, interval), 1, function()
+        if (not IsValid(ply)) then return end
+
+        hook.Call("NextPhaseRabies", nil, ply)
+    end)
 end
 
 --[[
@@ -177,11 +205,8 @@ function scp_1025.Asthma(ply)
     end)
 end
 
--- TODO : Entité de bouffe / Insuline
--- TODO : Entité Lecteur glycémie
--- TODO : Gérer si le joueur est trop bas ou trop haut (On les tues ? / Coma / etc)
 --[[
-* Set the diabetes for the player (Player need to take insulin).
+* Set the diabetes for the player (Player need to manage glycemia with food/insulin).
 * @Player ply The player to set the disease.
 --]]
 function scp_1025.Diabetes(ply)
@@ -217,24 +242,16 @@ function scp_1025.Diabetes(ply)
             ply.scp_1025_HyperGlycemia = false
             timer.Remove("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex())
             timer.Remove("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex())
-            timer.Remove("SCP1025.Diabetes.ComaHypoGlycemia." .. ply:EntIndex())
-            timer.Remove("SCP1025.Diabetes.ComaHyperGlycemia." .. ply:EntIndex())
+            timer.Remove("SCP1025.Diabetes.ComaGlycemia." .. ply:EntIndex())
             ply:SetRunSpeed(ply.scp_1025_OldRunSpeed)
             UnSleep(ply)
         end
 
-        if (currentGlycemia <= SCP_1025_CONFIG.Settings.MaxHypoGlycemia and not ply.scp_1025_IsSleeping) then
+        if ((currentGlycemia <= SCP_1025_CONFIG.Settings.MaxHypoGlycemia or currentGlycemia >= SCP_1025_CONFIG.Settings.MaxHyperGlycemia) and not ply.scp_1025_IsSleeping) then
             Sleep(ply)
-            timer.Create("SCP1025.Diabetes.ComaHypoGlycemia." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.DelayComa, 1, function()
+            timer.Create("SCP1025.Diabetes.ComaGlycemia." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.DelayComa, 1, function()
                 if (not IsValid(ply)) then return end
-                if (not ply.scp_1025_HypoGlycemia) then return end
-
-                ply:Kill()
-            end)
-        elseif (currentGlycemia >= SCP_1025_CONFIG.Settings.MaxHyperGlycemia) then
-            timer.Create("SCP1025.Diabetes.ComaHyperGlycemia." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.DelayComa, 1, function()
-                if (not IsValid(ply)) then return end
-                if (not ply.scp_1025_HyperGlycemia) then return end
+                if (not ply.scp_1025_HypoGlycemia or ply.scp_1025_HyperGlycemia) then return end
 
                 ply:Kill()
             end)
@@ -297,16 +314,26 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.KleineLevin.WakeUp." .. ply:EntIndex())
     timer.Remove("SCP1025.Diabetes.HypoGlycemia." .. ply:EntIndex())
     timer.Remove("SCP1025.Diabetes.HyperGlycemia." .. ply:EntIndex())
-    timer.Remove("SCP1025.Diabetes.ComaHypoGlycemia." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.ComaGlycemia." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.Rabies." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.Rabies.Phase1." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.Rabies.Phase2." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.Rabies.Phase3Paralized." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.Rabies.Phase3Paralized." .. ply:EntIndex())
     hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
     hook.Remove("Think", "Think.SCP1025.Diabetes." .. ply:EntIndex())
+    hook.Remove("Think", "Think.SCP1025.Rabies.ParalizedPhaseRabies" .. ply:EntIndex())
     ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
     if (ply.scp_1025_IsSleeping) then ply:Freeze(false) end
     ply.scp_1025_Huntington_Symptom = nil
     ply.scp_1025_Glycemia = nil
-    ply.scp_1025_HypoGlycemia = false
-    ply.scp_1025_HyperGlycemia = false
-    ply.scp_1025_IsSleeping = false
+    ply.scp_1025_HypoGlycemia = nil
+    ply.scp_1025_HyperGlycemia = nil
+    ply.scp_1025_IsSleeping = nil
+    ply.scp_1025_Rabies = nil
+    ply.scp_1025_RabiesParalized = nil
+    ply.scp_1025_OldRunSpeed = nil
+    ply.scp_1025_OldWalkSpeed = nil
 
     net.Start(SCP_1025_CONFIG.NetVar.ClearDisease)
     net.Send(ply)
@@ -343,10 +370,14 @@ end
 --[[
 * Make player vomit.
 * @Player ply The player to set the disease.
+* @string effectName The effect name.
+* @string decal The decal name.
 --]]
-function scp_1025.Vomiting(ply)
+function scp_1025.Vomiting(ply, effectName, decal)
+    effectName = effectName or "BloodImpact"
+    decal = decal or "YellowBlood"
     ply:EmitSound(SCP_1025_CONFIG.Sounds.GastroenteritisVomiting, 75, math.random( 90, 110 ))
-    util.Decal("YellowBlood", ply:GetPos() - Vector(0, 0, 1), ply:GetPos() + Vector(0, 0, 1), ply)
+    util.Decal(decal, ply:GetPos() - Vector(0, 0, 1), ply:GetPos() + Vector(0, 0, 1), ply)
 
     local attachments = ply:GetAttachments()
     local keyMouth = nil
@@ -360,14 +391,14 @@ function scp_1025.Vomiting(ply)
     effectdata:SetOrigin(offsetvec)
     effectdata:SetScale(100)
     effectdata:SetColor(1)
-    util.Effect("BloodImpact", effectdata)
-    util.Effect("BloodImpact", effectdata)
+    util.Effect(effectName, effectdata)
+    util.Effect(effectName, effectdata)
 end
 
 -- NET RECEIVERS
 net.Receive(SCP_1025_CONFIG.NetVar.CallDisease, function(len, ply)
     local disease = net.ReadString()
-    scp_1025.CallDisease(disease, ply)
+    CallDisease(disease, ply)
 end)
 
 -- HOOKS
@@ -487,4 +518,86 @@ hook.Add("OnGlucideConsumption", "OnGlucideConsumption.SCP_1025", function(ply, 
     if (not ply.scp_1025_Glycemia) then return end
 
     ply.scp_1025_Glycemia = math.Clamp(ply.scp_1025_Glycemia + glucide, 0, SCP_1025_CONFIG.Settings.MaxHyperGlycemia)
+end)
+
+hook.Add("NextPhaseRabies", "NextPhaseRabies.SCP_1025", function(ply)
+    if (not IsValid(ply)) then return end
+    if (not ply.scp_1025_Rabies) then return end
+
+    local phase = ply.scp_1025_Rabies
+
+    --? Blur effect
+    if (phase == 1) then
+        timer.Create("SCP1025.Diabetes.Rabies.Phase1." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.RabiesIntervalBlur, 0, function()
+            if (not IsValid(ply)) then return end
+            if (not ply.scp_1025_Rabies) then return end
+
+            scp_1025.CreateBlurEffect(ply, 2, SCP_1025_CONFIG.Sounds.Dizzy)
+        end)
+    --? 80% rage with hydrophobia, else init paralized
+    elseif (phase == 2) then
+        local coefficientDammage = SCP_1025_CONFIG.Settings.CoefficientHydrophobia
+        local randomSymtom = math.random(1, 10)
+        if (randomSymtom <= 2) then
+            ply.scp_1025_RabiesParalized = true
+            ChatPrint(ply, "rabies_phase2")
+        else
+            ChatPrint(ply, "rabies_phase2_hydrophobia")
+            hook.Add("Think", "Think.SCP1025.Rabies.Hydrophobia", function()
+                if (not IsValid(ply)) then return end
+                if (not ply.scp_1025_Rabies) then return end
+
+                if (ply:WaterLevel() > 1) then
+                    ply:TakeDamage(engine.TickInterval() * coefficientDammage, ply, ply)
+                end
+            end)
+            timer.Create("SCP1025.Diabetes.Rabies.Phase2." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.RabiesIntervalBlur, 0, function()
+                if (not IsValid(ply)) then return end
+                if (not ply.scp_1025_Rabies) then return end
+
+                scp_1025.Vomiting(ply, "spit_saliva", "")
+            end)
+        end
+    --? Give fist weapon and chatprint if rage, else paralized the player with time
+    elseif (phase == 3) then
+        net.Start(SCP_1025_CONFIG.NetVar.RabiesPhase3)
+        net.Send(ply)
+        if (ply.scp_1025_RabiesParalized) then
+            ply.scp_1025_OldRunSpeed = ply:GetRunSpeed()
+            ply.scp_1025_OldWalkSpeed = ply:GetWalkSpeed()
+            local repetition = SCP_1025_CONFIG.Settings.RabiesParalizedRepetition
+            local i = 0
+
+            ChatPrint(ply, "rabies_phase3_paralized")
+            timer.Create("SCP1025.Diabetes.Rabies.Phase3Paralized." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.RabiesPhase3Duration, repetition, function()
+                if (not IsValid(ply)) then return end
+                if (not ply.scp_1025_Rabies) then return end
+
+                i = i + 1
+                local newRunSpeed = Lerp(i / repetition, ply.scp_1025_OldRunSpeed, 0)
+                local newWalkSpeed = Lerp(i / repetition, ply.scp_1025_OldWalkSpeed, 0)
+                ply:SetRunSpeed(newRunSpeed)
+                ply:SetWalkSpeed(newWalkSpeed)
+                ChatPrint(ply, "rabies_phase3_symptom_paralized")
+                if (i == repetition) then hook.Call("ParalizedPhaseRabies", nil, ply) end
+            end)
+        else
+            ChatPrint(ply, "rabies_phase3_aggressive")
+            ply:Give("weapon_fists")
+        end
+    end
+
+    ply.scp_1025_Rabies = phase + 1
+    if (ply.scp_1025_Rabies <= 3) then
+        scp_1025.Rabies(ply)
+    end
+end)
+
+hook.Add("ParalizedPhaseRabies", "ParalizedPhaseRabies.SCP1025", function(ply)
+    timer.Create("SCP1025.Diabetes.Rabies.ParalizedPhaseRabies." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.RabiesDelayParalized, 1, function()
+        if (not IsValid(ply)) then return end
+        if (not ply.scp_1025_Rabies) then return end
+
+        ply:Kill()
+    end)
 end)

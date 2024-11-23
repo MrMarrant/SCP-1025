@@ -15,7 +15,6 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 local LANG_EN = {
-    test = "test",
     warningsettings = "Only Super Admins can change these values, all other roles will do nothing.",
     adminaccess = "You need to be Admin or Super Admin to access this menu.",
     durationprops_description = "Time before a props disappears.",
@@ -30,6 +29,13 @@ local LANG_EN = {
     -- CONTEXT MENU
     adddisease = "Add custom disease",
     removedisease = "Remove custom disease",
+
+    -- Rabies Disease
+    rabies_phase2 = "You feel dizzy and confused.",
+    rabies_phase2_hydrophobia = "You feel dizzy and confused, you have a total phobia of water, even hearing someone talk about water terrifies you.",
+    rabies_phase3_aggressive = "You have an irresistible urge to attack the people around you ...",
+    rabies_phase3_paralized = "You feel your body becoming increasingly stiff ...",
+    rabies_phase3_symptom_paralized = "Your body stiffens ...",
 }
 
 scp_1025.AddLanguage("en", LANG_EN)

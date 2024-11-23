@@ -14,6 +14,10 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+local function ChatPrint(ply, index)
+    ply:ChatPrint(scp_1025.GetTranslation(index))
+end
+
 --[[
 * Create a blur effect for the player.
 * @Player ply The player to set the disease.
@@ -21,11 +25,11 @@
 --]]
 function scp_1025.CreateBlurEffect(ply, duration, sfx)
     sfx = sfx or false
-    hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025", function()
+    hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.CreateBlurEffect", function()
         DrawMotionBlur( 0.4, 0.8, 0.01 )
     end )
     timer.Create("SCP1025.BlurEffect." .. ply:EntIndex(), duration, 1, function()
-        hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025")
+        hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.CreateBlurEffect")
     end)
     if (sfx) then ply:EmitSound(SCP_1025_CONFIG.Sounds.Dizzy, 75, math.random( 90, 110 )) end
 end
@@ -88,7 +92,8 @@ function scp_1025.ClearDiseases(ply)
 
     timer.Remove("SCP1025.CommonCold." .. ply:EntIndex())
     timer.Remove("SCP1025.BlurEffect." .. ply:EntIndex())
-    hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025")
+    hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.CreateBlurEffect")
+    hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.RabiesPhase3")
     hook.Remove("Think", "Think.SCP1025.CreateBlinkEye")
     hook.Remove("HUDPaint", "HUDPaint.SCP1025.CreateBlinkEye")
     ply:ConCommand("pp_dof 0")
@@ -107,6 +112,23 @@ end
 function scp_1025.KleineLevin(ply)
     scp_1025.CreateBlinkEye(SCP_1025_CONFIG.Settings.KleineLevinDurationBlink)
     scp_1025.CreateBlurEffect(ply, 2)
+end
+
+function scp_1025.RabiesPhase3(ply)
+    local tab = SCP_1025_CONFIG.Settings.DefaultColorModify
+    local colorToReach = SCP_1025_CONFIG.Settings.ColorColorToReach
+    local fromColor = tab["$pp_colour_colour"]
+    local startTime = CurTime()
+    local duration = SCP_1025_CONFIG.Settings.RabiesPhase3Duration
+
+    hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.RabiesPhase3", function()
+        local currentTime = CurTime()
+        local progress = math.Clamp((currentTime - startTime) / duration, 0, 1)
+
+        tab["$pp_colour_colour"] = Lerp(progress, fromColor, colorToReach)
+        DrawMaterialOverlay("models/props_lab/tank_glass001", 0.01)
+        DrawColorModify(tab)
+    end )
 end
 
 -- NET VARS
@@ -139,4 +161,16 @@ net.Receive(SCP_1025_CONFIG.NetVar.CreateBlurEffect, function()
     local sfx = net.ReadBool()
 
     scp_1025.CreateBlurEffect(ply, duration, sfx)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.RabiesPhase3, function()
+    local ply = LocalPlayer()
+    scp_1025.RabiesPhase3(ply)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.ChatPrint, function()
+    local ply = LocalPlayer()
+    local index = net.ReadString()
+
+    ChatPrint(ply, index)
 end)

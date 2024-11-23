@@ -31,6 +31,8 @@ SCP_1025_CONFIG.NetVar.Myopia = "SCP_1025_CONFIG.NetVar.Myopia"
 SCP_1025_CONFIG.NetVar.KleineLevin = "SCP_1025_CONFIG.NetVar.KleineLevin"
 SCP_1025_CONFIG.NetVar.CreateBlinkEye = "SCP_1025_CONFIG.NetVar.CreateBlinkEye"
 SCP_1025_CONFIG.NetVar.CreateBlurEffect = "SCP_1025_CONFIG.NetVar.CreateBlurEffect"
+SCP_1025_CONFIG.NetVar.RabiesPhase3 = "SCP_1025_CONFIG.NetVar.RabiesPhase3"
+SCP_1025_CONFIG.NetVar.ChatPrint = "SCP_1025_CONFIG.NetVar.ChatPrint"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -115,6 +117,26 @@ SCP_1025_CONFIG.Settings.DelayGlycemiaReader = 1
 SCP_1025_CONFIG.Settings.HighHyperGlycemia = 3.5
 SCP_1025_CONFIG.Settings.HighHypoGlycemia = 0.4
 SCP_1025_CONFIG.Settings.DelayComa = 120
+-- Rabies Settings
+SCP_1025_CONFIG.Settings.RabiesDelay = 120
+SCP_1025_CONFIG.Settings.RabiesInterval = 20
+SCP_1025_CONFIG.Settings.RabiesIntervalBlur = 20
+SCP_1025_CONFIG.Settings.CoefficientHydrophobia = 3
+SCP_1025_CONFIG.Settings.DefaultColorModify = {
+    ["$pp_colour_addr"] = 0,
+    ["$pp_colour_addg"] = 0,
+    ["$pp_colour_addb"] = 0,
+    ["$pp_colour_brightness"] = 0,
+    ["$pp_colour_contrast"] = 0.4,
+    ["$pp_colour_colour"] = 0.5,
+    ["$pp_colour_mulr"] = 0,
+    ["$pp_colour_mulg"] = 0,
+    ["$pp_colour_mulb"] = 0
+}
+SCP_1025_CONFIG.Settings.ColorColorToReach = 3
+SCP_1025_CONFIG.Settings.RabiesPhase3Duration = 60
+SCP_1025_CONFIG.Settings.RabiesParalizedRepetition = 5
+SCP_1025_CONFIG.Settings.RabiesDelayParalized = 80
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {
