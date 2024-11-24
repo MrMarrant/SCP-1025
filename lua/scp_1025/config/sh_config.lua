@@ -33,6 +33,8 @@ SCP_1025_CONFIG.NetVar.CreateBlinkEye = "SCP_1025_CONFIG.NetVar.CreateBlinkEye"
 SCP_1025_CONFIG.NetVar.CreateBlurEffect = "SCP_1025_CONFIG.NetVar.CreateBlurEffect"
 SCP_1025_CONFIG.NetVar.RabiesPhase3 = "SCP_1025_CONFIG.NetVar.RabiesPhase3"
 SCP_1025_CONFIG.NetVar.ChatPrint = "SCP_1025_CONFIG.NetVar.ChatPrint"
+SCP_1025_CONFIG.NetVar.PlaySoundClient = "SCP_1025_CONFIG.NetVar.PlaySoundClient"
+SCP_1025_CONFIG.NetVar.SchizophreniaCrisis = "SCP_1025_CONFIG.NetVar.SchizophreniaCrisis"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -62,6 +64,12 @@ SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[3] = "scp_1025/sneezing/sneeze-03.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[4] = "scp_1025/sneezing/sneeze-04.mp3"
+SCP_1025_CONFIG.Sounds.Hallucinations = {}  -- TODO : Ajouter des bruits de gens qui parle qui n'ont aucun sens
+SCP_1025_CONFIG.Sounds.Hallucinations[1] = ""
+SCP_1025_CONFIG.Sounds.Hallucinations[2] = ""
+SCP_1025_CONFIG.Sounds.Hallucinations[3] = ""
+SCP_1025_CONFIG.Sounds.Hallucinations[4] = ""
+SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis = ""  -- TODO : cris / son d'ambiance creepy
 
 -- JSON Path
 SCP_1025_CONFIG.Paths = {}
@@ -137,6 +145,43 @@ SCP_1025_CONFIG.Settings.ColorColorToReach = 3
 SCP_1025_CONFIG.Settings.RabiesPhase3Duration = 60
 SCP_1025_CONFIG.Settings.RabiesParalizedRepetition = 5
 SCP_1025_CONFIG.Settings.RabiesDelayParalized = 80
+-- Schizophrenia Settings
+SCP_1025_CONFIG.Settings.SchizophreniaDelay = 10
+SCP_1025_CONFIG.Settings.SchizophreniaInterval = 0
+SCP_1025_CONFIG.Settings.SchizophreniaDurationCrisis = 60
+SCP_1025_CONFIG.Settings.DefaultColorCrisis = {
+    ["$pp_colour_addr"] = 0,
+    ["$pp_colour_addg"] = 0,
+    ["$pp_colour_addb"] = 0,
+    ["$pp_colour_brightness"] = 10,
+    ["$pp_colour_contrast"] = 5,
+    ["$pp_colour_colour"] = 10,
+    ["$pp_colour_mulr"] = 0,
+    ["$pp_colour_mulg"] = 0,
+    ["$pp_colour_mulb"] = 0
+}
+SCP_1025_CONFIG.Settings.SchizophreniaMaterialTerturize = Material("pp/texturize/rainbow.png")
+SCP_1025_CONFIG.Settings.SchizophreniaVariance = 0.5
+SCP_1025_CONFIG.Settings.SchizophreniaDelayHalo = 10
+SCP_1025_CONFIG.Settings.SchizophreniaRadiusHalo = 500
+SCP_1025_CONFIG.Settings.SchizophreniaColorHalo = Color( 221, 221, 221)
+SCP_1025_CONFIG.Settings.SchizophreniaModelsPlayer = {
+    "models/Zombie/Fast.mdl",
+    "models/Humans/Charple01.mdl",
+    "models/Humans/Charple02.mdl",
+    "models/Humans/corpse1.mdl",
+    "models/Zombie/Poison.mdl",
+    "models/Humans/Charple04.mdl",
+}
+SCP_1025_CONFIG.Settings.SchizophreniaModelsProps = {
+    "models/Gibs/HGIBS.mdl",
+    "models/props_lab/jar01a.mdl",
+    "models/props_c17/doll01.mdl",
+    "models/props_junk/garbage_plasticbottle002a.mdl",
+    "models/props_junk/garbage_plasticbottle001a.mdl",
+    "models/props_c17/chair_kleiner03a.mdl",
+    "models/props_junk/garbage_glassbottle003a.mdl",
+}
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {

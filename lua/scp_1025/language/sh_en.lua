@@ -36,6 +36,9 @@ local LANG_EN = {
     rabies_phase3_aggressive = "You have an irresistible urge to attack the people around you ...",
     rabies_phase3_paralized = "You feel your body becoming increasingly stiff ...",
     rabies_phase3_symptom_paralized = "Your body stiffens ...",
+
+    -- Schizophrenia Disease
+    schizophrenia_crisis = "You are in a crisis, you see things that are not there, you hear voices that are not there, you feel things that are not ...",
 }
 
 scp_1025.AddLanguage("en", LANG_EN)

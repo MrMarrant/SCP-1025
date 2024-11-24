@@ -33,6 +33,17 @@ for key, value in pairs(SCP_1025_CONFIG.CustomDisease) do
 end
 
 --[[
+* Play a sound for the player.
+* @Player ply The player to set the disease.
+* @string soundName The name of the sound.
+--]]
+local function PlaySoundClient(ply, soundName)
+    net.Start(SCP_1025_CONFIG.NetVar.PlaySoundClient)
+    net.WriteString(soundName)
+    net.Send(ply)
+end
+
+--[[
 * Set the sleep for the player (blink eye effect and freeze).
 * @Player ply The player to set to sleep.
 --]]
@@ -96,7 +107,18 @@ function scp_1025.CommonCold(ply)
     end
 end
 
+-- TODO : Symptomes : Tout les X secondes, hallucinations auditives (Voix racontant du non-sens) avec des vertiges
+-- TODO : Symptomes : Une fois de manière random en plus d'une hallucination auditive, 
+-- TODO : le joueur peut faire une crise qui rajoute des hallucinations visuelles (Objets qui bougent, etc) avec overlay couleur saturée.
+-- TODO : Avec l'ajout d'une aura sur les autres joueurs ou des entités au pif.
 function scp_1025.Schizophrenia(ply)
+    local delay = SCP_1025_CONFIG.Settings.SchizophreniaDelay
+    local interval = SCP_1025_CONFIG.Settings.SchizophreniaInterval
+    timer.Create("SCP1025.Schizophrenia.", delay + math.random(-interval, interval),0, function()
+        if (not IsValid(ply)) then return end
+
+        hook.Call("SchizophreniaSymptom", nil, ply)
+    end)
 end
 
 --[[
@@ -320,6 +342,7 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.Diabetes.Rabies.Phase2." .. ply:EntIndex())
     timer.Remove("SCP1025.Diabetes.Rabies.Phase3Paralized." .. ply:EntIndex())
     timer.Remove("SCP1025.Diabetes.Rabies.Phase3Paralized." .. ply:EntIndex())
+    timer.Remove("SCP1025.Schizophrenia." .. ply:EntIndex())
     hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
     hook.Remove("Think", "Think.SCP1025.Diabetes." .. ply:EntIndex())
     hook.Remove("Think", "Think.SCP1025.Rabies.ParalizedPhaseRabies" .. ply:EntIndex())
@@ -600,4 +623,20 @@ hook.Add("ParalizedPhaseRabies", "ParalizedPhaseRabies.SCP1025", function(ply)
 
         ply:Kill()
     end)
+end)
+
+hook.Add("SchizophreniaSymptom", "SchizophreniaSymptom.SCP1025", function(ply)
+    local randomCrisis = math.random(1, 10)
+
+    scp_1025.CreateBlurEffect(ply, 3, SCP_1025_CONFIG.Sounds.Dizzy)
+    if (randomCrisis >= 1) then
+        -- TODO : Crise le joueur peut faire une crise qui rajoute des hallucinations visuelles (Objets qui bougent, etc) avec overlay couleur saturée.
+        -- TODO : Avec l'ajout d'une aura sur les autres joueurs ou des entités au pif.
+        net.Start(SCP_1025_CONFIG.NetVar.SchizophreniaCrisis)
+        net.Send(ply)
+    else
+        local sounds = SCP_1025_CONFIG.Sounds.Hallucinations
+        PlaySoundClient(ply, sounds[math.random(#sounds)])
+        -- TODO : Faire un effet de texte comme avec SCP-035
+    end
 end)

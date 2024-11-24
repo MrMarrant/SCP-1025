@@ -32,6 +32,8 @@ util.AddNetworkString(SCP_1025_CONFIG.NetVar.CreateBlinkEye)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.CreateBlurEffect)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.RabiesPhase3)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.ChatPrint)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.PlaySoundClient)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.SchizophreniaCrisis)
 
 hook.Add( "PlayerDeath", "SCP1025.PlayerDeath", function(victim)
     scp_1025.CloseMenu(victim)
