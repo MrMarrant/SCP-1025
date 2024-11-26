@@ -39,6 +39,27 @@ local LANG_EN = {
 
     -- Schizophrenia Disease
     schizophrenia_crisis = "You are in a crisis, you see things that are not there, you hear voices that are not there, you feel things that are not ...",
+
+    schizophrenia_talking_voice_v1_1 = "Look at what he's doing again, he thinks he's being discreet.",
+    schizophrenia_talking_voice_v1_2 = "So pathetic, he thinks no one knows. But I know.",
+    schizophrenia_talking_voice_v1_3 = "Why are you still here? Move! Do something for once!",
+    schizophrenia_talking_voice_v1_4 = "No, he can't. He's too weak, as always.",
+
+    schizophrenia_talking_voice_v2_1 = "Stop, stop talking! You're scaring him.",
+    schizophrenia_talking_voice_v2_2 = "We're not scaring him; we're showing him the truth.",
+    schizophrenia_talking_voice_v2_3 = "What truth? You're just making him paranoid.",
+    schizophrenia_talking_voice_v2_4 = "Paranoid? Ha! He's already paranoid. We're just helping him to see it.",
+
+
+    schizophrenia_talking_voice_v3_1 = "Listen to us! We're the only ones who truly understand you.",
+    schizophrenia_talking_voice_v3_2 = "But be careful... they're everywhere. Do you see them? In the shadows, right there.",
+    schizophrenia_talking_voice_v3_3 = "No, they're not real. Ignore them, focus!",
+    schizophrenia_talking_voice_v3_4 = "Focus? Ha! Like that would change anything. Everything's already ruined.",
+
+    schizophrenia_talking_voice_v4_1 = "Look in the mirror. Look closely. Is that you?",
+    schizophrenia_talking_voice_v4_2 = "Don't let them control you. But they're watching... they're listening.",
+    schizophrenia_talking_voice_v4_3 = "No, you're safe here. Breathe. You're strong.",
+    schizophrenia_talking_voice_v4_4 = "Strong? Ha! He's broken. Just a puppet wandering in a world that doesn't want him.",
 }
 
 scp_1025.AddLanguage("en", LANG_EN)

@@ -14,12 +14,39 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+--[[
+* Display a moving text for the player.
+* @Player ply The player.
+--]]
+local function DisplayMovingText(ply)
+    local maxDialog = SCP_1025_CONFIG.SchizophreniaMaxDialog
+    local durationTotalSpeaking = SCP_1025_CONFIG.SchizophreniaDurationSpeaking
+    local duration = durationTotalSpeaking / maxDialog
+    local index = 1
+    local textTodisplay = {}
+    local dialogVersion = math.random(1, maxDialog)
+    for var = 1, 4 do
+        textTodisplay[var] = scp_1025.GetTranslation("schizophrenia_talking_voice_v" .. dialogVersion .. "_" .. var)
+    end
+
+    timer.Create("SCP1025.Schizophrenia.Talking." .. ply:EntIndex(), duration + 1, maxDialog, function()
+        if (not IsValid(ply)) then return end
+        if (not ply:Alive()) then return end
+
+        local movingPanelText = vgui.Create("DPanel.SCP1025.MovingText")
+        movingPanelText:SetInitValue(textTodisplay[index], duration)
+        ply.scp_1025_MovingPanel = movingPanelText
+        if (index == 1) then timer.Adjust("SCP1025.Schizophrenia.Talking." .. ply:EntIndex(), duration) end
+        if (index == maxDialog) then ply:StopSound(SCP_1025_CONFIG.Sounds.TalkingVoice) end
+        index = index + 1
+    end)
+end
+
 local function GetInSphereEnts(pos, radius, ent)
     local entsFound = ents.FindInSphere(pos, radius)
     local tableFilter = {}
     if (ent) then
         for key, value in ipairs(entsFound) do
-            print(value:GetClass())
             if (value != ent and (value:IsPlayer() or value:IsNPC() or value:IsNextBot() or value:GetClass() == "prop_physics")) then
                 table.insert(tableFilter, value)
             end
@@ -77,8 +104,10 @@ end
 * @Player ply The player to set the disease.
 * @string soundName The name of the sound.
 --]]
-local function PlaySoundClient(ply, soundName)
-    ply:EmitSound(soundName, 75, math.random( 90, 110 ))
+local function PlaySoundClient(ply, soundName, loop)
+    loop = loop or false
+    if (loop) then ply:StartLoopingSound(soundName)
+    else ply:EmitSound(soundName, 75, math.random( 90, 110 )) end
 end
 
 --[[
@@ -156,6 +185,7 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.CommonCold." .. ply:EntIndex())
     timer.Remove("SCP1025.BlurEffect." .. ply:EntIndex())
     timer.Remove("SCP1025.SchizophreniaEndCrisis." .. ply:EntIndex())
+    timer.Remove("SCP1025.Schizophrenia.Talking." .. ply:EntIndex())
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.CreateBlurEffect")
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.RabiesPhase3")
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.StartSchizophreniaCrisis")
@@ -165,11 +195,18 @@ function scp_1025.ClearDiseases(ply)
     hook.Remove("Think", "Think.SCP1025.CreateBlinkEye")
     hook.Remove("HUDPaint", "HUDPaint.SCP1025.CreateBlinkEye")
     ply:ConCommand("pp_dof 0")
+    ply:StopSound(SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis)
+    ply:StopSound(SCP_1025_CONFIG.Sounds.TalkingVoice)
+
+    if (ply.scp_1025_MovingPanel) then
+        ply.scp_1025_MovingPanel:Remove()
+    end
 
     if (ply.scp_1025_EntsSchizophrenia) then
         ResetModel(ply.scp_1025_EntsSchizophrenia)
     end
     ply.scp_1025_EntsSchizophrenia = nil
+    ply.scp_1025_MovingPanel = nil
 end
 
 --[[
@@ -186,11 +223,19 @@ function scp_1025.Myopia(ply)
     end)
 end
 
+--[[
+* Create a blink effect and blur for the player.
+* @Player ply The player to set the myopia.
+--]]
 function scp_1025.KleineLevin(ply)
     scp_1025.CreateBlinkEye(SCP_1025_CONFIG.Settings.KleineLevinDurationBlink)
     scp_1025.CreateBlurEffect(ply, 2)
 end
 
+--[[
+* Apply an overlay to the player that progressively changes the color of the screen.
+* @Player ply The player to set the overlay.
+--]]
 function scp_1025.RabiesPhase3(ply)
     local tab = SCP_1025_CONFIG.Settings.DefaultColorModify
     local colorToReach = SCP_1025_CONFIG.Settings.ColorColorToReach
@@ -208,13 +253,19 @@ function scp_1025.RabiesPhase3(ply)
     end )
 end
 
+--[[
+* Apply moving text, special overlay and halo effect to nearby entities.
+* @Player ply The player to set the design.
+--]]
 function scp_1025.SchizophreniaCrisis(ply)
     local startTimeCrisis = CurTime()
     local durationStart = 5
     local colorsa = SCP_1025_CONFIG.Settings.DefaultColorCrisis
+    local totalDuration = SCP_1025_CONFIG.Settings.SchizophreniaDurationCrisis
 
     ply:EmitSound(SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis, 75, math.random( 90, 110 ))
     ChatPrint(ply, "schizophrenia_crisis")
+    scp_1025.CreateBlurEffect(ply, totalDuration, SCP_1025_CONFIG.Sounds.Dizzy)
 
     hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.StartSchizophreniaCrisis", function()
         local currentTime = CurTime()
@@ -222,20 +273,21 @@ function scp_1025.SchizophreniaCrisis(ply)
 
         colorsa["$pp_colour_brightness"] = Lerp(progress, 10, -0.3)
         if (progress >= 1) then
+            DisplayMovingText(ply)
             hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.StartSchizophreniaCrisis")
         end
         DrawColorModify(colorsa)
     end )
 
     local startTime = CurTime()
-    local duration = SCP_1025_CONFIG.Settings.SchizophreniaVariance
+    local variance = SCP_1025_CONFIG.Settings.SchizophreniaVariance
     local from = 5
     local to = 10
     local firstSide = true
 
     hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.SchizophreniaCrisis", function()
         local currentTime = CurTime()
-        local progress = math.Clamp((currentTime - startTime) / duration, 0, 1)
+        local progress = math.Clamp((currentTime - startTime) / variance, 0, 1)
 
         if (firstSide) then
             colorsa["$pp_colour_contrast"] = Lerp(progress, from, to)
@@ -273,9 +325,10 @@ function scp_1025.SchizophreniaCrisis(ply)
         halo.Add( entsFound, color, 1, 1, 2 )
     end)
 
-    timer.Create("SCP1025.SchizophreniaEndCrisis." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.SchizophreniaDurationCrisis, 1, function()
+    timer.Create("SCP1025.SchizophreniaEndCrisis." .. ply:EntIndex(), totalDuration, 1, function()
         hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.SchizophreniaCrisis")
         hook.Remove("PreDrawHalos", "PreDrawHalos.SCP1025.SchizophreniaCrisis")
+        ply:StopSound(SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis)
     end)
 end
 
@@ -326,11 +379,20 @@ end)
 net.Receive(SCP_1025_CONFIG.NetVar.PlaySoundClient, function()
     local ply = LocalPlayer()
     local soundName = net.ReadString()
+    local isLooping = net.ReadBool()
 
-    PlaySoundClient(ply, soundName)
+    PlaySoundClient(ply, soundName, isLooping)
 end)
 
 net.Receive(SCP_1025_CONFIG.NetVar.SchizophreniaCrisis, function()
     local ply = LocalPlayer()
     scp_1025.SchizophreniaCrisis(ply)
+    DisplayMovingText(ply)
+    PlaySoundClient(ply, SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis, false)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.SchizophreniaTalking, function()
+    local ply = LocalPlayer()
+    DisplayMovingText(ply)
+    PlaySoundClient(ply, SCP_1025_CONFIG.Sounds.TalkingVoice, true)
 end)

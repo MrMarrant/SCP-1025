@@ -59,8 +59,6 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
             }
             return true;
         }
-        // Format the text for remove the ' character
-        // TODO : A retest
         function FormatText(func, name, description, index) {
             func = func.replace(/'/g, "\\'");
             name = name.replace(/'/g, "\\'");

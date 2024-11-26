@@ -27,7 +27,6 @@ function ENT:RebuildPhysics()
 	self:PhysWake()
 end
 
--- TODO : Change this
 -- Use specially for the physics sounds
 function ENT:PhysicsCollide( data, physobj )
 	if data.DeltaTime > 0.2 then

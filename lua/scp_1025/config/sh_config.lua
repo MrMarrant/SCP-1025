@@ -14,6 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+-- TODO : Vérifier chaque variable, les commentaires et les valeurs par défauts
 -- NET VAR
 SCP_1025_CONFIG.NetVar = {}
 SCP_1025_CONFIG.NetVar.IndexPage = "SCP_1025_CONFIG.NetVar.IndexPage"
@@ -35,6 +36,7 @@ SCP_1025_CONFIG.NetVar.RabiesPhase3 = "SCP_1025_CONFIG.NetVar.RabiesPhase3"
 SCP_1025_CONFIG.NetVar.ChatPrint = "SCP_1025_CONFIG.NetVar.ChatPrint"
 SCP_1025_CONFIG.NetVar.PlaySoundClient = "SCP_1025_CONFIG.NetVar.PlaySoundClient"
 SCP_1025_CONFIG.NetVar.SchizophreniaCrisis = "SCP_1025_CONFIG.NetVar.SchizophreniaCrisis"
+SCP_1025_CONFIG.NetVar.SchizophreniaTalking = "SCP_1025_CONFIG.NetVar.SchizophreniaTalking"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -52,6 +54,9 @@ SCP_1025_CONFIG.Sounds.CloseBook = "scp_1025/book/close_book.mp3"
 SCP_1025_CONFIG.Sounds.TurnPage = "scp_1025/book/turn_page.mp3"
 SCP_1025_CONFIG.Sounds.TurnIndex = "scp_1025/book/turn_index.mp3"
 SCP_1025_CONFIG.Sounds.DiseaseRead = "scp_1025/disease_read.mp3"
+SCP_1025_CONFIG.Sounds.Breathing = "" -- TODO : Ajouter un son de respiration fatigué
+SCP_1025_CONFIG.Sounds.BreathingRegained = "" -- TODO : Ajouter un son de respiration restoré
+SCP_1025_CONFIG.Sounds.MovementChange = "" -- TODO : Ajouter un son de confusion ??
 SCP_1025_CONFIG.Sounds.GastroenteritisVomiting = "" -- TODO : Ajouter un son de vomissement
 SCP_1025_CONFIG.Sounds.Snoring = "" -- TODO : Ajouter un son de ronflement wav loop
 SCP_1025_CONFIG.Sounds.Lease = "" -- TODO : Ajouter un son de baillement
@@ -64,12 +69,8 @@ SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[3] = "scp_1025/sneezing/sneeze-03.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[4] = "scp_1025/sneezing/sneeze-04.mp3"
-SCP_1025_CONFIG.Sounds.Hallucinations = {}  -- TODO : Ajouter des bruits de gens qui parle qui n'ont aucun sens
-SCP_1025_CONFIG.Sounds.Hallucinations[1] = ""
-SCP_1025_CONFIG.Sounds.Hallucinations[2] = ""
-SCP_1025_CONFIG.Sounds.Hallucinations[3] = ""
-SCP_1025_CONFIG.Sounds.Hallucinations[4] = ""
-SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis = ""  -- TODO : cris / son d'ambiance creepy
+SCP_1025_CONFIG.Sounds.TalkingVoice = "scp_1025/talking_voice.wav"
+SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis = "scp_1025/crisis.mp3"
 
 -- JSON Path
 SCP_1025_CONFIG.Paths = {}
@@ -146,9 +147,9 @@ SCP_1025_CONFIG.Settings.RabiesPhase3Duration = 60
 SCP_1025_CONFIG.Settings.RabiesParalizedRepetition = 5
 SCP_1025_CONFIG.Settings.RabiesDelayParalized = 80
 -- Schizophrenia Settings
-SCP_1025_CONFIG.Settings.SchizophreniaDelay = 10
-SCP_1025_CONFIG.Settings.SchizophreniaInterval = 0
-SCP_1025_CONFIG.Settings.SchizophreniaDurationCrisis = 60
+SCP_1025_CONFIG.Settings.SchizophreniaDelay = 120
+SCP_1025_CONFIG.Settings.SchizophreniaInterval = 20
+SCP_1025_CONFIG.Settings.SchizophreniaDurationCrisis = 35
 SCP_1025_CONFIG.Settings.DefaultColorCrisis = {
     ["$pp_colour_addr"] = 0,
     ["$pp_colour_addg"] = 0,
@@ -182,6 +183,8 @@ SCP_1025_CONFIG.Settings.SchizophreniaModelsProps = {
     "models/props_c17/chair_kleiner03a.mdl",
     "models/props_junk/garbage_glassbottle003a.mdl",
 }
+SCP_1025_CONFIG.SchizophreniaMaxDialog = 4
+SCP_1025_CONFIG.SchizophreniaDurationSpeaking = 30
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {
@@ -221,17 +224,17 @@ SCP_1025_CONFIG.DiseaseAvailable = {
         name = "Diabetes Type 1",
         description = "Type 1 diabetes, formerly known as juvenile diabetes, is an autoimmune disease that occurs when pancreatic (beta cells) are destroyed by the body's immune system. In healthy persons, beta cells produce insulin. Insulin is a hormone required by the body to store and convert blood sugar into energy. T1D results in high blood sugar levels in the body prior to treatment. Common symptoms include frequent urination, increased thirst, increased hunger, weight loss, and other complications. Additional symptoms may include blurry vision, tiredness, and slow wound healing (owing to impaired blood flow). While some cases take longer, symptoms usually appear within weeks or a few months. The cause of type 1 diabetes is not completely understood, though there have been recent studies that suggest linkage with HLA-DR3/DR4-DQ8. Further, it is believed to involve a combination of genetic and environmental factors. The underlying mechanism involves an autoimmune destruction of the insulin-producing beta cells in the pancreas. Diabetes is diagnosed by testing the level of sugar or glycated hemoglobin (HbA1C) in the blood. Type 1 diabetes can typically be distinguished from type 2 by testing for the presence of autoantibodies and/or declining levels/absence of C-peptide. There is no known way to prevent type 1 diabetes. Treatment with insulin is required for survival. Insulin therapy is usually given by injection just under the skin but can also be delivered by an insulin pump. A diabetic diet, exercise, and lifestyle modifications are considered cornerstones of management. If left untreated, diabetes can cause many complications. Complications of relatively rapid onset include diabetic ketoacidosis and nonketotic hyperosmolar coma. Long-term complications include heart disease, stroke, kidney failure, foot ulcers, and damage to the eyes. Furthermore, since insulin lowers blood sugar levels, complications may arise from low blood sugar if more insulin is taken than necessary."
     },
-    pica = {
-        name = "Pica",
-        description = 'Pica is the eating of, or craving to eat, things that are not food. It is classified as an eating disorder but can also be the result of an existing mental disorder. The ingested or craved substance may be biological, natural or manmade. The term was drawn directly from the medieval Latin word for magpie, a bird subject to much folklore regarding its opportunistic feeding behaviors. According to the Diagnostic and Statistical Manual of Mental Disorders, 5th Edition (DSM-5), pica as a standalone eating disorder must persist for more than one month at an age when eating such objects is considered developmentally inappropriate, not part of culturally sanctioned practice, and sufficiently severe to warrant clinical attention. Pica may lead to intoxication in children, which can result in an impairment of both physical and mental development. In addition, it can cause surgical emergencies to address intestinal obstructions, as well as more subtle symptoms such as nutritional deficiencies and parasitosis. Pica has been linked to other mental disorders. Stressors such as psychological trauma, maternal deprivation, family issues, parental neglect, pregnancy, and a disorganized family structure are risk factors for pica.'
-    },
+    -- TODO : Une autre fois, grosse flemme
+    -- pica = {
+    --     name = "Pica",
+    --     description = 'Pica is the eating of, or craving to eat, things that are not food. It is classified as an eating disorder but can also be the result of an existing mental disorder. The ingested or craved substance may be biological, natural or manmade. The term was drawn directly from the medieval Latin word for magpie, a bird subject to much folklore regarding its opportunistic feeding behaviors. According to the Diagnostic and Statistical Manual of Mental Disorders, 5th Edition (DSM-5), pica as a standalone eating disorder must persist for more than one month at an age when eating such objects is considered developmentally inappropriate, not part of culturally sanctioned practice, and sufficiently severe to warrant clinical attention. Pica may lead to intoxication in children, which can result in an impairment of both physical and mental development. In addition, it can cause surgical emergencies to address intestinal obstructions, as well as more subtle symptoms such as nutritional deficiencies and parasitosis. Pica has been linked to other mental disorders. Stressors such as psychological trauma, maternal deprivation, family issues, parental neglect, pregnancy, and a disorganized family structure are risk factors for pica.'
+    -- },
     writer_block = {
         name = "Writer's block",
         description = "Writer's block is a condition, primarily associated with writing, in which an author <b>LOSES HIS FUCKING MIND</b> to produce new work or experiences a creative slowdown. The condition ranges in difficulty from coming up with <b>IDEAS THAT ARE WORTH IT, WHERE IS IT, I CAN FEEL IT, I'M NOT IN THE RIGHT PLACE</b>. Throughout history, writer's block has been a documented problem. Professionals who have struggled with the affliction include authors such <b> ME, MY CREATIONS HAUNT ME, I CAN'T DO THIS ANYMORE</b> and <b> WRITING IS SUPPOSED TO EXPRESS NEW IDEAS, WHAT'S THE POINT OF ALWAYS WRITING JUST TO READ?</b>. Research concerning this issue was popular in the early 1990s, and it is still a topic of discussion among professionals. Writer's block can manifest when a writer <b>I KNOW, I'LL MAKE SURE EVERYONE REMEMBERS IT. BUT FIRST, I NEED AN ENCYCLOPEDIA</b> or when they fear that their work will be ridiculed or criticized. The condition can be temporary or it can persist for years. The causes of writer's block are varied and can include anxiety, <b>FEAR IS THE MOST PERSISTENT MEMORY. EVEN IF IT FADES WITH TIME, IT'S ALWAYS THERE, HIDDEN, IN THE SHADOWS OF OUR MINDS. SO THEY'LL REMEMBER. I AM MY WORKS, AND THEY ARE ME, FOREVER AND EVER</b>. The condition was first described in 1947 by psychoanalyst Edmund Bergler."
     }
 }
 
--- TODO : A vérifier, dès fois toutes les maladies par defauts sont ajoutées
 -- Custom Diseases
 SCP_1025_CONFIG.CustomDisease = util.JSONToTable(file.Read(SCP_1025_CONFIG.Paths.DataJson) or "") or {}
 

@@ -28,3 +28,37 @@ surface.CreateFont( "SCP01025_Book", {
     font = "Lumios Typewriter Old",
     size = 15
 } )
+
+surface.CreateFont( "SCP01025_MT1", {
+    font = "Arial",
+    size = 40,
+} )
+surface.CreateFont( "SCP01025_MT2", {
+    font = "Arial",
+    size = 35,
+} )
+surface.CreateFont( "SCP01025_MT3", {
+    font = "Arial",
+    size = 45,
+} )
+surface.CreateFont( "SCP01025_MT4", {
+    font = "Arial",
+    size = 30,
+} )
+surface.CreateFont( "SCP01025_MT5", {
+    font = "Arial",
+    size = 38,
+} )
+surface.CreateFont( "SCP01025_MT6", {
+    font = "Arial",
+    size = 25,
+} )
+surface.CreateFont( "SCP01025_MTFinal", {
+    font = "Akbar",
+    size = 150,
+} )
+
+SCP_1025_CONFIG.FontEffect = {}
+for var = 1, 6 do
+    SCP_1025_CONFIG.FontEffect[var] = "SCP01025_MT" .. var
+end

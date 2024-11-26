@@ -37,9 +37,11 @@ end
 * @Player ply The player to set the disease.
 * @string soundName The name of the sound.
 --]]
-local function PlaySoundClient(ply, soundName)
+local function PlaySoundClient(ply, soundName, isLooping)
+    isLooping = isLooping or false
     net.Start(SCP_1025_CONFIG.NetVar.PlaySoundClient)
     net.WriteString(soundName)
+    net.WriteBool(isLooping)
     net.Send(ply)
 end
 
@@ -107,16 +109,18 @@ function scp_1025.CommonCold(ply)
     end
 end
 
--- TODO : Symptomes : Tout les X secondes, hallucinations auditives (Voix racontant du non-sens) avec des vertiges
--- TODO : Symptomes : Une fois de manière random en plus d'une hallucination auditive, 
--- TODO : le joueur peut faire une crise qui rajoute des hallucinations visuelles (Objets qui bougent, etc) avec overlay couleur saturée.
--- TODO : Avec l'ajout d'une aura sur les autres joueurs ou des entités au pif.
+-- TODO : Rajouter des objets qui bougent ?
+--[[
+* Set the schizophrenia for the player (hallucinations effect visual/auditive).
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.Schizophrenia(ply)
     local delay = SCP_1025_CONFIG.Settings.SchizophreniaDelay
     local interval = SCP_1025_CONFIG.Settings.SchizophreniaInterval
-    timer.Create("SCP1025.Schizophrenia.", delay + math.random(-interval, interval),0, function()
+    timer.Create("SCP1025.Schizophrenia.", delay + math.random(-interval, interval), 0, function()
         if (not IsValid(ply)) then return end
 
+        timer.Adjust("SCP1025.Schizophrenia.", delay + math.random(-interval, interval))
         hook.Call("SchizophreniaSymptom", nil, ply)
     end)
 end
@@ -196,6 +200,8 @@ function scp_1025.Asthma(ply)
     ply.scp_1025_RecoverTime = nil
     local minRunSpeed = SCP_1025_CONFIG.Settings.MinRunSpeed
     local sprintDuration = SCP_1025_CONFIG.Settings.SprintDuration
+    local breathSound = SCP_1025_CONFIG.Sounds.Breathing
+    local regainedSound = SCP_1025_CONFIG.Sounds.BreathingRegained
 
     hook.Add("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex(), function()
         if (not IsValid(ply)) then return end
@@ -207,7 +213,7 @@ function scp_1025.Asthma(ply)
             if (cur > recoverTime) then
                 ply.scp_1025_RecoverTime = nil
                 ply.scp_1025_SprintTime = 0
-                -- TODO : Ajouter un son de souffle
+                ply:EmitSound(breathSound, 75, math.random( 90, 110 ))
             end
         else
             if ply:KeyDown(IN_SPEED) and ply:IsOnGround() then
@@ -219,7 +225,7 @@ function scp_1025.Asthma(ply)
                     ply.scp_1025_RecoverTime = cur + SCP_1025_CONFIG.Settings.RecoveryDuration
                     ply:SetRunSpeed(minRunSpeed)
                     ply.scp_1025_SprintTime = 0
-                    -- TODO : Ajouter un son de respiration
+                    ply:EmitSound(regainedSound, 75, math.random( 90, 110 ))
                 end
                 ply.scp_1025_IsRunning = false
             end
@@ -319,7 +325,6 @@ end
 -- TODO : BlackScreen -> Impossible d'entendre
 -- TODO : Voix vers le joueur d'une conversation d'un auteur avec son éditeur essayant de le convaincre de publier son encyclopédie.
 -- TODO : A la fin de la conversation, quand l'éditeur accepte de le publier, l'auteur s'adresse au joueur : Pourrions nous continuer cette discussion plus tard ? Je pense que quelqu'un nous écoute, n'est ce pas ?
--- TODO : 
 function scp_1025.WriterBlock(ply)
 end
 
@@ -456,7 +461,7 @@ hook.Add("NextSymptomHuntington", "NextSymptomHuntington.SCP_1025", function(ply
     if (not ply.scp_1025_Huntington) then return end
 
     ply.scp_1025_Huntington_Symptom = true
-    -- TODO : Jouer un son ?
+    ply:EmitSound(SCP_1025_CONFIG.Sounds.MovementChange, 75, math.random( 90, 110 ))
 
     timer.Create("SCP1025.NextSymptomHuntington." .. ply:EntIndex(), SCP_1025_CONFIG.Settings.HuntingtonDuration, 1, function()
         if (not IsValid(ply)) then return end
@@ -628,15 +633,12 @@ end)
 hook.Add("SchizophreniaSymptom", "SchizophreniaSymptom.SCP1025", function(ply)
     local randomCrisis = math.random(1, 10)
 
-    scp_1025.CreateBlurEffect(ply, 3, SCP_1025_CONFIG.Sounds.Dizzy)
-    if (randomCrisis >= 1) then
-        -- TODO : Crise le joueur peut faire une crise qui rajoute des hallucinations visuelles (Objets qui bougent, etc) avec overlay couleur saturée.
-        -- TODO : Avec l'ajout d'une aura sur les autres joueurs ou des entités au pif.
+    if (randomCrisis <= 2) then
         net.Start(SCP_1025_CONFIG.NetVar.SchizophreniaCrisis)
         net.Send(ply)
     else
-        local sounds = SCP_1025_CONFIG.Sounds.Hallucinations
-        PlaySoundClient(ply, sounds[math.random(#sounds)])
-        -- TODO : Faire un effet de texte comme avec SCP-035
+        scp_1025.CreateBlurEffect(ply, 5, SCP_1025_CONFIG.Sounds.Dizzy)
+        net.Start(SCP_1025_CONFIG.NetVar.SchizophreniaTalking)
+        net.Send(ply)
     end
 end)
