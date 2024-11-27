@@ -239,10 +239,10 @@ end
 --]]
 function scp_1025.Diabetes(ply)
     ply.scp_1025_Glycemia = SCP_1025_CONFIG.Settings.NormalGlycemia
-    ply.scp_1025_CoefficientGlycemia = SCP_1025_CONFIG.Settings.CoefficientIncreaseGlycemia
     ply.scp_1025_HypoGlycemia = false
     ply.scp_1025_HyperGlycemia = false
-    local interval = SCP_1025_CONFIG.Settings.IntervalGlycemia
+    local intervalDefault = SCP_1025_CONFIG.Settings.IntervalGlycemia
+    local coefficientGlycemia = SCP_1025_CONFIG.Settings.CoefficientIncreaseGlycemia
     local hypoGlycemia = SCP_1025_CONFIG.Settings.HypoGlycemia
     local hyperGlycemia = SCP_1025_CONFIG.Settings.HyperGlycemia
     local delay = SCP_1025_CONFIG.Settings.DelayUpdateGlycemia
@@ -253,12 +253,18 @@ function scp_1025.Diabetes(ply)
 
         local cur = CurTime()
         local currentGlycemia = ply.scp_1025_Glycemia
+        local intervalCurrent = intervalDefault
+
+        if ply:KeyDown(IN_SPEED) and ply:IsOnGround() then
+            intervalCurrent = intervalDefault * coefficientGlycemia
+        end
 
         if (cur > nextGlycemia) then
-            currentGlycemia = math.Clamp(ply.scp_1025_Glycemia - interval, 0, 6)
+            currentGlycemia = math.Clamp(ply.scp_1025_Glycemia - intervalCurrent, 0, 6)
             ply.scp_1025_Glycemia = currentGlycemia
             nextGlycemia = cur + delay
         end
+
         if (currentGlycemia <= hypoGlycemia and not ply.scp_1025_HypoGlycemia) then
             ply.scp_1025_HypoGlycemia = true
             hook.Call("HypoGlycemiaDiabetes", nil, ply)
@@ -404,7 +410,8 @@ end
 function scp_1025.Vomiting(ply, effectName, decal)
     effectName = effectName or "BloodImpact"
     decal = decal or "YellowBlood"
-    ply:EmitSound(SCP_1025_CONFIG.Sounds.GastroenteritisVomiting, 75, math.random( 90, 110 ))
+    local sounds = SCP_1025_CONFIG.Sounds.GastroenteritisVomiting
+    ply:EmitSound(sounds[math.random(1, #sounds)], 75, math.random( 90, 110 ))
     util.Decal(decal, ply:GetPos() - Vector(0, 0, 1), ply:GetPos() + Vector(0, 0, 1), ply)
 
     local attachments = ply:GetAttachments()
