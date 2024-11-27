@@ -333,6 +333,7 @@ function scp_1025.CloseBook()
     local ply = LocalPlayer()
     scp_1025.DeletePage()
     ply:EmitSound(Sound(SCP_1025_CONFIG.Sounds.CloseBook), 90, math.random( 90, 110 )) --! Ne sera joué que coté client
+    hook.Call("OnCloseBookSCP1025", nil, ply)
 end
 
 --[[

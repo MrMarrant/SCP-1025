@@ -37,6 +37,8 @@ SCP_1025_CONFIG.NetVar.ChatPrint = "SCP_1025_CONFIG.NetVar.ChatPrint"
 SCP_1025_CONFIG.NetVar.PlaySoundClient = "SCP_1025_CONFIG.NetVar.PlaySoundClient"
 SCP_1025_CONFIG.NetVar.SchizophreniaCrisis = "SCP_1025_CONFIG.NetVar.SchizophreniaCrisis"
 SCP_1025_CONFIG.NetVar.SchizophreniaTalking = "SCP_1025_CONFIG.NetVar.SchizophreniaTalking"
+SCP_1025_CONFIG.NetVar.WriterBlock = "SCP_1025_CONFIG.NetVar.WriterBlock"
+SCP_1025_CONFIG.NetVar.EndWriterBlock = "SCP_1025_CONFIG.NetVar.EndWriterBlock"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -46,6 +48,7 @@ SCP_1025_CONFIG.Models.Coke = "models/props_junk/PopCan01a.mdl"
 SCP_1025_CONFIG.Models.Donut = "models/scp_1025/donut/donut.mdl"
 SCP_1025_CONFIG.Models.Insulin = "models/scp_1025/insulin/insulin.mdl"
 SCP_1025_CONFIG.Models.GlycemiaReader = "models/scp_1025/insulin_reader/insulin_reader.mdl"
+SCP_1025_CONFIG.Models.Writer = "models/scp_1025/writer/writer.mdl"
 
 --Sound Path
 SCP_1025_CONFIG.Sounds = {}
@@ -74,6 +77,9 @@ SCP_1025_CONFIG.Sounds.Sneezing[3] = "scp_1025/sneezing/sneeze-03.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[4] = "scp_1025/sneezing/sneeze-04.mp3"
 SCP_1025_CONFIG.Sounds.TalkingVoice = "scp_1025/talking_voice.wav"
 SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis = "scp_1025/crisis.mp3"
+SCP_1025_CONFIG.Sounds.SOMETHINGWRICKED = "scp_1025/wricked.wav"
+SCP_1025_CONFIG.Sounds.NONONONO = "scp_1025/nononono.mp3"
+SCP_1025_CONFIG.Sounds.EPITAPH = ""
 
 -- JSON Path
 SCP_1025_CONFIG.Paths = {}
@@ -188,6 +194,20 @@ SCP_1025_CONFIG.Settings.SchizophreniaModelsProps = {
 }
 SCP_1025_CONFIG.SchizophreniaMaxDialog = 4
 SCP_1025_CONFIG.SchizophreniaDurationSpeaking = 30
+-- Writers Settings
+SCP_1025_CONFIG.Settings.WriterBlockDurationOverlay = 3.65
+SCP_1025_CONFIG.Settings.WriterBlockDurationTalk = 10
+SCP_1025_CONFIG.Settings.WriterBlockColors  = {
+    [ "$pp_colour_addr" ] = 0,
+    [ "$pp_colour_addg" ] = 0,
+    [ "$pp_colour_addb" ] = 0,
+    [ "$pp_colour_brightness" ] = 0,
+    [ "$pp_colour_contrast" ] = 0,
+    [ "$pp_colour_colour" ] = 0,
+    [ "$pp_colour_mulr" ] = 0,
+    [ "$pp_colour_mulg" ] = 0,
+    [ "$pp_colour_mulb" ] = 0
+}
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {

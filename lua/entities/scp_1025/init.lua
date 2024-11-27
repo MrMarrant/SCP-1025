@@ -40,7 +40,10 @@ end
 
 function ENT:Use(ply)
 	if (not IsValid(ply)) then return end
+	if (ply.scp_1025_WriterBlock) then return end
 
 	scp_1025.OpenBook(ply)
 	self:EmitSound(Sound(SCP_1025_CONFIG.Sounds.OpenBook), 90, math.random( 90, 110 ))
 end
+
+-- TODO : Rendre les joueurs autours de l'entité parano de façon aléatoire ?

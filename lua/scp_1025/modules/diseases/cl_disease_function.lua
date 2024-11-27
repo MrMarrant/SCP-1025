@@ -29,14 +29,14 @@ local function DisplayMovingText(ply)
         textTodisplay[var] = scp_1025.GetTranslation("schizophrenia_talking_voice_v" .. dialogVersion .. "_" .. var)
     end
 
-    timer.Create("SCP1025.Schizophrenia.Talking." .. ply:EntIndex(), duration + 1, maxDialog, function()
+    timer.Create("SCP1025.Schizophrenia.Talking", duration + 1, maxDialog, function()
         if (not IsValid(ply)) then return end
         if (not ply:Alive()) then return end
 
         local movingPanelText = vgui.Create("DPanel.SCP1025.MovingText")
         movingPanelText:SetInitValue(textTodisplay[index], duration)
         ply.scp_1025_MovingPanel = movingPanelText
-        if (index == 1) then timer.Adjust("SCP1025.Schizophrenia.Talking." .. ply:EntIndex(), duration) end
+        if (index == 1) then timer.Adjust("SCP1025.Schizophrenia.Talking", duration) end
         if (index == maxDialog) then ply:StopSound(SCP_1025_CONFIG.Sounds.TalkingVoice) end
         index = index + 1
     end)
@@ -120,7 +120,7 @@ function scp_1025.CreateBlurEffect(ply, duration, sfx)
     hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.CreateBlurEffect", function()
         DrawMotionBlur( 0.4, 0.8, 0.01 )
     end )
-    timer.Create("SCP1025.BlurEffect." .. ply:EntIndex(), duration, 1, function()
+    timer.Create("SCP1025.BlurEffect", duration, 1, function()
         hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.CreateBlurEffect")
     end)
     if (sfx) then ply:EmitSound(SCP_1025_CONFIG.Sounds.Dizzy, 75, math.random( 90, 110 )) end
@@ -182,14 +182,16 @@ end
 function scp_1025.ClearDiseases(ply)
     if not (IsValid(ply)) then return end
 
-    timer.Remove("SCP1025.CommonCold." .. ply:EntIndex())
-    timer.Remove("SCP1025.BlurEffect." .. ply:EntIndex())
-    timer.Remove("SCP1025.SchizophreniaEndCrisis." .. ply:EntIndex())
-    timer.Remove("SCP1025.Schizophrenia.Talking." .. ply:EntIndex())
+    timer.Remove("SCP1025.BlurEffect")
+    timer.Remove("SCP1025.SchizophreniaEndCrisis")
+    timer.Remove("SCP1025.Schizophrenia.Talking")
+    timer.Remove("SCP1025.WriterBlock.EPITAPH")
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.CreateBlurEffect")
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.RabiesPhase3")
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.StartSchizophreniaCrisis")
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.SchizophreniaCrisis")
+    hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.DOYOUHEARIT")
+    hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.WriterBlock")
     hook.Remove("PreDrawHalos", "PreDrawHalos.SCP1025.SchizophreniaCrisis")
     hook.Remove("Think", "Think.SCP1025.Myopia")
     hook.Remove("Think", "Think.SCP1025.CreateBlinkEye")
@@ -197,6 +199,9 @@ function scp_1025.ClearDiseases(ply)
     ply:ConCommand("pp_dof 0")
     ply:StopSound(SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis)
     ply:StopSound(SCP_1025_CONFIG.Sounds.TalkingVoice)
+    ply:StopSound(SCP_1025_CONFIG.Sounds.SOMETHINGWRICKED)
+    ply:StopSound(SCP_1025_CONFIG.Sounds.EPITAPH)
+    scp_1025.DeletePage()
 
     if (ply.scp_1025_MovingPanel) then
         ply.scp_1025_MovingPanel:Remove()
@@ -207,6 +212,7 @@ function scp_1025.ClearDiseases(ply)
     end
     ply.scp_1025_EntsSchizophrenia = nil
     ply.scp_1025_MovingPanel = nil
+    ply.scp_1025_WriterBlock = nil
 end
 
 --[[
@@ -325,10 +331,73 @@ function scp_1025.SchizophreniaCrisis(ply)
         halo.Add( entsFound, color, 1, 1, 2 )
     end)
 
-    timer.Create("SCP1025.SchizophreniaEndCrisis." .. ply:EntIndex(), totalDuration, 1, function()
+    timer.Create("SCP1025.SchizophreniaEndCrisis", totalDuration, 1, function()
         hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.SchizophreniaCrisis")
         hook.Remove("PreDrawHalos", "PreDrawHalos.SCP1025.SchizophreniaCrisis")
         ply:StopSound(SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis)
+    end)
+end
+
+-- TODO :
+-- Effet de yeux de poisson progressifs puis fondu au noir soudain + son drop
+-- discussion de l'écrivain qui commence ( effet d'écho)
+-- une entité humanoïde est visible au loin
+-- (Vision de moi sourire malsain, image apparaissent de manière spontanée)
+--[[
+* ARE WE FUN ALREADY?
+* @Player ply YEAAAAAAAA, THIS GUY IS FUNNY
+--]]
+function scp_1025.WriterBlock(ply)
+    ply.scp_1025_WriterBlock = true
+    ply:StartLoopingSound(SCP_1025_CONFIG.Sounds.SOMETHINGWRICKED)
+end
+
+--[[
+* GET THE FUCK FROM HERE
+* @Player ply PARANOIA IS THE NEW DISEASE
+--]]
+function scp_1025.DOYOUHEARIT(ply)
+    local tab = SCP_1025_CONFIG.Settings.WriterBlockColors
+    local ClModel = ClientsideModel(SCP_1025_CONFIG.Models.Writer)
+    local duration = SCP_1025_CONFIG.Settings.WriterBlockDurationTalk
+    local startTime = CurTime()
+    ClModel:SetModelScale(1)
+    ClModel:SetNoDraw(true)
+
+    hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.DOYOUHEARIT", function()
+        if (not IsValid(ply)) then return end
+
+        local posPlayer = ply:GetPos()
+        local currentTime = CurTime()
+        local progress = 1 - math.Clamp((currentTime - startTime) / duration, 0, 1)
+
+        DrawColorModify(tab)
+        DrawSobel(0.1)
+        cam.Start3D()
+            render.SetStencilEnable(true)
+            render.SetStencilWriteMask(1)
+            render.SetStencilTestMask(1)
+            render.SetStencilReferenceValue(1)
+            render.SetStencilFailOperation(STENCIL_KEEP)
+            render.SetStencilZFailOperation(STENCIL_KEEP)
+            render.SuppressEngineLighting(true)
+            render.DepthRange(0, 0.01)
+            ClModel:SetPos(posPlayer + Vector(400 * progress + 10, 0, 55))
+            ClModel:SetAngles(Angle(0, -90, 0))
+            ClModel:DrawModel()
+            render.DepthRange(0, 1)
+            render.MaterialOverride()
+            render.SuppressEngineLighting(false)
+            render.SetStencilEnable(false)
+        cam.End3D()
+    end )
+
+    ply:EmitSound(SCP_1025_CONFIG.Sounds.EPITAPH)
+    timer.Create("SCP1025.WriterBlock.EPITAPH", duration, 1, function() --TODO : Durée du son
+        hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.DOYOUHEARIT")
+        ply.scp_1025_WriterBlock = nil
+        net.Start(SCP_1025_CONFIG.NetVar.EndWriterBlock)
+        net.SendToServer()
     end)
 end
 
@@ -395,4 +464,31 @@ net.Receive(SCP_1025_CONFIG.NetVar.SchizophreniaTalking, function()
     local ply = LocalPlayer()
     DisplayMovingText(ply)
     PlaySoundClient(ply, SCP_1025_CONFIG.Sounds.TalkingVoice, true)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.WriterBlock, function()
+    local ply = LocalPlayer()
+    scp_1025.WriterBlock(ply)
+end)
+
+-- HOOKS
+hook.Add("OnCloseBookSCP1025", "OnCloseBookSCP1025.SCP1025", function(ply)
+    if (ply.scp_1025_WriterBlock) then
+        local refract = 0
+        local startTime = CurTime()
+        local duration = SCP_1025_CONFIG.Settings.WriterBlockDurationOverlay
+        ply:EmitSound(SCP_1025_CONFIG.Sounds.NONONONO, 90)
+        hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.WriterBlock", function()
+            local currentTime = CurTime()
+            local progress = math.Clamp((currentTime - startTime) / duration, 0, 1)
+            refract = Lerp(progress, 0, 1)
+
+            DrawMaterialOverlay("models/props_c17/fisheyelens", refract)
+            if (progress >= 1) then
+                hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.WriterBlock")
+                ply:StopSound(SCP_1025_CONFIG.Sounds.SOMETHINGWRICKED)
+                scp_1025.DOYOUHEARIT(ply)
+            end
+        end )
+    end
 end)

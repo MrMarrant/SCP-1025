@@ -332,6 +332,9 @@ end
 -- TODO : Voix vers le joueur d'une conversation d'un auteur avec son éditeur essayant de le convaincre de publier son encyclopédie.
 -- TODO : A la fin de la conversation, quand l'éditeur accepte de le publier, l'auteur s'adresse au joueur : Pourrions nous continuer cette discussion plus tard ? Je pense que quelqu'un nous écoute, n'est ce pas ?
 function scp_1025.WriterBlock(ply)
+    ply.scp_1025_WriterBlock = true
+    net.Start(SCP_1025_CONFIG.NetVar.WriterBlock)
+    net.Send(ply)
 end
 
 --[[
@@ -368,6 +371,7 @@ function scp_1025.ClearDiseases(ply)
     ply.scp_1025_RabiesParalized = nil
     ply.scp_1025_OldRunSpeed = nil
     ply.scp_1025_OldWalkSpeed = nil
+    ply.scp_1025_WriterBlock = nil
 
     net.Start(SCP_1025_CONFIG.NetVar.ClearDisease)
     net.Send(ply)
@@ -434,6 +438,10 @@ end
 net.Receive(SCP_1025_CONFIG.NetVar.CallDisease, function(len, ply)
     local disease = net.ReadString()
     CallDisease(disease, ply)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.EndWriterBlock, function(len, ply)
+    ply.scp_1025_WriterBlock = nil
 end)
 
 -- HOOKS
@@ -649,3 +657,7 @@ hook.Add("SchizophreniaSymptom", "SchizophreniaSymptom.SCP1025", function(ply)
         net.Send(ply)
     end
 end)
+
+hook.Add( "PlayerCanHearPlayersVoice", "PlayerCanHearPlayersVoice.SCP1025", function( listener, talker )
+    if listener.scp_1025_WriterBlock then return false end
+end )
