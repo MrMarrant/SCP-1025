@@ -34,11 +34,11 @@ SCP_1025_CONFIG.NetVar.CreateBlinkEye = "SCP_1025_CONFIG.NetVar.CreateBlinkEye"
 SCP_1025_CONFIG.NetVar.CreateBlurEffect = "SCP_1025_CONFIG.NetVar.CreateBlurEffect"
 SCP_1025_CONFIG.NetVar.RabiesPhase3 = "SCP_1025_CONFIG.NetVar.RabiesPhase3"
 SCP_1025_CONFIG.NetVar.ChatPrint = "SCP_1025_CONFIG.NetVar.ChatPrint"
-SCP_1025_CONFIG.NetVar.PlaySoundClient = "SCP_1025_CONFIG.NetVar.PlaySoundClient"
 SCP_1025_CONFIG.NetVar.SchizophreniaCrisis = "SCP_1025_CONFIG.NetVar.SchizophreniaCrisis"
 SCP_1025_CONFIG.NetVar.SchizophreniaTalking = "SCP_1025_CONFIG.NetVar.SchizophreniaTalking"
 SCP_1025_CONFIG.NetVar.WriterBlock = "SCP_1025_CONFIG.NetVar.WriterBlock"
 SCP_1025_CONFIG.NetVar.EndWriterBlock = "SCP_1025_CONFIG.NetVar.EndWriterBlock"
+SCP_1025_CONFIG.NetVar.Paranoid = "SCP_1025_CONFIG.NetVar.Paranoid"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -69,7 +69,9 @@ SCP_1025_CONFIG.Sounds.Lease = "scp_1025/yawning.mp3"
 SCP_1025_CONFIG.Sounds.Dizzy = "scp_1025/tinnitus.mp3"
 SCP_1025_CONFIG.Sounds.Eat = "scp_1025/eating.mp3"
 SCP_1025_CONFIG.Sounds.Injection = "scp_1025/inject.mp3"
-SCP_1025_CONFIG.Sounds.GlycemiaReader = "" -- TODO : Ajouter un son de bip
+SCP_1025_CONFIG.Sounds.GlycemiaHigh = "scp_1025/glycemia_reader/high_sg.mp3"
+SCP_1025_CONFIG.Sounds.GlycemiaLow = "scp_1025/glycemia_reader/low_sg.mp3"
+SCP_1025_CONFIG.Sounds.GlycemiaNormal = "scp_1025/glycemia_reader/normal_sg.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing = {}
 SCP_1025_CONFIG.Sounds.Sneezing[1] = "scp_1025/sneezing/sneeze-01.mp3"
 SCP_1025_CONFIG.Sounds.Sneezing[2] = "scp_1025/sneezing/sneeze-02.mp3"
@@ -79,7 +81,7 @@ SCP_1025_CONFIG.Sounds.TalkingVoice = "scp_1025/talking_voice.wav"
 SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis = "scp_1025/crisis.mp3"
 SCP_1025_CONFIG.Sounds.SOMETHINGWRICKED = "scp_1025/wricked.wav"
 SCP_1025_CONFIG.Sounds.NONONONO = "scp_1025/nononono.mp3"
-SCP_1025_CONFIG.Sounds.EPITAPH = ""
+SCP_1025_CONFIG.Sounds.EPITAPH = "scp_1025/publication.mp3"
 
 -- JSON Path
 SCP_1025_CONFIG.Paths = {}
@@ -140,17 +142,6 @@ SCP_1025_CONFIG.Settings.RabiesDelay = 120
 SCP_1025_CONFIG.Settings.RabiesInterval = 20
 SCP_1025_CONFIG.Settings.RabiesIntervalBlur = 20
 SCP_1025_CONFIG.Settings.CoefficientHydrophobia = 3
-SCP_1025_CONFIG.Settings.DefaultColorModify = {
-    ["$pp_colour_addr"] = 0,
-    ["$pp_colour_addg"] = 0,
-    ["$pp_colour_addb"] = 0,
-    ["$pp_colour_brightness"] = 0,
-    ["$pp_colour_contrast"] = 0.4,
-    ["$pp_colour_colour"] = 0.5,
-    ["$pp_colour_mulr"] = 0,
-    ["$pp_colour_mulg"] = 0,
-    ["$pp_colour_mulb"] = 0
-}
 SCP_1025_CONFIG.Settings.ColorColorToReach = 3
 SCP_1025_CONFIG.Settings.RabiesPhase3Duration = 60
 SCP_1025_CONFIG.Settings.RabiesParalizedRepetition = 5
@@ -196,18 +187,39 @@ SCP_1025_CONFIG.SchizophreniaMaxDialog = 4
 SCP_1025_CONFIG.SchizophreniaDurationSpeaking = 30
 -- Writers Settings
 SCP_1025_CONFIG.Settings.WriterBlockDurationOverlay = 3.65
-SCP_1025_CONFIG.Settings.WriterBlockDurationTalk = 10
-SCP_1025_CONFIG.Settings.WriterBlockColors  = {
+SCP_1025_CONFIG.Settings.WriterBlockDurationTalk = 115 -- Durée du son
+SCP_1025_CONFIG.Settings.WriterBlockColors = {
     [ "$pp_colour_addr" ] = 0,
     [ "$pp_colour_addg" ] = 0,
     [ "$pp_colour_addb" ] = 0,
     [ "$pp_colour_brightness" ] = 0,
     [ "$pp_colour_contrast" ] = 0,
-    [ "$pp_colour_colour" ] = 0,
+    [ "$pp_colour_colour" ] = 1,
     [ "$pp_colour_mulr" ] = 0,
     [ "$pp_colour_mulg" ] = 0,
     [ "$pp_colour_mulb" ] = 0
 }
+-- Parano Settings
+SCP_1025_CONFIG.Settings.ParanoidDelay = 60
+SCP_1025_CONFIG.Settings.ParanoidRadius = 500
+SCP_1025_CONFIG.Settings.ParanoidMinChance = 10
+SCP_1025_CONFIG.Settings.ParanoidMaxChance = 50
+SCP_1025_CONFIG.Settings.ParanoidMinPlayers = 3
+SCP_1025_CONFIG.Settings.ParanoidMaxPlayers = 10
+SCP_1025_CONFIG.Settings.ParanoidDelayOverlay = 5
+SCP_1025_CONFIG.Settings.ParanoidToColor = 0.6
+SCP_1025_CONFIG.Settings.ParanoidColors = {
+    [ "$pp_colour_addr" ] = 0,
+    [ "$pp_colour_addg" ] = 0,
+    [ "$pp_colour_addb" ] = 0,
+    [ "$pp_colour_brightness" ] = 0,
+    [ "$pp_colour_contrast" ] = 1,
+    [ "$pp_colour_colour" ] = 1,
+    [ "$pp_colour_mulr" ] = 0,
+    [ "$pp_colour_mulg" ] = 0,
+    [ "$pp_colour_mulb" ] = 0
+}
+
 
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {

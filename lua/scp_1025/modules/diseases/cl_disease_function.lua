@@ -15,6 +15,30 @@
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --[[
+* Create a froze effect clientside.
+* @Player ply The player.
+--]]
+local function FrozeEffect(ply)
+    local frozePlayer = {}
+    for _, playerGet in ipairs(player.GetAll()) do
+        if playerGet != ply and playerGet:Alive() then
+            frozePlayer[playerGet] = {
+                pos = playerGet:GetPos(),
+                ang = playerGet:EyeAngles()
+            }
+        end
+    end
+
+    hook.Add("PostPlayerDraw", "PostPlayerDraw.SCP1025.FrozeEffect", function(drawPly)
+        if frozePlayer[drawPly] then
+            local data = frozePlayer[drawPly]
+            drawPly:SetPos(data.pos)
+            drawPly:SetEyeAngles(data.ang)
+        end
+    end)
+end
+
+--[[
 * Display a moving text for the player.
 * @Player ply The player.
 --]]
@@ -42,6 +66,12 @@ local function DisplayMovingText(ply)
     end)
 end
 
+--[[
+* Get most of entites in a radius define around an entity.
+* @Vector pos The position.
+* @number radius The radius.
+* @Entity ent The entity.
+--]]
 local function GetInSphereEnts(pos, radius, ent)
     local entsFound = ents.FindInSphere(pos, radius)
     local tableFilter = {}
@@ -55,6 +85,11 @@ local function GetInSphereEnts(pos, radius, ent)
     return tableFilter, entsFound
 end
 
+--[[
+* Return a random number of elements from a table.
+* @table tbl The table.
+* @number numElements The number of elements to return in the table.
+--]]
 local function GetRandomElementsFromTable(tbl, numElements)
     if not istable(tbl) or #tbl == 0 then
         return {}
@@ -73,20 +108,29 @@ local function GetRandomElementsFromTable(tbl, numElements)
     return selectedElements
 end
 
+--[[
+* Return a random number of elements from a table.
+* @table tbl The table.
+* @number numElements The number of elements to return in the table.
+--]]
 local function SetRandomModel(tbl)
-    local modelsPlayer = SCP_1025_CONFIG.Settings.SchizophreniaModelsPlayer
-    local modelsProps = SCP_1025_CONFIG.Settings.SchizophreniaModelsProps
+    local modelsPlayer = table.Copy(SCP_1025_CONFIG.Settings.SchizophreniaModelsPlayer)
+    local modelsProps = table.Copy(SCP_1025_CONFIG.Settings.SchizophreniaModelsProps)
 
     for key, value in ipairs(tbl) do
         value.scp_1025_OldModel = value:GetModel()
         if (value:IsPlayer() or value:IsNPC() or value:IsNextBot()) then
-            value:SetModel(modelsPlayer[ math.random( #modelsPlayer ) ])
+            value:SetModel(modelsPlayer[math.random(#modelsPlayer)])
         else
-            value:SetModel(modelsProps[ math.random( #modelsProps ) ])
+            value:SetModel(modelsProps[math.random(#modelsProps)])
         end
     end
 end
 
+--[[
+* Make every ent in the table return to their old model.
+* @table tbl The table.
+--]]
 local function ResetModel(tbl)
     for key, value in ipairs(tbl) do
         if (value.scp_1025_OldModel) then
@@ -95,6 +139,11 @@ local function ResetModel(tbl)
     end
 end
 
+--[[
+* Display a text for the player.
+* @Player ply The player to display the text.
+* @string index The index translation.
+--]]
 local function ChatPrint(ply, index)
     ply:ChatPrint(scp_1025.GetTranslation(index))
 end
@@ -192,7 +241,9 @@ function scp_1025.ClearDiseases(ply)
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.SchizophreniaCrisis")
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.DOYOUHEARIT")
     hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.WriterBlock")
+    hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.Paranoid")
     hook.Remove("PreDrawHalos", "PreDrawHalos.SCP1025.SchizophreniaCrisis")
+    hook.Remove("PostPlayerDraw", "PostPlayerDraw.SCP1025.FrozeEffect")
     hook.Remove("Think", "Think.SCP1025.Myopia")
     hook.Remove("Think", "Think.SCP1025.CreateBlinkEye")
     hook.Remove("HUDPaint", "HUDPaint.SCP1025.CreateBlinkEye")
@@ -213,6 +264,7 @@ function scp_1025.ClearDiseases(ply)
     ply.scp_1025_EntsSchizophrenia = nil
     ply.scp_1025_MovingPanel = nil
     ply.scp_1025_WriterBlock = nil
+    ply.scp_1025_Paranoid = nil
 end
 
 --[[
@@ -243,7 +295,7 @@ end
 * @Player ply The player to set the overlay.
 --]]
 function scp_1025.RabiesPhase3(ply)
-    local tab = SCP_1025_CONFIG.Settings.DefaultColorModify
+    local tab = table.Copy(SCP_1025_CONFIG.Settings.DefaultColorModif)
     local colorToReach = SCP_1025_CONFIG.Settings.ColorColorToReach
     local fromColor = tab["$pp_colour_colour"]
     local startTime = CurTime()
@@ -266,7 +318,7 @@ end
 function scp_1025.SchizophreniaCrisis(ply)
     local startTimeCrisis = CurTime()
     local durationStart = 5
-    local colorsa = SCP_1025_CONFIG.Settings.DefaultColorCrisis
+    local colorsa = table.Copy(SCP_1025_CONFIG.Settings.DefaultColorCrisis)
     local totalDuration = SCP_1025_CONFIG.Settings.SchizophreniaDurationCrisis
 
     ply:EmitSound(SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis, 75, math.random( 90, 110 ))
@@ -338,11 +390,6 @@ function scp_1025.SchizophreniaCrisis(ply)
     end)
 end
 
--- TODO :
--- Effet de yeux de poisson progressifs puis fondu au noir soudain + son drop
--- discussion de l'écrivain qui commence ( effet d'écho)
--- une entité humanoïde est visible au loin
--- (Vision de moi sourire malsain, image apparaissent de manière spontanée)
 --[[
 * ARE WE FUN ALREADY?
 * @Player ply YEAAAAAAAA, THIS GUY IS FUNNY
@@ -357,19 +404,33 @@ end
 * @Player ply PARANOIA IS THE NEW DISEASE
 --]]
 function scp_1025.DOYOUHEARIT(ply)
-    local tab = SCP_1025_CONFIG.Settings.WriterBlockColors
+    local tab = table.Copy(SCP_1025_CONFIG.Settings.WriterBlockColors)
     local ClModel = ClientsideModel(SCP_1025_CONFIG.Models.Writer)
     local duration = SCP_1025_CONFIG.Settings.WriterBlockDurationTalk
+    local durationColor = 40
     local startTime = CurTime()
+    local posAdd = 30
     ClModel:SetModelScale(1)
     ClModel:SetNoDraw(true)
+    FrozeEffect(ply)
 
     hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.DOYOUHEARIT", function()
         if (not IsValid(ply)) then return end
 
         local posPlayer = ply:GetPos()
         local currentTime = CurTime()
-        local progress = 1 - math.Clamp((currentTime - startTime) / duration, 0, 1)
+        local timePassed = currentTime - startTime
+        local progress = 1 - math.Clamp(timePassed / (duration - 5), 0, 1)
+        if (timePassed >= 5) then
+            timeReal = timePassed - 5
+            local progressColor = math.Clamp(timeReal / durationColor, 0, 0.5)
+            tab["$pp_colour_contrast"] = progressColor
+        end
+
+        if (timePassed >= duration - 1) then
+            local timeNewPos = timePassed - (duration - 1)
+            posAdd = Lerp(timeNewPos / 1, 30, 0)
+        end
 
         DrawColorModify(tab)
         DrawSobel(0.1)
@@ -382,7 +443,7 @@ function scp_1025.DOYOUHEARIT(ply)
             render.SetStencilZFailOperation(STENCIL_KEEP)
             render.SuppressEngineLighting(true)
             render.DepthRange(0, 0.01)
-            ClModel:SetPos(posPlayer + Vector(400 * progress + 10, 0, 55))
+            ClModel:SetPos(posPlayer + Vector((400 * progress) + posAdd, 0, 55))
             ClModel:SetAngles(Angle(0, -90, 0))
             ClModel:DrawModel()
             render.DepthRange(0, 1)
@@ -393,12 +454,38 @@ function scp_1025.DOYOUHEARIT(ply)
     end )
 
     ply:EmitSound(SCP_1025_CONFIG.Sounds.EPITAPH)
-    timer.Create("SCP1025.WriterBlock.EPITAPH", duration, 1, function() --TODO : Durée du son
+
+    timer.Create("SCP1025.WriterBlock.EPITAPH", duration, 1, function()
         hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.DOYOUHEARIT")
+        hook.Remove("PostPlayerDraw", "PostPlayerDraw.SCP1025.FrozeEffect")
         ply.scp_1025_WriterBlock = nil
         net.Start(SCP_1025_CONFIG.NetVar.EndWriterBlock)
         net.SendToServer()
     end)
+end
+
+--[[
+* Create a paranoid effect for the player.
+* @Player ply The player to set the disease.
+--]]
+function scp_1025.Paranoid(ply)
+    scp_1025.CreateBlurEffect(ply, 4)
+    ChatPrint(ply, "paranoid")
+
+    local startTime = CurTime()
+    local tab = table.Copy(SCP_1025_CONFIG.Settings.ParanoidColors)
+    local delay = SCP_1025_CONFIG.Settings.ParanoidDelayOverlay
+    local to = SCP_1025_CONFIG.Settings.ParanoidToColor
+
+    hook.Add("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.Paranoid", function()
+        local currentTime = CurTime()
+        local timePassed = currentTime - startTime
+        local progress = math.Clamp(timePassed / delay, 0, 1)
+
+        tab["$pp_colour_colour"] = Lerp(progress, 1, to)
+
+        DrawColorModify(tab)
+    end )
 end
 
 -- NET VARS
@@ -445,14 +532,6 @@ net.Receive(SCP_1025_CONFIG.NetVar.ChatPrint, function()
     ChatPrint(ply, index)
 end)
 
-net.Receive(SCP_1025_CONFIG.NetVar.PlaySoundClient, function()
-    local ply = LocalPlayer()
-    local soundName = net.ReadString()
-    local isLooping = net.ReadBool()
-
-    PlaySoundClient(ply, soundName, isLooping)
-end)
-
 net.Receive(SCP_1025_CONFIG.NetVar.SchizophreniaCrisis, function()
     local ply = LocalPlayer()
     scp_1025.SchizophreniaCrisis(ply)
@@ -469,6 +548,12 @@ end)
 net.Receive(SCP_1025_CONFIG.NetVar.WriterBlock, function()
     local ply = LocalPlayer()
     scp_1025.WriterBlock(ply)
+end)
+
+net.Receive(SCP_1025_CONFIG.NetVar.Paranoid, function()
+    local ply = LocalPlayer()
+
+    scp_1025.Paranoid(ply)
 end)
 
 -- HOOKS

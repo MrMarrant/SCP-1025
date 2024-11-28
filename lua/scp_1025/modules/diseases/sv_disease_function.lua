@@ -33,19 +33,6 @@ for key, value in pairs(SCP_1025_CONFIG.CustomDisease) do
 end
 
 --[[
-* Play a sound for the player.
-* @Player ply The player to set the disease.
-* @string soundName The name of the sound.
---]]
-local function PlaySoundClient(ply, soundName, isLooping)
-    isLooping = isLooping or false
-    net.Start(SCP_1025_CONFIG.NetVar.PlaySoundClient)
-    net.WriteString(soundName)
-    net.WriteBool(isLooping)
-    net.Send(ply)
-end
-
---[[
 * Set the sleep for the player (blink eye effect and freeze).
 * @Player ply The player to set to sleep.
 --]]
@@ -90,6 +77,44 @@ local function CallDisease(disease, ply)
     if (not ply:Alive()) then return end
     SCP_1025_CONFIG.Diseases[disease](ply)
     hook.Call("SCP1025.CallDisease", nil, ply, disease) --? In case some dev wants to do something on disease call
+end
+
+--[[
+* Get the farthest entity from a list of entities.
+* @table tbl The list of entities.
+* @Entity entRef The entity to compare the distance.
+--]]
+function scp_1025.GetFarthestEnt(tbl, entRef)
+    local farthestPlayer = nil
+    local maxDistance = 0
+
+    for _, ent in pairs(tbl) do
+        if IsValid(ent) then
+            local distance = entRef:GetPos():Distance(ent:GetPos())
+            if distance > maxDistance then
+                maxDistance = distance
+                farthestPlayer = ent
+            end
+        end
+    end
+
+    return farthestPlayer, maxDistance
+end
+
+--[[
+* Get every players in a sphere.
+* @Vector pos The position of the sphere.
+* @number radius The radius of the sphere.
+--]]
+function scp_1025.GetInSpherePlayers(pos, radius)
+    local entsFound = ents.FindInSphere(pos, radius)
+    local tableFilter = {}
+        for key, value in ipairs(entsFound) do
+            if (value:IsPlayer()) then
+                tableFilter[value:EntIndex()] = value
+            end
+        end
+    return tableFilter, entsFound
 end
 
 --[[
@@ -328,9 +353,10 @@ end
 function scp_1025.Pica(ply)
 end
 
--- TODO : BlackScreen -> Impossible d'entendre
--- TODO : Voix vers le joueur d'une conversation d'un auteur avec son éditeur essayant de le convaincre de publier son encyclopédie.
--- TODO : A la fin de la conversation, quand l'éditeur accepte de le publier, l'auteur s'adresse au joueur : Pourrions nous continuer cette discussion plus tard ? Je pense que quelqu'un nous écoute, n'est ce pas ?
+--[[
+* Set the writer block for the player (SoundPlay & cinematic).
+* @Player ply The player to set the disease.
+--]]
 function scp_1025.WriterBlock(ply)
     ply.scp_1025_WriterBlock = true
     net.Start(SCP_1025_CONFIG.NetVar.WriterBlock)
@@ -372,6 +398,7 @@ function scp_1025.ClearDiseases(ply)
     ply.scp_1025_OldRunSpeed = nil
     ply.scp_1025_OldWalkSpeed = nil
     ply.scp_1025_WriterBlock = nil
+    ply.scp_1025_Paranoid = nil
 
     net.Start(SCP_1025_CONFIG.NetVar.ClearDisease)
     net.Send(ply)

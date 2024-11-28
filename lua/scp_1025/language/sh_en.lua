@@ -17,7 +17,6 @@
 local LANG_EN = {
     warningsettings = "Only Super Admins can change these values, all other roles will do nothing.",
     adminaccess = "You need to be Admin or Super Admin to access this menu.",
-    durationprops_description = "Time before a props disappears.",
     fillall = "Please fill all the fields.",
     funcdontexist = "The function call doesn't exist.",
     needoneparam = "The function call needs to have only one parameter.",
@@ -59,7 +58,10 @@ local LANG_EN = {
     schizophrenia_talking_voice_v4_1 = "Look in the mirror. Look closely. Is that you?",
     schizophrenia_talking_voice_v4_2 = "Don't let them control you. But they're watching... they're listening.",
     schizophrenia_talking_voice_v4_3 = "No, you're safe here. Breathe. You're strong.",
-    schizophrenia_talking_voice_v4_4 = "Strong? Ha! He's broken. Just a puppet wandering in a world that doesn't want him.",
+    schizophrenia_talking_voice_v4_4 = "He's broken. Just a puppet wandering in a world that doesn't want him.",
+
+    -- Paranoid
+    paranoid = "You get the impression that anyone could have been infected by SCP-1025. Everyone is a suspect ...",
 }
 
 scp_1025.AddLanguage("en", LANG_EN)

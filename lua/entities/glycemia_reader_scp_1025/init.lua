@@ -44,8 +44,16 @@ function ENT:Use(ply)
 	local cur = CurTime()
 	if (self.Delay > cur ) then return end
 
-	local glycemia = ply.scp_1025_Glycemia or "1.2"
+	local glycemia = ply.scp_1025_Glycemia or 1.2
+	local sound = ""
+	if (glycemia >= SCP_1025_CONFIG.Settings.HyperGlycemia) then
+		sound = SCP_1025_CONFIG.Sounds.GlycemiaHigh
+	elseif (glycemia <= SCP_1025_CONFIG.Settings.HypoGlycemia) then
+		sound = SCP_1025_CONFIG.Sounds.GlycemiaLow
+	else
+		sound = SCP_1025_CONFIG.Sounds.GlycemiaNormal
+	end
 	self.Delay = cur + SCP_1025_CONFIG.Settings.DelayGlycemiaReader
 	ply:ChatPrint(glycemia .. " g/L")
-	ply:EmitSound(SCP_1025_CONFIG.Sounds.GlycemiaReader, 75, math.random( 90, 110 ))
+	ply:EmitSound(sound, 40)
 end
