@@ -62,6 +62,9 @@ local LANG_FR = {
 
     -- Paranoïaque
     paranoid = "Vous avez l'impression que n'importe qui a pu être infecté par SCP-1025. Tout le monde est suspect...",
+
+    error_form = "Erreur de formulaire",
+    ok_form = "OK",
 }
 
 scp_1025.AddLanguage("fr", LANG_FR)

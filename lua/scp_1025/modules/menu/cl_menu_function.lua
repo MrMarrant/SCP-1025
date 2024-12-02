@@ -189,7 +189,7 @@ end
 * @string index The index of the disease.
 --]]
 function scp_1025.RemoveDisease(index)
-    if (index == "") then 
+    if (index == "") then
         scp_1025.AlertChat("indexempty")
         return
     end
@@ -223,10 +223,28 @@ end
 * @string message The message to display.
 * @number|nil notiftype The type notification icon to display.
 --]]
-function scp_1025.AlertChat(message, notiftype)
-    notiftype = notiftype or NOTIFY_ERROR
-    notification.AddLegacy(scp_1025.GetTranslation(message), notiftype, 4)
-    -- LocalPlayer():ChatPrint(scp_1025.GetTranslation(mesage))
+function scp_1025.AlertChat(message)
+    local DFrame = vgui.Create("DFrame")
+    DFrame:Center()
+    DFrame:SetSize(300, 200)
+    DFrame:SetTitle(scp_1025.GetTranslation("error_form"))
+    DFrame:MakePopup()
+    DFrame:SetDraggable(false)
+    DFrame:ShowCloseButton(false)
+    local w, h = DFrame:GetSize()
+
+    local richtext = vgui.Create("RichText", DFrame)
+    richtext:Dock(TOP)
+    richtext:InsertColorChange( 255, 0, 0, 255 )
+    richtext:AppendText(scp_1025.GetTranslation(message))
+
+    local DermaButton = vgui.Create("DButton", DFrame)
+    DermaButton:SetText(scp_1025.GetTranslation("ok_form"))
+    DermaButton:SetPos(w * 0.1, h * 0.5)
+    DermaButton:SetSize(250, 30)
+    DermaButton.DoClick = function()
+        DFrame:Remove()
+    end
 end
 
 -- NET RECEIVE
@@ -242,7 +260,7 @@ end)
 
 net.Receive(SCP_1025_CONFIG.NetVar.ConfirmMenu, function()
     local message = net.ReadString()
-    scp_1025.AlertChat(message, NOTIFY_GENERIC)
+    scp_1025.AlertChat(message)
     scp_1025.DeletePage()
 end)
 

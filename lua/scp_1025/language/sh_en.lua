@@ -42,7 +42,7 @@ local LANG_EN = {
     schizophrenia_talking_voice_v1_1 = "Look at what he's doing again, he thinks he's being discreet.",
     schizophrenia_talking_voice_v1_2 = "So pathetic, he thinks no one knows. But I know.",
     schizophrenia_talking_voice_v1_3 = "Why are you still here? Move! Do something for once!",
-    schizophrenia_talking_voice_v1_4 = "No, he can't. He's too weak, as always.",
+    schizophrenia_talking_voice_v1_4 = "He can't. He's too weak, as always.",
 
     schizophrenia_talking_voice_v2_1 = "Stop, stop talking! You're scaring him.",
     schizophrenia_talking_voice_v2_2 = "We're not scaring him; we're showing him the truth.",
@@ -62,6 +62,9 @@ local LANG_EN = {
 
     -- Paranoid
     paranoid = "You get the impression that anyone could have been infected by SCP-1025. Everyone is a suspect ...",
+
+    error_form = "Error Form",
+    ok_form = "OK",
 }
 
 scp_1025.AddLanguage("en", LANG_EN)
