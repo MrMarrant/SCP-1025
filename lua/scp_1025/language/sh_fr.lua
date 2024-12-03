@@ -29,6 +29,9 @@ local LANG_FR = {
     adddisease = "Ajouter une maladie personnalisée",
     removedisease = "Supprimer une maladie personnalisée",
 
+    -- Asthma
+    asthma = "Vous ressentez une tension dans la poitrine, vous avez du mal à respirer, vous devez prendre votre inhalateur rapidement ...",
+
     -- Rabies Disease
     rabies_phase2 = "Vous vous sentez étourdi et confus",
     rabies_phase2_hydrophobia = "Vous vous sentez étourdi et confus, vous avez une phobie totale de l'eau, le simple fait d'entendre quelqu'un parler d'eau vous terrifie",
@@ -63,6 +66,7 @@ local LANG_FR = {
     -- Paranoïaque
     paranoid = "Vous avez l'impression que n'importe qui a pu être infecté par SCP-1025. Tout le monde est suspect...",
 
+    -- Form
     error_form = "Erreur de formulaire",
     ok_form = "OK",
 }

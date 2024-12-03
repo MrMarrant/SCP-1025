@@ -29,6 +29,9 @@ local LANG_EN = {
     adddisease = "Add custom disease",
     removedisease = "Remove custom disease",
 
+    -- Asthma
+    asthma = "You feel a tightness in your chest, you have trouble breathing, you need to take your inhaler quick ...",
+
     -- Rabies Disease
     rabies_phase2 = "You feel dizzy and confused.",
     rabies_phase2_hydrophobia = "You feel dizzy and confused, you have a total phobia of water, even hearing someone talk about water terrifies you.",
@@ -63,6 +66,7 @@ local LANG_EN = {
     -- Paranoid
     paranoid = "You get the impression that anyone could have been infected by SCP-1025. Everyone is a suspect ...",
 
+    -- Form
     error_form = "Error Form",
     ok_form = "OK",
 }

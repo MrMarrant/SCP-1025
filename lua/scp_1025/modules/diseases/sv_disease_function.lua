@@ -218,7 +218,6 @@ function scp_1025.Huntington(ply)
     end )
 end
 
--- TODO : Ajouter une crise d'asthme ?
 --[[
 * Set the asthma for the player (sprint slowdown effect).
 * @Player ply The player to set the disease.
@@ -261,6 +260,22 @@ function scp_1025.Asthma(ply)
                 ply.scp_1025_IsRunning = false
             end
         end
+    end)
+    scp_1025.AsthmaCrisis(ply)
+end
+
+--[[
+* Set the asthma for the player (sprint slowdown effect).
+* @Player ply The player to set the disease.
+--]]
+function scp_1025.AsthmaCrisis(ply)
+    local crisisDelay = SCP_1025_CONFIG.Settings.AsthmaCrisisDelay
+    local crisisInterval = SCP_1025_CONFIG.Settings.AsthmaCrisisInterval
+
+    timer.Create("SCP1025.AsthmaCrisis." .. ply:EntIndex(), math.random(crisisDelay - crisisInterval, crisisDelay + crisisInterval), 1, function()
+        if (not IsValid(ply)) then return end
+
+        hook.Call("AsthmaCrisis", nil, ply)
     end)
 end
 
@@ -392,9 +407,12 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.Diabetes.Rabies.Phase3Paralized." .. ply:EntIndex())
     timer.Remove("SCP1025.Schizophrenia." .. ply:EntIndex())
     timer.Remove("SCP1025.Diabetes.Rabies.ParalizedPhaseRabies." .. ply:EntIndex())
+    timer.Remove("SCP1025.AsthmaCrisis." .. ply:EntIndex())
+    timer.Remove("SCP1025.AsthmaCrisisPanic." .. ply:EntIndex())
     hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
     hook.Remove("Think", "Think.SCP1025.Diabetes." .. ply:EntIndex())
     ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
+    ply:StopSound(SCP_1025_CONFIG.Sounds.AsthmaCrisis)
     if (ply.scp_1025_IsSleeping) then ply:Freeze(false) end
     ply.scp_1025_Huntington_Symptom = nil
     ply.scp_1025_Glycemia = nil
@@ -407,6 +425,7 @@ function scp_1025.ClearDiseases(ply)
     ply.scp_1025_OldWalkSpeed = nil
     ply.scp_1025_WriterBlock = nil
     ply.scp_1025_Paranoid = nil
+    ply.scp_1025_AsthmaCrisis = nil
 
     net.Start(SCP_1025_CONFIG.NetVar.ClearDisease)
     net.Send(ply)
@@ -437,6 +456,11 @@ function scp_1025.CreateBlurEffect(ply, duration, sfx)
     net.Start(SCP_1025_CONFIG.NetVar.CreateBlurEffect)
     net.WriteFloat(duration)
     net.WriteBool(sfx)
+    net.Send(ply)
+end
+
+function scp_1025.ClearBlurEffect(ply)
+    net.Start(SCP_1025_CONFIG.NetVar.ClearBlurEffect)
     net.Send(ply)
 end
 
@@ -696,3 +720,19 @@ end)
 hook.Add( "PlayerCanHearPlayersVoice", "PlayerCanHearPlayersVoice.SCP1025", function( listener, talker )
     if listener.scp_1025_WriterBlock then return false end
 end )
+
+hook.Add("AsthmaCrisis", "AsthmaCrisis.SCP1025", function(ply)
+    if (not IsValid(ply)) then return end
+
+    local delayCrisis = SCP_1025_CONFIG.Settings.AsthmaCrisisPanic
+    ply:EmitSound(SCP_1025_CONFIG.Sounds.AsthmaCrisis)
+    ply.scp_1025_AsthmaCrisis = true
+    scp_1025.CreateBlurEffect(ply, delayCrisis)
+    ChatPrint(ply, "asthma")
+
+    timer.Create("SCP1025.AsthmaCrisisPanic." .. ply:EntIndex(), delayCrisis, 1, function()
+        if (not IsValid(ply)) then return end
+
+        ply:Kill()
+    end)
+end)

@@ -38,6 +38,7 @@ SCP_1025_CONFIG.NetVar.SchizophreniaTalking = "SCP_1025_CONFIG.NetVar.Schizophre
 SCP_1025_CONFIG.NetVar.WriterBlock = "SCP_1025_CONFIG.NetVar.WriterBlock"
 SCP_1025_CONFIG.NetVar.EndWriterBlock = "SCP_1025_CONFIG.NetVar.EndWriterBlock"
 SCP_1025_CONFIG.NetVar.Paranoid = "SCP_1025_CONFIG.NetVar.Paranoid"
+SCP_1025_CONFIG.NetVar.ClearBlurEffect = "SCP_1025_CONFIG.NetVar.ClearBlurEffect"
 
 -- Model Path
 SCP_1025_CONFIG.Models = {}
@@ -48,6 +49,7 @@ SCP_1025_CONFIG.Models.Donut = "models/scp_1025/donut/donut.mdl"
 SCP_1025_CONFIG.Models.Insulin = "models/scp_1025/insulin/insulin.mdl"
 SCP_1025_CONFIG.Models.GlycemiaReader = "models/scp_1025/insulin_reader/insulin_reader.mdl"
 SCP_1025_CONFIG.Models.Writer = "models/scp_1025/writer/writer.mdl"
+SCP_1025_CONFIG.Models.Inhalator = "models/scp_1025/inhaler/inhaler.mdl"
 
 --Sound Path
 SCP_1025_CONFIG.Sounds = {}
@@ -81,6 +83,8 @@ SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis = "scp_1025/crisis.mp3"
 SCP_1025_CONFIG.Sounds.SOMETHINGWRICKED = "scp_1025/wricked.wav"
 SCP_1025_CONFIG.Sounds.NONONONO = "scp_1025/nononono.mp3"
 SCP_1025_CONFIG.Sounds.EPITAPH = "scp_1025/publication.mp3"
+SCP_1025_CONFIG.Sounds.AsthmaCrisis = "scp_1025/asthma_crisis.mp3"
+SCP_1025_CONFIG.Sounds.InhalatorUsed = "scp_1025/inhaler_used.mp3"
 
 -- JSON Path
 SCP_1025_CONFIG.Paths = {}
@@ -97,6 +101,9 @@ SCP_1025_CONFIG.Settings.CommonColdRepetitions = 10
 SCP_1025_CONFIG.Settings.SprintDuration = 3
 SCP_1025_CONFIG.Settings.RecoveryDuration = 5
 SCP_1025_CONFIG.Settings.MinRunSpeed = 50
+SCP_1025_CONFIG.Settings.AsthmaCrisisDelay = 300
+SCP_1025_CONFIG.Settings.AsthmaCrisisInterval = 60
+SCP_1025_CONFIG.Settings.AsthmaCrisisPanic = 30
 -- Huntington Settings
 SCP_1025_CONFIG.Settings.HuntingtonDuration = 2
 SCP_1025_CONFIG.Settings.HuntingtonDelay = 60

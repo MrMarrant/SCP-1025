@@ -37,6 +37,7 @@ util.AddNetworkString(SCP_1025_CONFIG.NetVar.SchizophreniaTalking)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.WriterBlock)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.EndWriterBlock)
 util.AddNetworkString(SCP_1025_CONFIG.NetVar.Paranoid)
+util.AddNetworkString(SCP_1025_CONFIG.NetVar.ClearBlurEffect)
 
 hook.Add( "PlayerDeath", "SCP1025.PlayerDeath", function(victim)
     scp_1025.CloseMenu(victim)

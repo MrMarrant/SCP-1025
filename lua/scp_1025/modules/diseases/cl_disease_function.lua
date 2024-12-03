@@ -560,6 +560,11 @@ net.Receive(SCP_1025_CONFIG.NetVar.Paranoid, function()
     scp_1025.Paranoid(ply)
 end)
 
+net.Receive(SCP_1025_CONFIG.NetVar.ClearBlurEffect, function(len, ply)
+    timer.Remove("SCP1025.BlurEffect")
+    hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.CreateBlurEffect")
+end)
+
 -- HOOKS
 hook.Add("OnCloseBookSCP1025", "OnCloseBookSCP1025.SCP1025", function(ply)
     if (ply.scp_1025_WriterBlock) then
