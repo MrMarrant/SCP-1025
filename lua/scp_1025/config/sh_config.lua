@@ -145,6 +145,17 @@ SCP_1025_CONFIG.Settings.ColorColorToReach = 3
 SCP_1025_CONFIG.Settings.RabiesPhase3Duration = 60
 SCP_1025_CONFIG.Settings.RabiesParalizedRepetition = 5
 SCP_1025_CONFIG.Settings.RabiesDelayParalized = 80
+SCP_1025_CONFIG.Settings.DefaultColorModify = {
+    ["$pp_colour_addr"] = 0,
+    ["$pp_colour_addg"] = 0,
+    ["$pp_colour_addb"] = 0,
+    ["$pp_colour_brightness"] = 0,
+    ["$pp_colour_contrast"] = 0.4,
+    ["$pp_colour_colour"] = 0.5,
+    ["$pp_colour_mulr"] = 0,
+    ["$pp_colour_mulg"] = 0,
+    ["$pp_colour_mulb"] = 0
+}
 -- Schizophrenia Settings
 SCP_1025_CONFIG.Settings.SchizophreniaDelay = 120
 SCP_1025_CONFIG.Settings.SchizophreniaInterval = 20

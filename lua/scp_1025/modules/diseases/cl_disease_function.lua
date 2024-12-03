@@ -182,6 +182,10 @@ end
 * @boolean wasClose If the blink eye effect is close.
 --]]
 function scp_1025.CreateBlinkEye(duration, oneSide, wasClose)
+    --? Clear all previous blink eye effect.
+    hook.Remove("Think", "Think.SCP1025.CreateBlinkEye")
+    hook.Remove("HUDPaint", "HUDPaint.SCP1025.CreateBlinkEye")
+
     local w = SCP_1025_CONFIG.ScrW
     local h = SCP_1025_CONFIG.ScrH
     local minUp = -0.5
@@ -295,7 +299,7 @@ end
 * @Player ply The player to set the overlay.
 --]]
 function scp_1025.RabiesPhase3(ply)
-    local tab = table.Copy(SCP_1025_CONFIG.Settings.DefaultColorModif)
+    local tab = table.Copy(SCP_1025_CONFIG.Settings.DefaultColorModify)
     local colorToReach = SCP_1025_CONFIG.Settings.ColorColorToReach
     local fromColor = tab["$pp_colour_colour"]
     local startTime = CurTime()
@@ -343,7 +347,7 @@ function scp_1025.SchizophreniaCrisis(ply)
     local to = 10
     local firstSide = true
 
-    hook.Add( "RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.SchizophreniaCrisis", function()
+    hook.Add("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.SchizophreniaCrisis", function()
         local currentTime = CurTime()
         local progress = math.Clamp((currentTime - startTime) / variance, 0, 1)
 

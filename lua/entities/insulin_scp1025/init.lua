@@ -44,6 +44,7 @@ function ENT:Eat(ply)
 	self:Remove()
 end
 
+-- TODO : Pouvoir gérer le nombre d'unité injecté ?
 function ENT:Use(ply)
 	if (not IsValid(ply)) then return end
 	if (not ply.scp_1025_Glycemia) then return end

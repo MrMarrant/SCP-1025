@@ -31,8 +31,8 @@ local LANG_FR = {
 
     -- Rabies Disease
     rabies_phase2 = "Vous vous sentez étourdi et confus",
-    rabies_phase2_hydrophobie = "Vous vous sentez étourdi et confus, vous avez une phobie totale de l'eau, le simple fait d'entendre quelqu'un parler d'eau vous terrifie",
-    rabies_phase3_agressif = "Vous avez une envie irrésistible d'attaquer les gens autour de vous...",
+    rabies_phase2_hydrophobia = "Vous vous sentez étourdi et confus, vous avez une phobie totale de l'eau, le simple fait d'entendre quelqu'un parler d'eau vous terrifie",
+    rabies_phase3_aggressive = "Vous avez une envie irrésistible d'attaquer les gens autour de vous...",
     rabies_phase3_paralized = "Vous sentez que votre corps devient de plus en plus raide ...",
     rabies_phase3_symptom_paralized = "Votre corps se raidit ...",
 

@@ -37,13 +37,15 @@ end
 * @Player ply The player to set to sleep.
 --]]
 local function Sleep(ply)
-    local eyeAngle = ply:EyeAngles()
-    local Direction = Angle(90, eyeAngle.y, eyeAngle.r)
+    if (not ply.scp_1025_IsSleeping) then
+        local eyeAngle = ply:EyeAngles()
+        local Direction = Angle(90, eyeAngle.y, eyeAngle.r)
 
-    scp_1025.CreateBlinkEye(ply, 1, true, false)
-    ply:SetEyeAngles(Direction)
-    ply:Freeze(true)
-    ply.scp_1025_IsSleeping = true
+        scp_1025.CreateBlinkEye(ply, 1, true, false)
+        ply:SetEyeAngles(Direction)
+        ply:Freeze(true)
+        ply.scp_1025_IsSleeping = true
+    end
 end
 
 --[[
@@ -51,10 +53,12 @@ end
 * @Player ply The player to unsleep.
 --]]
 local function UnSleep(ply)
-    ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
-    ply:Freeze(false)
-    scp_1025.CreateBlinkEye(ply, 1, true, true)
-    ply.scp_1025_IsSleeping = nil
+    if (ply.scp_1025_IsSleeping) then
+        ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
+        ply:Freeze(false)
+        scp_1025.CreateBlinkEye(ply, 1, true, true)
+        ply.scp_1025_IsSleeping = nil
+    end
 end
 
 --[[
@@ -142,10 +146,10 @@ end
 function scp_1025.Schizophrenia(ply)
     local delay = SCP_1025_CONFIG.Settings.SchizophreniaDelay
     local interval = SCP_1025_CONFIG.Settings.SchizophreniaInterval
-    timer.Create("SCP1025.Schizophrenia.", delay + math.random(-interval, interval), 0, function()
+    timer.Create("SCP1025.Schizophrenia." .. ply:EntIndex(), delay + math.random(-interval, interval), 0, function()
         if (not IsValid(ply)) then return end
 
-        timer.Adjust("SCP1025.Schizophrenia.", delay + math.random(-interval, interval))
+        timer.Adjust("SCP1025.Schizophrenia." .. ply:EntIndex(), delay + math.random(-interval, interval))
         hook.Call("SchizophreniaSymptom", nil, ply)
     end)
 end
@@ -387,9 +391,9 @@ function scp_1025.ClearDiseases(ply)
     timer.Remove("SCP1025.Diabetes.Rabies.Phase3Paralized." .. ply:EntIndex())
     timer.Remove("SCP1025.Diabetes.Rabies.Phase3Paralized." .. ply:EntIndex())
     timer.Remove("SCP1025.Schizophrenia." .. ply:EntIndex())
+    timer.Remove("SCP1025.Diabetes.Rabies.ParalizedPhaseRabies." .. ply:EntIndex())
     hook.Remove("Think", "SCP1025.AsthmaSprint." .. ply:EntIndex())
     hook.Remove("Think", "Think.SCP1025.Diabetes." .. ply:EntIndex())
-    hook.Remove("Think", "Think.SCP1025.Rabies.ParalizedPhaseRabies" .. ply:EntIndex())
     ply:StopSound(SCP_1025_CONFIG.Sounds.Snoring)
     if (ply.scp_1025_IsSleeping) then ply:Freeze(false) end
     ply.scp_1025_Huntington_Symptom = nil
