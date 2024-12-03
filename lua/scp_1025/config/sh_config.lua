@@ -14,7 +14,6 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--- TODO : Vérifier chaque variable, les commentaires et les valeurs par défauts
 -- NET VAR
 SCP_1025_CONFIG.NetVar = {}
 SCP_1025_CONFIG.NetVar.IndexPage = "SCP_1025_CONFIG.NetVar.IndexPage"
@@ -94,7 +93,6 @@ SCP_1025_CONFIG.Settings = {}
 SCP_1025_CONFIG.Settings.MinCommonCold = 80
 SCP_1025_CONFIG.Settings.MaxCommonCold = 120
 SCP_1025_CONFIG.Settings.CommonColdRepetitions = 10
-SCP_1025_CONFIG.Settings.ProbabilityWriter = 20
 -- Asthme Settings
 SCP_1025_CONFIG.Settings.SprintDuration = 3
 SCP_1025_CONFIG.Settings.RecoveryDuration = 5
@@ -107,13 +105,14 @@ SCP_1025_CONFIG.Settings.HuntingtonShootDuration = 2
 -- Gastroenteritis Settings
 SCP_1025_CONFIG.Settings.MinGastroenteritis = 60
 SCP_1025_CONFIG.Settings.MaxGastroenteritis = 120
-SCP_1025_CONFIG.Settings.RepetitionsGastroenteritis = 6
+SCP_1025_CONFIG.Settings.RepetitionsGastroenteritis = 10
 -- Kleine Levin Settings
 SCP_1025_CONFIG.Settings.KleineLevinDurationBlink = 0.2
 SCP_1025_CONFIG.Settings.KleineLevinDelay = 60
 SCP_1025_CONFIG.Settings.KleineLevinMinInterval = 5
 SCP_1025_CONFIG.Settings.KleineLevinMaxInterval = 10
 SCP_1025_CONFIG.Settings.KleineLevinRepetition = 5
+SCP_1025_CONFIG.Settings.KleineLevinIntervalRepetition = 2
 SCP_1025_CONFIG.Settings.KleineLevinSleepDuration = 15
 -- Diabetes Settings
 SCP_1025_CONFIG.Settings.NormalGlycemia = 1.2
@@ -126,7 +125,7 @@ SCP_1025_CONFIG.Settings.IntervalGlycemia = 0.011 -- default 0.011
 SCP_1025_CONFIG.Settings.CoefficientIncreaseGlycemia = 2
 SCP_1025_CONFIG.Settings.DelaySymptomGlycemia = 15
 SCP_1025_CONFIG.Settings.IntervalSymptomGlycemia = 10
-SCP_1025_CONFIG.Settings.ProbabilityVomiting = 8
+SCP_1025_CONFIG.Settings.ProbabilityVomiting = 20
 SCP_1025_CONFIG.Settings.CoefficientSpeedHypo = 0.4
 SCP_1025_CONFIG.Settings.CoefficientSpeedHyper = 0.3
 SCP_1025_CONFIG.Settings.HamburgerGlycemiaValue = 0.7
@@ -161,7 +160,6 @@ SCP_1025_CONFIG.Settings.DefaultColorCrisis = {
     ["$pp_colour_mulg"] = 0,
     ["$pp_colour_mulb"] = 0
 }
-SCP_1025_CONFIG.Settings.SchizophreniaMaterialTerturize = Material("pp/texturize/rainbow.png")
 SCP_1025_CONFIG.Settings.SchizophreniaVariance = 0.5
 SCP_1025_CONFIG.Settings.SchizophreniaDelayHalo = 10
 SCP_1025_CONFIG.Settings.SchizophreniaRadiusHalo = 500
@@ -187,7 +185,8 @@ SCP_1025_CONFIG.SchizophreniaMaxDialog = 4
 SCP_1025_CONFIG.SchizophreniaDurationSpeaking = 30
 -- Writers Settings
 SCP_1025_CONFIG.Settings.WriterBlockDurationOverlay = 3.65
-SCP_1025_CONFIG.Settings.WriterBlockDurationTalk = 115 -- Durée du son
+SCP_1025_CONFIG.Settings.WriterBlockDurationTalk = 115
+SCP_1025_CONFIG.Settings.ProbabilityWriter = 20
 SCP_1025_CONFIG.Settings.WriterBlockColors = {
     [ "$pp_colour_addr" ] = 0,
     [ "$pp_colour_addg" ] = 0,

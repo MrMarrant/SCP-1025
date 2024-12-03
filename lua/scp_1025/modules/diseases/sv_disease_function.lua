@@ -214,6 +214,7 @@ function scp_1025.Huntington(ply)
     end )
 end
 
+-- TODO : Ajouter une crise d'asthme ?
 --[[
 * Set the asthma for the player (sprint slowdown effect).
 * @Player ply The player to set the disease.
@@ -238,7 +239,7 @@ function scp_1025.Asthma(ply)
             if (cur > recoverTime) then
                 ply.scp_1025_RecoverTime = nil
                 ply.scp_1025_SprintTime = 0
-                ply:EmitSound(breathSound, 75, math.random( 90, 110 ))
+                ply:EmitSound(regainedSound, 150, math.random( 90, 110 ))
             end
         else
             if ply:KeyDown(IN_SPEED) and ply:IsOnGround() then
@@ -250,7 +251,8 @@ function scp_1025.Asthma(ply)
                     ply.scp_1025_RecoverTime = cur + SCP_1025_CONFIG.Settings.RecoveryDuration
                     ply:SetRunSpeed(minRunSpeed)
                     ply.scp_1025_SprintTime = 0
-                    ply:EmitSound(regainedSound, 75, math.random( 90, 110 ))
+                    ply:EmitSound(breathSound, 75, math.random( 90, 110 ))
+                    scp_1025.CreateBlurEffect(ply, 2)
                 end
                 ply.scp_1025_IsRunning = false
             end
@@ -327,6 +329,8 @@ function scp_1025.KleineLevin(ply)
     local minInterval = SCP_1025_CONFIG.Settings.KleineLevinMinInterval
     local maxInterval = SCP_1025_CONFIG.Settings.KleineLevinMaxInterval
     local repetition = SCP_1025_CONFIG.Settings.KleineLevinRepetition
+    local intervalRep = SCP_1025_CONFIG.Settings.KleineLevinIntervalRepetition
+    repetition = math.random(repetition - intervalRep, repetition + intervalRep)
     local leaseSound = SCP_1025_CONFIG.Sounds.Lease
     local i = 0
 
@@ -568,13 +572,13 @@ hook.Add("HyperGlycemiaDiabetes", "HyperGlycemiaDiabetes.SCP_1025", function(ply
         if (not ply.scp_1025_HyperGlycemia) then return end
 
         local glycemia = ply.scp_1025_Glycemia
-        local randomSymptom = math.random(1, probabiltyVomiting)
+        local randomSymptom = math.random(1, 100)
         local interval = intervalSymptom * math.Clamp(glycemia / highHyper, 0, 1)
         local coefficient = 1 - (coefficientSpeed * math.Clamp(highHyper / glycemia, 0, 1))
 
-        if (randomSymptom > 1) then
+        scp_1025.CreateBlurEffect(ply, 2)
+        if (randomSymptom > probabiltyVomiting) then
             scp_1025.CreateBlinkEye(ply, 0.5)
-            scp_1025.CreateBlurEffect(ply, 2)
         else
             scp_1025.Vomiting(ply)
         end

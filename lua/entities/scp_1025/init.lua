@@ -61,6 +61,7 @@ function ENT:MakeParanoid(tbl)
 	while (not playerParanoidFound and #tbl >= 1) do
 		local furfarthestPlayer = scp_1025.GetFarthestEnt(tbl, self)
 		if (not IsValid(furfarthestPlayer)) then return end
+		if (not furfarthestPlayer:Alive()) then return end
 
 		tbl[furfarthestPlayer:EntIndex()] = nil
 		if (not furfarthestPlayer.scp_1025_Paranoid) then
