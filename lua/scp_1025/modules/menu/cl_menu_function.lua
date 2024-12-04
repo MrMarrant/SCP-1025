@@ -21,7 +21,7 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
         body {
             margin-left: 10px;
             color: #ffffff;
-            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/background_menu.png") no-repeat center center fixed;
+            background: url("https://i.imgur.com/lA07yWA.png") no-repeat center center fixed;
             background-size: cover;
             overflow: hidden;
         }
@@ -86,7 +86,7 @@ SCP_1025_CONFIG.RemoveHeaderMenu = [[
         body {
             margin-left: 10px;
             color: #ffffff;
-            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/background_menu.png") no-repeat center center fixed;
+            background: url("https://i.imgur.com/lA07yWA.png") no-repeat center center fixed;
             background-size: cover;
             overflow: hidden;
         }

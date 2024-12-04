@@ -23,7 +23,7 @@ SCP_1025_CONFIG.BasePage = [[
         margin: 0;
         font-family: "Lumios Typewriter Old";
         src: url("asset://garrysmod/addons/scp_1025/resource/fonts/LumiosTypewriter-Old.ttf") format("truetype");
-        background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/page.png") no-repeat center center fixed;
+        background: url("https://i.imgur.com/eiU6Aod.png") no-repeat center center fixed;
         background-size: cover;
         display: flex;
         flex-direction: column;
@@ -137,7 +137,7 @@ SCP_1025_CONFIG.DescriptionPage = [[
             margin: 0;
             font-family: "Lumios Typewriter Old";
             src: url("asset://garrysmod/addons/scp_1025/resource/fonts/LumiosTypewriter-Old.ttf") format("truetype");
-            background: url("asset://garrysmod/addons/scp_1025/materials/img_scp_1025/page.png") no-repeat center center fixed;
+            background: url("https://i.imgur.com/eiU6Aod.png") no-repeat center center fixed;
             background-size: cover;
             overflow: hidden;
         }
