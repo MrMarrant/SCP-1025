@@ -29,6 +29,11 @@ surface.CreateFont( "SCP01025_Book", {
     size = 15
 } )
 
+surface.CreateFont( "SCP01025_Error", {
+    font = "CenterPrintText",
+    size = 20
+} )
+
 surface.CreateFont( "SCP01025_MT1", {
     font = "Arial",
     size = 40,

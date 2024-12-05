@@ -13,8 +13,7 @@
 
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-SCP_1025_CONFIG.BasePage = [[
+SCP_1025_CONFIG.BasePageChromium = [[
 <head>
 <title>Index Page</title>
 <style>
@@ -112,10 +111,105 @@ SCP_1025_CONFIG.BasePage = [[
 <div class="disease-column">
 ]]
 
-SCP_1025_CONFIG.IndexFooterPage = [[
+SCP_1025_CONFIG.BasePage = [[
+<head>
+<title>Index Page</title>
+<style>
+    body {
+        overflow: hidden;
+        font-family: "Lumios Typewriter Old";
+        src: url("asset://garrysmod/addons/scp_1025/resource/fonts/LumiosTypewriter-Old.ttf") format("truetype");
+        background: url("https://i.imgur.com/eiU6Aod.png") no-repeat center center fixed;
+        background-size: cover;
+        color: #333;
+    }
+
+    h1 {
+        margin-top: 10px;
+        text-align: center;
+        font-size: %frem;
+        line-height: 1.2;
+    }
+
+    hr {
+        margin-top: 15px;
+        margin-bottom: 30px;
+        width: %dpx;
+        border: none;
+        border-top: 3px solid #333;
+    }
+
+    .disease-column button {
+        text-align: center;
+        display: block;
+        padding: 5px;
+        margin-bottom: 5px;
+        max-height: 1000px;
+        position: relative;
+        left: %s;
+    }
+
+    .footer-text {
+        text-align: center;
+        font-size: %frem;
+        margin-top: 50px;
+    }
+
+    button {
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        outline: inherit;
+        font-size: %frem;
+        width: inherit;
+        height: inherit;
+    }
+
+    button:hover {
+        cursor: pointer;
+        color: blue;
+    }
+
+    .QuitButton {
+        top: 10px;
+        right: -10px;
+        border-radius: 5px;
+        background-color: #000000;
+        margin-bottom: 0.5em;
+        transition: all 0.3s ease;
+        position: absolute;
+        width: %frem;
+        height: 5em;
+        display: grid;
+        margin-top: 3em;
+    }
+    .QuitButton:hover {
+        width: %frem;
+    }
+    .DeletePageButton {
+        font-size: %frem;
+        color: #ffffff;
+    }
+    .DeletePageButton:hover {
+        color: #e2e2e2;
+    }
+</style>
+</head>
+<body>
+
+<h1>The<br>Encyclopedia<br>of<br>Common<br>Diseases</h1>
+<hr>
+<div class="QuitButton">
+    <button class="DeletePageButton" onclick='DeletePage()'>Close</button>
 </div>
 
+<div class="disease-column">
+]]
+
+SCP_1025_CONFIG.IndexFooterPage = [[
 <div class="footer-text">Illustrated by Coltan Press<br>1948</div>
+</div>
 <script>
     function DeletePage() {
         console.log("RUNLUA:scp_1025.CloseBook()")
@@ -234,7 +328,12 @@ SCP_1025_CONFIG.DescriptionFooterPage = [[
 --]]
 function scp_1025.IndexPage()
     local ply = LocalPlayer()
-    local page = string.format(SCP_1025_CONFIG.BasePage, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
+    local page = ""
+    if (SCP_1025_CONFIG.IsChromium) then
+        page = string.format(SCP_1025_CONFIG.BasePageChromium, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
+    else
+        page = string.format(SCP_1025_CONFIG.BasePage, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, "40%", scp_1025.FontSizeResolution(1.8), scp_1025.FontSizeResolution(1.5), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
+    end
     local i = 1
     for k, v in pairs(SCP_1025_CONFIG.DiseaseAvailable) do
         if (k == "writer_block") then
@@ -254,7 +353,6 @@ end
 * @string disease The disease to display.
 --]]
 function scp_1025.DescriptionPage(ply, disease)
-    scp_1025.DeletePage()
     local diseaseSelect = SCP_1025_CONFIG.DiseaseAvailable[disease]
     local page = string.format(SCP_1025_CONFIG.DescriptionPage, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(10), SCP_1025_CONFIG.ScrW * 0.35, diseaseSelect.name)
     page = page .. diseaseSelect.description .. SCP_1025_CONFIG.DescriptionFooterPage
@@ -292,9 +390,10 @@ end
 * @string content The page content.
 --]]
 function scp_1025.CreateDHTMLPage(ply, content, w, h, canClose)
-    scp_1025.DeletePage(ply)
+    local page = ply.scp_1025_CurrentPage
+    if (page) then page = page:IsValid() and page or nil end
 
-    local frame = vgui.Create("DFrame")
+    local frame = page and page:GetParent() or vgui.Create("DFrame")
     frame:SetSize(w, h)
     frame:Center()
     frame:SetTitle("")
@@ -305,14 +404,14 @@ function scp_1025.CreateDHTMLPage(ply, content, w, h, canClose)
     height = canClose and height - 30 or height
 
     -- Create the DHTML panel
-    local dhtml = vgui.Create("DHTML", frame)
+    local dhtml = page or vgui.Create("DHTML", frame)
     dhtml:SetSize(width, height)
     dhtml:SetHTML(content)
     dhtml:SetAllowLua(true)
     dhtml:RequestFocus()
     if (canClose) then dhtml:Dock(BOTTOM) end
 
-    ply.scp_1025_CurrentPage = frame
+    ply.scp_1025_CurrentPage = dhtml
 end
 
 --[[
@@ -321,7 +420,7 @@ end
 function scp_1025.DeletePage()
     local ply = LocalPlayer()
     if (ply.scp_1025_CurrentPage) then
-        ply.scp_1025_CurrentPage:Remove()
+        ply.scp_1025_CurrentPage:GetParent():Remove()
         ply.scp_1025_CurrentPage = nil
     end
 end

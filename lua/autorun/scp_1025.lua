@@ -26,6 +26,8 @@ SCP_1025_CONFIG.RootFolder = "scp_1025/"
 -- Actual lang server
 SCP_1025_CONFIG.LangServer = GetConVar("gmod_language"):GetString()
 
+SCP_1025_CONFIG.IsChromium = BRANCH == "x86-64"
+
 --[[
 * Load the file set in the parameters.
 * @string File The name of the file to load.

@@ -31,11 +31,11 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
     <h1>SCP-1025</h1>
     <h2>Add disease</h2>
 
-    <form name="formdisease" action="javascript:CreateDisease()">
+    <form name="formdisease" action="javascript:;" onsubmit="CreateDisease(this)">
         <label for="dname">Disease name:</label><br>
         <input type="text" id="dname" name="dname" placeholder="Influenza"><br><br>
         <label for="ddescription">Disease description:</label><br>
-        <textarea  type="text" id="ddescription" name="ddescription" rows="8" cols="50" placeholder='Flu, also called influenza, is an infection of the nose, throat and lungs, which are part of the respiratory system. The flu is caused by a virus. Influenza viruses are different from the "stomach flu" viruses that cause diarrhea and vomiting.'></textarea><br><br>
+        <textarea  type="text" id="ddescription" name="ddescription" rows="3" cols="50" placeholder='Flu, also called influenza, is an infection of the nose, throat and lungs, which are part of the respiratory system. The flu is caused by a virus. Influenza viruses are different from the "stomach flu" viruses that cause diarrhea and vomiting.'></textarea><br><br>
         <label for="dfunction">Disease function to call:<br>
             <b>- The function must exist.<br>
             - The function must have only one parameter who should receive a player.<br>
@@ -51,7 +51,18 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
         <input class="submit" type="submit" value="Confirm">
     </form>
     <script>
-        // Check if every parameter are not empty
+        function CreateDisease(form) {
+            func = FormatText(form.dfunction.value)
+            name = FormatText(form.dname.value)
+            description = FormatText(form.ddescription.value)
+            index = FormatText(form.dindex.value)
+
+            isValid = IsFormValid(func, name, description, index);
+            if (isValid) {
+                console.log("RUNLUA:scp_1025.CreateDisease('"+func+"', '"+name+"', '"+description+"', '"+index+"')");
+            }
+        }
+
         function IsFormValid(func, name, description, index) {
             if (func == "" || name == "" || description == "" || index == "") {
                 console.log("RUNLUA:scp_1025.AlertChat('fillall')")
@@ -59,21 +70,9 @@ SCP_1025_CONFIG.AddDiseaseMenu = [[
             }
             return true;
         }
-        function FormatText(func, name, description, index) {
-            func = func.replace(/'/g, "\\'");
-            name = name.replace(/'/g, "\\'");
-            description = description.replace(/'/g, "\\'");
-            index = index.replace(/'/g, "\\'");
-            return [func, name, description, index];
-        }
-        function CreateDisease() {
-            let form = document.formdisease;
-            let [func, name, description, index] = [form.dfunction.value, form.dname.value, form.ddescription.value, form.dindex.value];
-            isValid = IsFormValid(func, name, description, index);
-            if (isValid) {
-                [func, name, description, index] = FormatText(func, name, description, index)
-                console.log("RUNLUA:scp_1025.CreateDisease('"+func+"', '"+name+"', '"+description+"', '"+index+"')");
-            }
+
+        function FormatText(text) {
+            return text.replace(/'/g, "\\'");
         }
     </script>
 </body>
@@ -220,28 +219,31 @@ end
 
 --[[
 * Create a notificatino message to the screen of the player.
-* @string message The message to display.
-* @number|nil notiftype The type notification icon to display.
+* @string message The index message translation to display.
 --]]
 function scp_1025.AlertChat(message)
     local DFrame = vgui.Create("DFrame")
-    DFrame:Center()
-    DFrame:SetSize(300, 200)
+    local sizeFW, sizeFH = SCP_1025_CONFIG.ScrW * 0.3, SCP_1025_CONFIG.ScrH * 0.3
+    DFrame:SetPos(SCP_1025_CONFIG.ScrW * 0.5 - sizeFW / 2, SCP_1025_CONFIG.ScrH * 0.5 - sizeFH / 2)
+    DFrame:SetSize(sizeFW, sizeFH)
     DFrame:SetTitle(scp_1025.GetTranslation("error_form"))
     DFrame:MakePopup()
     DFrame:SetDraggable(false)
     DFrame:ShowCloseButton(false)
-    local w, h = DFrame:GetSize()
+    local wFrame, hFrame = DFrame:GetSize()
 
-    local richtext = vgui.Create("RichText", DFrame)
-    richtext:Dock(TOP)
-    richtext:InsertColorChange( 255, 0, 0, 255 )
-    richtext:AppendText(scp_1025.GetTranslation(message))
+    local background = Color(121, 121, 121, 200)
+    local colorText = Color(155, 0, 0)
+    DFrame.Paint = function(self, w, h)
+        draw.RoundedBox(2, 0, 0, w, h, background)
+        draw.DrawText(scp_1025.GetTranslation(message), "SCP01025_Error", w * 0.5, h * 0.4, colorText, TEXT_ALIGN_CENTER)
+    end
 
     local DermaButton = vgui.Create("DButton", DFrame)
+    local sizeBW, sizeBH = 250, 30
     DermaButton:SetText(scp_1025.GetTranslation("ok_form"))
-    DermaButton:SetPos(w * 0.1, h * 0.5)
-    DermaButton:SetSize(250, 30)
+    DermaButton:SetPos(wFrame * 0.5 - sizeBW / 2, hFrame * 0.8)
+    DermaButton:SetSize(sizeBW, sizeBH)
     DermaButton.DoClick = function()
         DFrame:Remove()
     end
@@ -310,4 +312,10 @@ hook.Add("PopulateToolMenu", "PopulateToolMenu.SCP1025", function()
         panel:AddItem(AddDisease)
         panel:AddItem(RemoveDisease)
     end)
+end)
+
+hook.Add("OnGamemodeLoaded", "OnGamemodeLoaded.SCP1025", function()
+    if (not SCP_1025_CONFIG.IsChromium) then
+        scp_1025.AlertChat("chromium")
+    end
 end)

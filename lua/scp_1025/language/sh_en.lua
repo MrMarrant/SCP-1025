@@ -67,8 +67,11 @@ local LANG_EN = {
     paranoid = "You get the impression that anyone could have been infected by SCP-1025. Everyone is a suspect ...",
 
     -- Form
-    error_form = "Error Form",
+    error_form = "Error",
     ok_form = "OK",
+
+    -- Other
+    chromium = "You are using the base branch version.\nI strongly recommend using the chromium branch x86-64 version\ninstead for better stability for SCP-1025.",
 }
 
 scp_1025.AddLanguage("en", LANG_EN)
