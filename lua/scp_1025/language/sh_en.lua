@@ -72,6 +72,10 @@ local LANG_EN = {
 
     -- Other
     chromium = "You are using the base branch version.\nI strongly recommend using the chromium branch x86-64 version\ninstead for better stability for SCP-1025.",
+
+    -- SCP-500
+    consume_scp500 = "You have consumed SCP-500, you feel better, like never before.",
+    remaining_pills = "Remaining pills : ",
 }
 
 scp_1025.AddLanguage("en", LANG_EN)

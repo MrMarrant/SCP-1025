@@ -50,6 +50,7 @@ SCP_1025_CONFIG.Models.Insulin = "models/scp_1025/insulin/insulin.mdl"
 SCP_1025_CONFIG.Models.GlycemiaReader = "models/scp_1025/insulin_reader/insulin_reader.mdl"
 SCP_1025_CONFIG.Models.Writer = "models/scp_1025/writer/writer.mdl"
 SCP_1025_CONFIG.Models.Inhalator = "models/scp_1025/inhaler/inhaler.mdl"
+SCP_1025_CONFIG.Models.Pill = "models/scp_1025/pills/pills.mdl"
 
 --Sound Path
 SCP_1025_CONFIG.Sounds = {}
@@ -236,8 +237,10 @@ SCP_1025_CONFIG.Settings.ParanoidColors = {
     [ "$pp_colour_mulg" ] = 0,
     [ "$pp_colour_mulb" ] = 0
 }
+-- SCP-500 Settings
+SCP_1025_CONFIG.Settings.PillsNumber = 47
 
-
+-- TODO : Ajouter au système de traduction
 -- Default Diseases
 SCP_1025_CONFIG.DiseaseAvailable = {
     common_cold = {
