@@ -391,6 +391,7 @@ function scp_1025.SchizophreniaCrisis(ply)
         hook.Remove("RenderScreenspaceEffects", "RenderScreenspaceEffects.SCP1025.SchizophreniaCrisis")
         hook.Remove("PreDrawHalos", "PreDrawHalos.SCP1025.SchizophreniaCrisis")
         ply:StopSound(SCP_1025_CONFIG.Sounds.HalluSchizophreniaCrisis)
+        ResetModel(entsFound)
     end)
 end
 

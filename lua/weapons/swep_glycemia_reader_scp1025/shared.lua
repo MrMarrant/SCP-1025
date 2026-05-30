@@ -43,7 +43,7 @@ SWEP.DrawAmmo = false
 
 -- Variables Personnal to this weapon --
 -- [[ STATS WEAPON ]]
-SWEP.PrimaryCooldown = SCP_1025_CONFIG.Settings.DelayGlycemiaReader
+SWEP.UseCooldown = SCP_1025_CONFIG.Settings.DelayGlycemiaReader
 
 function SWEP:Initialize()
 	self:SetHoldType( self.HoldType )
@@ -65,7 +65,7 @@ function SWEP:PrimaryAttack()
 
 	ply:ChatPrint(glycemia .. " g/L")
 	ply:EmitSound(sound, 40)
-	self:SetNextPrimaryFire(CurTime() + self.PrimaryCooldown)
+	self:SetNextPrimaryFire(CurTime() + self.UseCooldown)
 end
 
 function SWEP:SecondaryAttack()
