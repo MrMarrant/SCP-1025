@@ -13,7 +13,7 @@
 
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
-SCP_1025_CONFIG.BasePageChromium = [[
+SCP_1025_CONFIG.BasePage = [[
 <head>
 <title>Index Page</title>
 <style>
@@ -24,33 +24,43 @@ SCP_1025_CONFIG.BasePageChromium = [[
         src: url("asset://garrysmod/addons/scp_1025/resource/fonts/LumiosTypewriter-Old.ttf") format("truetype");
         background: url("https://i.imgur.com/eiU6Aod.png") no-repeat center center fixed;
         background-size: cover;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        text-align: center;
         color: #333;
     }
 
     h1 {
         margin-top: 10px;
+        margin-bottom: 0;
+        padding-bottom: 0.67em;
         text-align: center;
         font-size: %frem;
         line-height: 1.2;
     }
 
     hr {
-        margin-top: 15px;
-        margin-bottom: 30px;
+        margin: 15px auto 30px auto;
         width: %dpx;
         border: none;
         border-top: 3px solid #333;
     }
+
     .disease-column {
-        gap: 0px 100px;
-        display: flex;
-        flex-direction: column;
-        max-height: 1000px;
-        flex-wrap: wrap;
-        align-items: center;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .wrap-column {
+        display: inline-block;
+        vertical-align: top;
+        white-space: normal;
+    }
+
+    .wrap-column + .wrap-column {
+        margin-left: 100px;
+    }
+
+    .wrap-item button {
+        vertical-align: top;
     }
 
     .footer-text {
@@ -59,6 +69,8 @@ SCP_1025_CONFIG.BasePageChromium = [[
         position: absolute;
         font-size: %frem;
         bottom: 0;
+        left: 0;
+        right: 0;
     }
 
     button {
@@ -81,11 +93,11 @@ SCP_1025_CONFIG.BasePageChromium = [[
         border-radius: 5px;
         background-color: #000000;
         margin-bottom: 0.5em;
+        -webkit-transition: all 0.3s ease;
         transition: all 0.3s ease;
         position: absolute;
         width: %frem;
         height: 5em;
-        display: grid;
         margin-top: 3em;
     }
     .QuitButton:hover {
@@ -94,6 +106,8 @@ SCP_1025_CONFIG.BasePageChromium = [[
     .DeletePageButton {
         font-size: %frem;
         color: #ffffff;
+        width: 100%%;
+        height: 100%%;
     }
     .DeletePageButton:hover {
         color: #e2e2e2;
@@ -108,109 +122,13 @@ SCP_1025_CONFIG.BasePageChromium = [[
     <button class="DeletePageButton" onclick='DeletePage()'>Close</button>
 </div>
 
-<div class="disease-column">
-]]
-
-SCP_1025_CONFIG.BasePage = [[
-<head>
-<title>Index Page</title>
-<style>
-    body {
-        overflow: hidden;
-        font-family: "Lumios Typewriter Old";
-        src: url("asset://garrysmod/addons/scp_1025/resource/fonts/LumiosTypewriter-Old.ttf") format("truetype");
-        background: url("https://i.imgur.com/eiU6Aod.png") no-repeat center center fixed;
-        background-size: cover;
-        color: #333;
-    }
-
-    h1 {
-        margin-top: 10px;
-        text-align: center;
-        font-size: %frem;
-        line-height: 1.2;
-    }
-
-    hr {
-        margin-top: 15px;
-        margin-bottom: 30px;
-        width: %dpx;
-        border: none;
-        border-top: 3px solid #333;
-    }
-
-    .disease-column button {
-        text-align: center;
-        display: block;
-        padding: 5px;
-        margin-bottom: 5px;
-        max-height: 1000px;
-        position: relative;
-        left: %s;
-    }
-
-    .footer-text {
-        text-align: center;
-        font-size: %frem;
-        margin-top: 50px;
-    }
-
-    button {
-        background: none;
-        border: none;
-        padding: 0;
-        font: inherit;
-        outline: inherit;
-        font-size: %frem;
-        width: inherit;
-        height: inherit;
-    }
-
-    button:hover {
-        cursor: pointer;
-        color: blue;
-    }
-
-    .QuitButton {
-        top: 10px;
-        right: -10px;
-        border-radius: 5px;
-        background-color: #000000;
-        margin-bottom: 0.5em;
-        transition: all 0.3s ease;
-        position: absolute;
-        width: %frem;
-        height: 5em;
-        display: grid;
-        margin-top: 3em;
-    }
-    .QuitButton:hover {
-        width: %frem;
-    }
-    .DeletePageButton {
-        font-size: %frem;
-        color: #ffffff;
-    }
-    .DeletePageButton:hover {
-        color: #e2e2e2;
-    }
-</style>
-</head>
-<body>
-
-<h1>The<br>Encyclopedia<br>of<br>Common<br>Diseases</h1>
-<hr>
-<div class="QuitButton">
-    <button class="DeletePageButton" onclick='DeletePage()'>Close</button>
-</div>
-
-<div class="disease-column">
+<div class="disease-column" id="disease-column">
 ]]
 
 SCP_1025_CONFIG.IndexFooterPage = [[
 <div class="footer-text">Illustrated by Coltan Press<br>1948</div>
-</div>
 <script>
+    WrapColumns("disease-column", 1000);
     function DeletePage() {
         console.log("RUNLUA:scp_1025.CloseBook()")
     }
@@ -275,6 +193,7 @@ SCP_1025_CONFIG.DescriptionPage = [[
             width: %frem;
         }
         .index, .close {
+            -webkit-transition: all 0.3s ease;
             transition: all 0.3s ease;
             text-align: center;
             position: absolute;
@@ -328,22 +247,17 @@ SCP_1025_CONFIG.DescriptionFooterPage = [[
 --]]
 function scp_1025.IndexPage()
     local ply = LocalPlayer()
-    local page = ""
-    if (SCP_1025_CONFIG.IsChromium) then
-        page = string.format(SCP_1025_CONFIG.BasePageChromium, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
-    else
-        page = string.format(SCP_1025_CONFIG.BasePage, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, "40%", scp_1025.FontSizeResolution(1.8), scp_1025.FontSizeResolution(1.5), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
-    end
+    local page = string.format(SCP_1025_CONFIG.BasePage, scp_1025.FontSizeResolution(3), SCP_1025_CONFIG.ScrW * 0.4, scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(2), scp_1025.FontSizeResolution(10), scp_1025.FontSizeResolution(10.5), scp_1025.FontSizeResolution(2))
     local i = 1
     for k, v in pairs(SCP_1025_CONFIG.DiseaseAvailable) do
         if (k == "writer_block") then
             local displayed = math.random(1, SCP_1025_CONFIG.Settings.ProbabilityWriter) == 1 and true or false
             if (not displayed) then continue end
         end
-        page = page .. "<button onclick='OpenPage(\"" .. k .. "\")'>" .. v.name .. " ......." .. i .. "</button>"
+        page = page .. "<div class='wrap-item'><button onclick='OpenPage(\"" .. k .. "\")'>" .. v.name .. " ......." .. i .. "</button></div>"
         i = i + 1
     end
-    page = page .. SCP_1025_CONFIG.IndexFooterPage
+    page = page .. "</div>" .. SCP_1025_CONFIG.WrapColumnsScript .. SCP_1025_CONFIG.IndexFooterPage
     scp_1025.CreateDHTMLPage(ply, page, SCP_1025_CONFIG.ScrW * 0.5, SCP_1025_CONFIG.ScrH * 0.95, false)
 end
 

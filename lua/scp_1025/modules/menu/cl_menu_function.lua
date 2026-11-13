@@ -90,19 +90,25 @@ SCP_1025_CONFIG.RemoveHeaderMenu = [[
             overflow: hidden;
         }
         .disease-column {
-            gap: 0px 100px;
-            display: flex;
-            flex-direction: column;
-            max-height: -webkit-fill-available;
-            flex-wrap: wrap;
-            align-items: center;
+            text-align: center;
+            white-space: nowrap;
             margin-bottom: 100px;
         }
-        .disease-element {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 10px;
+        .wrap-column {
+            display: inline-block;
+            vertical-align: top;
+            white-space: normal;
+        }
+        .wrap-column + .wrap-column {
+            margin-left: 100px;
+        }
+        .disease-element p {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        .disease-element button {
+            vertical-align: middle;
         }
         .no-disease {
             width: 190px;
@@ -120,12 +126,14 @@ SCP_1025_CONFIG.RemoveHeaderMenu = [[
 <body>
     <h1>SCP-1025</h1>
     <h2>Remove disease</h2>
-    <div class="disease-column">
+    <div class="disease-column" id="disease-column">
 ]]
 
 SCP_1025_CONFIG.RemoveFooterMenu = [[
-    </div>
     <script>
+        var diseaseColumn = document.getElementById("disease-column");
+        WrapColumns("disease-column", window.innerHeight - diseaseColumn.offsetTop - 100);
+
         function RemoveDisease(index) {
             console.log("RUNLUA:scp_1025.RemoveDisease('"+index+"')")
         }
@@ -142,13 +150,13 @@ local function OpenRemoveMenu()
     local page = SCP_1025_CONFIG.RemoveHeaderMenu
 
     for k, v in pairs(SCP_1025_CONFIG.CustomDisease) do
-        page = page .. "<div class=\"disease-element\"><p>" .. v.name .. "</p> <button onclick=\"RemoveDisease('" .. k .. "')\">Remove</button></div>"
+        page = page .. "<div class=\"disease-element\"><p>" .. v.name .. "</p><button onclick=\"RemoveDisease('" .. k .. "')\">Remove</button></div>"
     end
     if (next(SCP_1025_CONFIG.CustomDisease) == nil) then
         page = page .. "<p class='no-disease'>No Diseases.</p>"
     end
 
-    page = page .. SCP_1025_CONFIG.RemoveFooterMenu
+    page = page .. "</div>" .. SCP_1025_CONFIG.WrapColumnsScript .. SCP_1025_CONFIG.RemoveFooterMenu
     scp_1025.CreateDHTMLPage(ply, page, SCP_1025_CONFIG.ScrW * 0.8, SCP_1025_CONFIG.ScrH * 0.8, true)
 end
 
@@ -312,10 +320,4 @@ hook.Add("PopulateToolMenu", "PopulateToolMenu.SCP1025", function()
         panel:AddItem(AddDisease)
         panel:AddItem(RemoveDisease)
     end)
-end)
-
-hook.Add("OnGamemodeLoaded", "OnGamemodeLoaded.SCP1025", function()
-    if (not SCP_1025_CONFIG.IsChromium) then
-        scp_1025.AlertChat("chromium")
-    end
 end)

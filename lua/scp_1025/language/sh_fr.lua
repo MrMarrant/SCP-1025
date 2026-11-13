@@ -70,9 +70,6 @@ local LANG_FR = {
     error_form = "Erreur",
     ok_form = "OK",
 
-    -- Other
-    chromium = "Je vous recommende vivement d'utiliser plutot la branche\nchromium x86-64 pour une meilleur stabilité de SCP-1025",
-
     -- SCP-500
     consume_scp500 = "Vous avez consommé SCP-500, vous vous sentez mieux, comme jamais auparavant.",
     remaining_pills = "Pilules restantes : ",

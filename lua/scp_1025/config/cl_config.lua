@@ -19,6 +19,39 @@ SCP_1025_CONFIG.ScrH = ScrH()
 SCP_1025_CONFIG.WIdealResolution = 1920
 SCP_1025_CONFIG.HIdealResolution = 1080
 
+-- Split the children of a container into side-by-side columns of a maximum height.
+-- Equivalent to a wrapping flex column, which is not supported by the Awesomium browser of the base branch.
+SCP_1025_CONFIG.WrapColumnsScript = [[
+<script>
+    function WrapColumns(id, maxHeight) {
+        var container = document.getElementById(id);
+        var items = [];
+        var heights = [];
+        var nodes = container.childNodes;
+        for (var i = nodes.length - 1; i >= 0; i--) {
+            if (nodes[i].nodeType != 1) container.removeChild(nodes[i]);
+        }
+        for (var j = 0; j < nodes.length; j++) {
+            items.push(nodes[j]);
+            heights.push(nodes[j].offsetHeight);
+        }
+
+        var column = null;
+        var height = 0;
+        for (var k = 0; k < items.length; k++) {
+            if (!column || (height > 0 && height + heights[k] > maxHeight)) {
+                column = document.createElement("div");
+                column.className = "wrap-column";
+                container.appendChild(column);
+                height = 0;
+            }
+            column.appendChild(items[k]);
+            height += heights[k];
+        }
+    }
+</script>
+]]
+
 hook.Add( "OnScreenSizeChanged", "OnScreenSizeChanged.SCP1025", function( oldWidth, oldHeight )
     SCP_1025_CONFIG.ScrW = ScrW()
     SCP_1025_CONFIG.ScrH = ScrH()
